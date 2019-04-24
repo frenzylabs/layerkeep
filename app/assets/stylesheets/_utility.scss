@@ -1,0 +1,14 @@
+/*
+ *  _utility.scss
+ *  LayerKeep
+ * 
+ *  Created by Wess Cope (me@wess.io) on 04/23/19
+ *  Copyright 2018 WessCope
+ */
+
+ .is-text-overflow {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -1,0 +1,220 @@
+/*
+ *  main.scss
+ *  LayerKeep
+ * 
+ *  Created by Wess Cope (me@wess.io) on 04/23/19
+ *  Copyright 2018 WessCope
+ */
+
+ @import "colors";
+ @import "navbar";
+
+ html, body {
+  width:100vw;
+  height: 100vh;
+  background: $background_color;
+}
+
+body {
+  font-family: 'Nunito Sans', sans-serif !important;
+}
+
+#main-hero {
+  h1 {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-size: 80px !important;
+    font-weight: bolder !important;
+    color: #333 !important;
+    width:100% !important;
+
+    margin: 0 0 30px 0 !important;
+    padding: 0 !important;
+  }
+
+  h2 {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-size: 50px !important;
+    line-height: 50px;
+    font-weight: bold !important;
+    color: #333 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  h3 {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-size: 26px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    line-height: 40px;
+
+    margin: 30px 0 0 0 !important;
+    padding: 0 !important;
+  }
+}
+
+#hero-columns {
+  .columns {
+    .column {
+      background: red;
+      overflow:hidden;
+    }
+  }
+}
+
+.hero-link {
+  font-family: 'Nunito Sans', sans-serif !important;
+  font-size: 30px !important;
+  font-weight: bold !important;
+  color: #8cc356 !important;
+
+  &:hover {
+    background: none !important;
+    color: #373737 !important;
+  }
+}
+
+#hero-concepts {
+  background: #e2f0f4;
+
+  .hero-title {
+    margin-top: 40px;
+  }
+
+  .hero-summary {
+    h1 {
+      font-weight: bold;
+      font-size:24px;
+    }
+  }
+
+  .column {
+    display: flex;
+  }
+}
+
+#block-info {
+  margin-top:60px;
+}
+
+#who-section {
+  .columns { margin: 0 !important; }
+
+  .column {
+    display: flex;
+
+    h1 {
+      font-family: 'Nunito Sans', sans-serif !important;
+      font-size: 36px !important;
+      font-weight: 800 !important;
+      color: #fff !important;
+      text-align: left;
+    }  
+  }
+}
+
+#who-about {
+  background: #69709e;
+
+  p {
+    color: #fff;
+    font-size:22px;
+  }
+}
+
+#who-contact {
+  background: #37a0ca;
+  margin:0 !important;
+  padding:0 !important;
+
+  h1 {
+    font-family: 'Nunito Sans', sans-serif !important;
+    font-size: 36px !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    text-align: left;
+    line-height: 160%;
+  }  
+
+  .column {
+    display: flex;
+  }
+
+  .social-link-wrapper {
+    display: flex !important;
+    justify-content: right !important;
+  }
+
+  .social-link {
+    margin:0 !important;
+    padding:0 !important;
+
+    a {
+      text-align: center;
+      color: #fff;
+      font-size:38px;
+    }
+  }
+  
+}
+
+#who-team {
+  background: #bdbdbd;
+}
+
+#contact-form {
+  margin: 0 !important;
+
+  .column {
+    display:flex;
+    justify-content: center;
+  }
+}
+
+a[id="hero-concepts"]:target ~ #main-sections div.hero {
+  -webkit-transform: translateY(-500px);
+  transform: translateY(-500px);
+}
+
+#notify-hud {
+  padding: 10px;
+  margin:0 !important;
+  animation-duration: 0.3s;
+
+  div {
+    font-size: 22px !important;
+    font-family: 'Nunito Sans', sans-serif !important;
+  }
+}
+
+.hud-message {
+  line-height: 140% !important;
+
+  .icon {
+    vertical-align: middle !important;
+    font-size: 28px !important;
+    display: inline-table !important;
+    margin-right: 6px;
+    opacity: 0.6;
+  }
+}
+
+.is_failure {
+  text-align: right;
+  color: #963737;
+}
+
+.article-content {
+  padding-right: 10px;
+
+  h2 {
+    margin:0 0 4px 0 !important;
+  }
+}
+
+.content-box {
+  h1 {
+    margin-bottom: 10px !important;
+  }
+}

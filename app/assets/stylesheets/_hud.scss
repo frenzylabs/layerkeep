@@ -1,0 +1,30 @@
+/*
+ *  _hud.scss
+ *  LayerKeep
+ * 
+ *  Created by Wess Cope (me@wess.io) on 04/23/19
+ *  Copyright 2018 WessCope
+ */
+
+#notify-hud {
+  padding:            10px;
+  margin:             0 !important;
+  animation-duration: 0.3s;
+
+  div {
+    font-size:    22px !important;
+    font-family:  'Nunito Sans', sans-serif !important;
+  }
+}
+
+.hud-message {
+  line-height: 140% !important;
+
+  .icon {
+    vertical-align: middle !important;
+    font-size:      28px !important;
+    display:        inline-table !important;
+    margin-right:   6px;
+    opacity:        0.6;
+  }
+}

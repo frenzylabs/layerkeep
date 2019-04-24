@@ -1,0 +1,50 @@
+/*
+ *  _navbar.scss
+ *  LayerKeep
+ * 
+ *  Created by Wess Cope (me@wess.io) on 04/23/19
+ *  Copyright 2018 WessCope
+ */
+
+ @import "colors";
+
+ .navbar {
+  height:44px;
+
+  border-bottom: 1px solid $seperator_color;
+
+  .navbar-brand {
+    a {
+      font-family: 'Nunito Sans', sans-serif !important;
+      font-size: 30px !important;
+      font-weight: bold !important;
+      // color: #373737 !important;
+    }
+  }
+}
+
+.nav-button {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.nav-option {
+  font-family: 'Nunito Sans', sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 500 !important;
+  // color: #d6d6d6 !important;
+
+  &:hover {
+    background: none !important;
+    color: #373737 !important;
+  }
+
+  &.super {
+    color: #8cc356 !important;
+    font-weight: bold !important;
+
+    &:hover {
+      color: #4eaf58 !important;
+    }
+  }
+}

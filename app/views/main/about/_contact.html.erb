@@ -1,0 +1,57 @@
+<div class="" id="who-contact">
+  <div class="container">
+    <div class="section">
+
+      <div class="section">
+        <div class="columns">
+          <div class="column is-9">
+            <h1>Ping us...</h1>
+          </div>
+        </div>
+
+        <div>
+          <form onSubmit={this.handleSubmit}>
+            <div class="columns">
+              <div class="column is-narrow">
+                <%= render 'main/about/contact_field', placeholder: "What's your name…", name: "name" %>
+              </div>
+
+              <div class="column is-narrow">
+              <%= render 'main/about/contact_field', placeholder: "…an email address?", name: "email" %>
+              </div>
+
+              <div class="column is-narrow">
+                <button class="button is-primary" type="submit">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="columns">
+          <div class="column is-9">
+            <h1>Find us...</h1>
+          </div>
+
+          <div class="column is-narrow social-link-wrapper"></div>
+
+          <div class="column is-narrow social-link-wrapper">
+            <%= render 'main/about/social_link', to: 'https://twitter.com/layerkeep', logo: 'twitter' %>
+          </div>
+
+          <div class="column is-narrow social-link-wrapper">
+            <%= render 'main/about/social_link', to: 'https://www.reddit.com/r/LayerKeep', logo: 'reddit' %>
+          </div>
+
+          <div class="column is-narrow social-link-wrapper">
+            <%= render 'main/about/social_link', to: 'https://github.com/layerkeep', logo: 'github' %>
+          </div>
+
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="navbar-item has-dropdown" id="top-user-menu">
+  <a class="button is-medium navbar-link is-light" id="top-user-menu-trigger">
+    <span class="icon is-small">
+      <i class="far fa-robot"></i>
+    </span>
+  </a>
+
+  
+  <div class="navbar-dropdown is-right">
+    <a class="navbar-item">
+      Profile
+    </a>
+
+    <a class="navbar-item">
+      Stars
+    </a>
+
+    <hr class="navbar-divider">
+    
+    <a class="navbar-item">
+      Settings
+    </a>
+
+    <%= link_to "Sign out", destroy_user_session_path, class: 'navbar-item' %>
+  </div>
+</div>
+
+
+

@@ -1,0 +1,42 @@
+
+<div class="box">
+  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+      <h1 class="title">Log in</h1>
+      
+      <hr/>
+
+      <%= f.input :login,
+                  required: true,
+                  autofocus: true,
+                  as: :string,
+                  placeholder: "Username or email" %>
+      
+      <%= f.input :password,
+                  required: true,
+                  placeholder: "Password",
+                  input_html: { autocomplete: "current-password" } %>
+
+      <%= f.input_field :remember_me, 
+                  inline_label: "remember me",
+                  checked_value: true,
+                  unchecked_value: false,
+                  as: :boolean %>
+  
+    <hr />
+
+
+    <div class="field is-grouped">
+      <div class="control">
+        <%= f.button :submit, "Log in" %>
+      </div>
+
+      <div class="control" style="padding-top:8px; overflow:hidden">
+        <%= link_to "Forgot your password?", new_password_path(resource_name) %>
+      </div>
+    </div>
+
+    <br />
+  <% end %>
+
+  <p class="has-text-centered"><%= link_to "No account? Sign up.", new_registration_path(resource_name) %></p>
+</div>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html class="has-navbar-fixed-top">
+  <head>
+    <title>LayerKeep</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag    'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
+  </head>
+
+  <body data-route="<%="#{controller_name}##{action_name}"%>">
+    <%= render 'shared/nav' %>
+
+    <div class="section">
+      <div class="columns is-mobile is-centered">
+        <div class="column is-half">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
