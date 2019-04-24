@@ -7,6 +7,7 @@
     "axios": "^0.18.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
     "babel-polyfill": "^6.26.0",
+    "bloomer": "^0.6.5",
     "bulma": "^0.7.4",
     "diff2html": "^2.7.0",
     "jets": "^0.14.1",

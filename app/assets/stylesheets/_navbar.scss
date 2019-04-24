@@ -9,10 +9,9 @@
  @import "colors";
 
  .navbar {
-  height:44px;
-
   border-bottom: 1px solid $seperator_color;
-
+  height: 44px !important;
+  
   .navbar-brand {
     a {
       font-family: 'Nunito Sans', sans-serif !important;

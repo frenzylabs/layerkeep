@@ -31,3 +31,13 @@
 
 @import "diff2html/dist/diff2html";
 @import "prismjs/themes/prism";
+
+html, body {
+  width:100vw;
+  height: 100vh;
+  background: $background_color;
+}
+
+body {
+  font-family: 'Nunito Sans', sans-serif !important;
+}

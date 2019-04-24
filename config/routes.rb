@@ -18,10 +18,10 @@ Rails.application.routes.draw do
 
   devise_for :users
 
-  # FOR REACT ONCE WE DASHBOARD
-  #
-  # get '*page', to: 'main#index', constraints: ->(req) do
-  #   !req.xhr? && req.format.html?
-  # end
+  # REACT
+  
+  get '*page', to: 'user#index', constraints: ->(req) do
+    !req.xhr? && req.format.html?
+  end
 
 end

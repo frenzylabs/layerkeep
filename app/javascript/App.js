@@ -15,19 +15,32 @@ import {
 } from 'react-router-dom'
 
 import configureStore from 'configureStore'
-
 const store = configureStore();
+
+import { Columns }    from 'bloomer/lib/grid/Columns';
+import { Column }     from 'bloomer';
+import { Nav }        from './components/Nav';
+import { LeftColumn } from './components/LeftColumn';
 
 class App extends React.Component {
   render () {
     return (
       <Provider store={store}>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/" render={() => ("Home!")} />
-            <Route path="/about"  render={() => ("About!")} />
-          </Switch>
-        </BrowserRouter>
+        <Nav />
+
+        <Columns isGapless id="dashboard">
+          <Column isSize={2} style={{background: 'red'}}>
+            <LeftColumn />
+          </Column>
+
+          <Column>
+            <BrowserRouter>
+              <Switch>
+                <Route exact path="/user/" render={() => "Hi"} />
+              </Switch>
+            </BrowserRouter>
+          </Column>
+        </Columns>
       </Provider>
     );
   }

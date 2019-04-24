@@ -1,8 +1,5 @@
 <nav class="navbar is-fixed-top is-light" role="navigation" aria-label="main navigation">
-<% if user_signed_in? %>
-<% else %>
   <div class="container">
-<% end %>
     <section class="navbar-start">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">LayerKeep</a>
@@ -22,33 +19,12 @@
       </div>
       <% end %>
 
-      <% if user_signed_in? %>
-        <a class="navbar-item" href="/profiles">
-          Profiles
-        </a>
-
-        <a class="navbar-item" href="/projects">
-          Projects
-        </a>
-      <% end %>
-
     </section>
-
-    <% if flash.count > 0 %>
-      <%= render 'shared/notifications' %>
-    <% end %>
 
     <div class="navbar-end">
       <div class="navbar-menu" role="navigation">
-      <% if user_signed_in? %>
-        <%= render "shared/user_menu" %>
-      <% else %>
         <%= render "shared/landing_menu" %>
-      <% end %>
       </div>
     </div>
-<% if user_signed_in? %>
-<% else %>
   </div>
-<% end %>
 </nav>
