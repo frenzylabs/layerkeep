@@ -18,6 +18,46 @@ Rails.application.routes.draw do
 
   devise_for :users
 
+  concern :repo_files do |options|
+    options ||= {}
+    # get ':repo_name/files/:revision/:filepath', {action: 'show', to: 'repo_files#show', as: "#{options[:controller]}_revisions", constraints: { tree: 'tree', revision: /.*/ }}.merge(options)
+    # get ':repo_name/tree/:revision', {action: 'index', to: 'repos#index', as: "#{options[:controller]}_revisions", constraints: { tree: 'tree', revision: /.*/ }}.merge(options)
+    get ':repo_name', {action: 'show', to: 'repos#show', as: "edit_#{options[:as_kind]}"}.merge(options)
+    get '/', {action: 'index', to: 'repos#index', as: "#{options[:as]}"}.merge(options)
+    post '/', {action: 'create', to: 'repos#create', as: "create_#{options[:as_kind]}"}.merge(options)
+
+    # get 'upload', {action: 'new', as: "new_#{options[:controller]}"}.merge(options)
+    # get ':tree/:treebranch', {action: 'index', as: "#{options[:controller]}", defaults: {tree: 'tree', treebranch: 'master'}, constraints: { tree: 'tree', treebranch: /.*/ }}.merge(options)
+    # get ':files/:treebranch/:filename', {action: 'show', as: "edit_#{options[:controller]}", defaults: {files: 'files'}, constraints: { files: /files|content/, treebranch: /.*/, filename: /.*/ }}.merge(options)
+    # delete ':files/:treebranch/:filename', {action: 'destroy', as: "destroy_#{options[:controller]}", defaults: {files: 'files'}, constraints: { files: 'files', treebranch: /.*/, filename: /.*/ }}.merge(options)
+    # post 'upload/:treebranch', {action: 'create', as: "upload_#{options[:controller]}", defaults: {treebranch: 'master'}, constraints: { treebranch: /.*/ }}.merge(options)    
+  end
+
+  scope ':user' do
+    scope 'slices' do
+    end
+
+    scope 'profiles', defaults: {kind: 'profile'} do
+      concerns :repo_files, as_kind: 'profiles'
+    end
+
+    scope 'projects', defaults: {kind: 'project'} do
+      concerns :repo_files, as_kind: 'projects'
+    end
+  end
+    
+
+#     /:username/profiles/
+# ReposController get from repos table where kind = profiles
+# /:username/profiles/:profile_name/:kind/:branch_or_commit_oid/
+# /kmussel/profiles/settings.ini/  
+# /kmussel/profiles/settings.ini/tree/123123123   ->  view 
+# /kmussel/profiles/settings.ini/file/123123123/filename   ->  view single file details
+# /kmussel/profiles/settings.ini/content/master
+# /:username/profiles/:profile_name/upload
+# would replace the current file in 
+
+
   # REACT
   
   get '*page', to: 'user#index', constraints: ->(req) do
