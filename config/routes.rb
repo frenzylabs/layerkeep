@@ -20,10 +20,11 @@ Rails.application.routes.draw do
 
   concern :repo_files do |options|
     options ||= {}
-    # get ':repo_name/files/:revision/:filepath', {action: 'show', to: 'repo_files#show', as: "#{options[:controller]}_revisions", constraints: { tree: 'tree', revision: /.*/ }}.merge(options)
-    # get ':repo_name/tree/:revision', {action: 'index', to: 'repos#index', as: "#{options[:controller]}_revisions", constraints: { tree: 'tree', revision: /.*/ }}.merge(options)
+    get ':repo_name/files/:revision/:filepath', {action: 'show', to: 'files#show', as: "edit_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/, filepath: /.*/ }}.merge(options)
+    get ':repo_name/tree/:revision', {action: 'index', to: 'files#index', as: "#{options[:as_kind]}_revisions", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
+    post ':repo_name/tree/:revision', {action: 'create', to: 'files#create', as: "create_#{options[:as_kind]}_revisions", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
     get ':repo_name', {action: 'show', to: 'repos#show', as: "edit_#{options[:as_kind]}"}.merge(options)
-    get '/', {action: 'index', to: 'repos#index', as: "#{options[:as]}"}.merge(options)
+    get '/', {action: 'index', to: 'repos#index', as: "#{options[:as_kind]}"}.merge(options)
     post '/', {action: 'create', to: 'repos#create', as: "create_#{options[:as_kind]}"}.merge(options)
 
     # get 'upload', {action: 'new', as: "new_#{options[:controller]}"}.merge(options)
