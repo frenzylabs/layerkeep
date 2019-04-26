@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_23_205100) do
+ActiveRecord::Schema.define(version: 2019_04_26_143120) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "citext"
   enable_extension "plpgsql"
+
+  create_table "repos", force: :cascade do |t|
+    t.citext "name", null: false
+    t.string "description"
+    t.string "oid"
+    t.string "latest_commit_id"
+    t.string "path", null: false
+    t.string "kind", default: "projects", null: false
+    t.boolean "is_private", default: false
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "kind", "name"], name: "index_repos_on_user_id_and_kind_and_name"
+    t.index ["user_id"], name: "index_repos_on_user_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -29,4 +45,5 @@ ActiveRecord::Schema.define(version: 2019_04_23_205100) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "repos", "users"
 end

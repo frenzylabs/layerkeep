@@ -7,6 +7,8 @@
 #
 
 class ApplicationController < ActionController::Base
+  skip_before_action :verify_authenticity_token
+
   layout :layout_by_resource
 
   before_action :configure_permitted_parameters, if: :devise_controller?
