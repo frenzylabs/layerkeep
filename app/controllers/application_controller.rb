@@ -13,6 +13,15 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+
+  def record_not_found(exception)
+    respond_to do |format|
+      format.html { render status: 404, :file => File.join(Rails.root, 'public', '404.html') }
+      format.json { render status: 404, :json => {"error": "#{exception.message}"} }
+    end
+  end
+
   def after_sign_in_path_for(resource)
     "/user/"
   end

@@ -34,6 +34,10 @@ class ReposController < AuthController
 
     if @repo.valid?
       @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo_path}/.", :bare)
+      files = params.get(:files)
+      if files
+        commit_id, names = RepoFilesHandler.new(@git_repo, params).insert_files(current_user, files)
+      end
       @repo.save!
 
       render json: @repo.to_json
@@ -42,13 +46,8 @@ class ReposController < AuthController
     end
   end
 
-  def about
-  end
-
-  def contact
-  end
 
   def get_user()
-    @user ||= User.find_by(username: params["user"] || "")
+    @user ||= User.find_by!(username: params["user"] || "")
   end
 end
