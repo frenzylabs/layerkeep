@@ -1,9 +1,9 @@
 #
-# main_controller.rb
+# repos_controller.rb
 # LayerKeep
 #
-# Created by Wess Cope (me@wess.io) on 04/23/19
-# Copyright 2018 WessCope
+# Created by Kevin Musselman (kmussel@gmail.io) on 04/27/19
+# Copyright 2018 LayerKeep
 #
 
 class ReposController < AuthController
@@ -34,9 +34,9 @@ class ReposController < AuthController
 
     if @repo.valid?
       @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo_path}/.", :bare)
-      files = params.get(:files)
+      files = params.fetch(:files, nil)
       if files
-        commit_id, names = RepoFilesHandler.new(@git_repo, params).insert_files(current_user, files)
+        commit_id, names = RepoFilesHandler.new(@git_repo, params).insert_files(@user, files)
       end
       @repo.save!
 
