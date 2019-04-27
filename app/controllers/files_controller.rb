@@ -1,10 +1,11 @@
 #
-# main_controller.rb
+# files_controller.rb
 # LayerKeep
 #
-# Created by Wess Cope (me@wess.io) on 04/23/19
-# Copyright 2018 WessCope
+# Created by Kevin Musselman (kmussel@gmail.io) on 04/27/19
+# Copyright 2018 LayerKeep
 #
+
 
 class FilesController < AuthController
   before_action :get_user
@@ -15,15 +16,9 @@ class FilesController < AuthController
     start_commit = @repo_handler.current_commit
 
     @filepath = @repo_handler.filepath.chomp("/")
-    rootpath = @filename.blank? ? "" : @filepath + "/"
+    rootpath = @filepath.blank? ? "" : @filepath + "/"
     pathmatch = Regexp.new("(?:#{@filepath}(?:\/))?([^\/]+)", "m")
     file_paths = file_list(start_commit, @filepath)
-  
-
-    if file_paths.empty?
-      throw not_found
-    end
-    
 
     @files = []
 
@@ -34,7 +29,7 @@ class FilesController < AuthController
       break if file_paths.empty?
       if c.parents.first 
         c.parents.first.diff(c, paths: file_paths).deltas.each do |d| 
-          filename, filetype = build_filepath(d.new_file[:path], pathmatch)
+          filename, filetype = build_filepath(d.new_file[:path], pathmatch)          
           filepath = rootpath + filename
           if file_paths.delete(filepath)
             a << {name: filename, path: filepath, type: filetype, author: c.author, date: c.time, commit: c.oid, subject: c.message.split("\n").first, message: c.message}
@@ -129,8 +124,5 @@ class FilesController < AuthController
 
   def init_git_data
     @repo_handler = RepoFilesHandler.new(@git_repo, params)
-    if params["view"] == 'tree' && (@repo_handler.filepath.nil? or @repo_handler.filepath.length > 0)
-      redirect_to(:action => "show", revision: @repo_handler.revision, filepath: @repo_handler.filepath)
-    end
   end
 end

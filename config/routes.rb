@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   concern :repo_files do |options|
     options ||= {}
+    get ':repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/ }}.merge(options)
     get ':repo_name/files/:revision/:filepath', {action: 'show', to: 'files#show', as: "edit_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/, filepath: /.*/ }}.merge(options)
     get ':repo_name/tree/:revision', {action: 'index', to: 'files#index', as: "#{options[:as_kind]}_revisions", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
     post ':repo_name/tree/:revision', {action: 'create', to: 'files#create', as: "create_#{options[:as_kind]}_revisions", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)

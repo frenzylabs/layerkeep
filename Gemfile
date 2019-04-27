@@ -30,4 +30,6 @@ group :development do
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'pry-doc'
+  gem 'rubocop', require: false
+  gem 'rubocop-performance'
 end

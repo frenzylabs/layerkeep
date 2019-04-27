@@ -1,8 +1,8 @@
 class RepoFilesHandler
   attr_accessor :repo, :current_branch, :current_commit, :revision, :filepath
 
-  def initialize(repo, params)
-    @repo = repo
+  def initialize(git_repo, params)
+    @repo = git_repo
     @revision = params['revision']
     @filepath = params['filepath'] 
     set_commit(@revision, @filepath)
