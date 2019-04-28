@@ -14,7 +14,6 @@ class FilesController < AuthController
 
   def index
     start_commit = @repo_handler.current_commit
-
     @filepath = @repo_handler.filepath.chomp("/")
     rootpath = @filepath.blank? ? "" : @filepath + "/"
     pathmatch = Regexp.new("(?:#{@filepath}(?:\/))?([^\/]+)", "m")
@@ -72,6 +71,28 @@ class FilesController < AuthController
     files = params.require(:files)
 
     commit_id, names = @repo_handler.insert_files(current_user, files)
+
+    if commit_id 
+      process_files = []
+      names.each do |f| 
+        ext = f.split(".").last()
+        if ["stl", "obj"].include?(ext) 
+          process_files << f
+        end
+      end
+
+      if process_files.length > 0
+        generate_imgs = {
+          repo_path: @repo.path,
+          repo_name: @repo.name.downcase(),
+          commit: commit_id,
+          image_type: "png",
+          file_paths: process_files
+        }
+        res = Publisher.publish(generate_imgs.to_json, "files.new")
+        puts "Publish Res = #{res.inspect}"
+      end
+    end
 
     if commit_id
       render json: {'commit_id': commit_id, 'names': names}

@@ -8,7 +8,7 @@ module Publisher
   #   @channel_pool ||= AMQPConnectionManager.channel_pool
   # end
 
-  def self.publish(message = "", route = "#", exchange = "topic")
+  def self.publish(message = "", route = "#", exchange = "amq.topic")
     channel.confirm_select
     x        = channel.topic(exchange, durable: true)
     x.publish(message,
