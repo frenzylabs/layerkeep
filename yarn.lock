@@ -2904,6 +2904,11 @@ forever-agent@~0.6.1:
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
   integrity sha1-+8cfDEGt6zf5bFd60e1C2P2sypE=
 
+form-data-to-object@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/form-data-to-object/-/form-data-to-object-0.2.0.tgz#f7a8e68ddd910a1100a65e25ac6a484143ff8168"
+  integrity sha1-96jmjd2RChEApl4lrGpIQUP/gWg=
+
 form-data@~2.3.2:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/form-data/-/form-data-2.3.3.tgz#dcce52c05f644f298c6a7ab936bd724ceffbf3a6"
@@ -2912,6 +2917,14 @@ form-data@~2.3.2:
     asynckit "^0.4.0"
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
+
+formsy-react@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/formsy-react/-/formsy-react-1.1.5.tgz#ee0911bb70712eb6fb9924d56fdb974a19006955"
+  integrity sha512-nNWe4Vbp6aDQ/zSxJ7gVQgD5+avFRVbydcjA2Om42flxpQFrKE54AAbuyEj3Jvv+2b9LVl+WLMAPalyvLjwNcQ==
+  dependencies:
+    form-data-to-object "^0.2.0"
+    prop-types "^15.5.10"
 
 forwarded@~0.1.2:
   version "0.1.2"
@@ -3796,6 +3809,11 @@ jets@^0.14.1:
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/jets/-/jets-0.14.1.tgz#7b0ab29d4297d005766ceaf8af6c00f57ed0f04f"
   integrity sha512-h4wbT0eCiRTTsDfSntmU8OdS9Fs5vd62IqVbmDeHcofcL+9CxobulTIdQPydkiMq5V7RiTwDwGzHvrZKHiWj7Q==
+
+jquery@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.0.tgz#8de513fa0fa4b2c7d2e48a530e26f0596936efdf"
+  integrity sha512-ggRCXln9zEqv6OqAGXFEcshF5dSBvCkzj6Gm2gzuR5fWawaX8t7cxKVkkygKODrDAzKdoYw3l/e3pm3vlT4IbQ==
 
 js-base64@^2.1.8:
   version "2.5.1"
@@ -5674,7 +5692,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.5.10, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==

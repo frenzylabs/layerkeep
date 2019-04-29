@@ -32,7 +32,7 @@ export default class App extends React.Component {
           <Nav />
 
           <Columns isGapless id="dashboard">
-            <Column isSize={2} style={{background: 'red'}}>
+            <Column isSize={2}>
               <LeftColumn />
             </Column>
 
