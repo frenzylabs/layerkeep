@@ -16,5 +16,7 @@ module LayerKeep
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
     config.settings = Rails.application.config_for(:application)
+
+    config.assets.paths << Rails.root.join('node_modules')
   end
 end
