@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   concern :repo_files do |options|
     options ||= {}
     get ':repo_name/revisions', {action: 'index', to: 'revisions#index', as: "default_#{options[:as_kind]}_revisions", defaults: {revision: 'master'}}.merge(options)
-    get ':repo_name/revisions/:filepath', {action: 'index', to: 'revisions#index', as: "#{options[:as_kind]}_revisions", defaults: {revision: 'master'}, constraints: { filepath: /.*/ }}.merge(options)
+    get ':repo_name/revisions/:revision', {action: 'index', to: 'revisions#index', as: "#{options[:as_kind]}_revisions", defaults: {revision: 'master'}, constraints: { revision: /.*/ }}.merge(options)
     get ':repo_name/revision/:revision', {action: 'show', to: 'revisions#show', as: "show_#{options[:as_kind]}_revision", constraints: { view: 'files', revision: /.*/ }}.merge(options)
     get ':repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/ }}.merge(options)
     get ':repo_name/files/:revision/:filepath', {action: 'show', to: 'files#show', as: "edit_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/, filepath: /.*/ }}.merge(options)
