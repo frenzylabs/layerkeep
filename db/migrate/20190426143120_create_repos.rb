@@ -1,6 +1,6 @@
 class CreateRepos < ActiveRecord::Migration[5.2]
   def change
-    # execute "CREATE EXTENSION IF NOT EXISTS citext"
+#    execute "CREATE EXTENSION IF NOT EXISTS citext"
     create_table :repos do |t|
       t.citext   :name,      null: false
       t.string   :description,        null: true
