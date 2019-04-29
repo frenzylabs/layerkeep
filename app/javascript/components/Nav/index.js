@@ -6,14 +6,13 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-
+import React    from 'react';
+import { Link } from 'react-router-dom';
 
 import { UserNavMenu }  from './user';
 import { Navbar }       from 'bloomer/lib/components/Navbar/Navbar';
 import { NavbarStart }  from 'bloomer/lib/components/Navbar/NavbarStart';
 import { NavbarBrand }  from 'bloomer/lib/components/Navbar/NavbarBrand';
-import { NavbarItem }   from 'bloomer/lib/components/Navbar/NavbarItem';
 import { NavbarEnd }    from 'bloomer/lib/components/Navbar/NavbarEnd';
 import { NavbarMenu }   from 'bloomer/lib/components/Navbar/NavbarMenu';
 
@@ -23,11 +22,11 @@ export class Nav extends React.Component {
       <Navbar className="is-fixed-top is-light">
         <NavbarStart>
           <NavbarBrand>
-            <NavbarItem href="/">LayerKeep</NavbarItem>
+            <Link to="/user" className="navbar-item">LayerKeep</Link>
           </NavbarBrand>
-
-          <NavbarItem href="/profiles">Profiles</NavbarItem>
-          <NavbarItem href="/projects">Projects</NavbarItem>
+          
+          <Link to="/profiles" className="navbar-item">Profiles</Link>
+          <Link to="/projects" className="navbar-item">Projects</Link>
         </NavbarStart>
 
         <NavbarEnd>

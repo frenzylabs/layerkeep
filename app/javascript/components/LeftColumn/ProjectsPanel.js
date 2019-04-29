@@ -7,11 +7,12 @@
  */
 
 import React    from 'react';
+import { Link } from 'react-router-dom';
+
 import { Panel } from 'bloomer/lib/components/Panel/Panel';
 import { PanelHeading } from 'bloomer/lib/components/Panel/PanelHeading';
 import { Column } from 'bloomer/lib/grid/Column';
 import { Columns } from 'bloomer/lib/grid/Columns';
-import { Button } from 'bloomer/lib/elements/Button';
 import { PanelBlock } from 'bloomer/lib/components/Panel/PanelBlock';
 import { PanelIcon } from 'bloomer/lib/components/Panel/PanelIcon';
 
@@ -43,7 +44,7 @@ export class ProjectsPanel extends React.Component {
             </Column>
 
             <Column>
-              <Button id="new-project-button" isSize='small' isColor='success'>New</Button>
+              <Link to="/projects/new" className="button is-small is-success">New</Link>
             </Column>
           </Columns>
         </PanelHeading>

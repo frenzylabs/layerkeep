@@ -21,29 +21,31 @@ import { Columns }    from 'bloomer/lib/grid/Columns';
 import { Column }     from 'bloomer';
 import { Nav }        from './components/Nav';
 import { LeftColumn } from './components/LeftColumn';
+import { ProjectList } from './components/Project/list';
+import { ProjectNew } from './components/Project/new';
 
-class App extends React.Component {
+export default class App extends React.Component {
   render () {
     return (
       <Provider store={store}>
-        <Nav />
+        <BrowserRouter>
+          <Nav />
 
-        <Columns isGapless id="dashboard">
-          <Column isSize={2} style={{background: 'red'}}>
-            <LeftColumn />
-          </Column>
+          <Columns isGapless id="dashboard">
+            <Column isSize={2} style={{background: 'red'}}>
+              <LeftColumn />
+            </Column>
 
-          <Column>
-            <BrowserRouter>
+            <Column>
               <Switch>
-                <Route exact path="/user/" render={() => "Hi"} />
+                <Route exact path="/user/"        render={() => "Hi"} />
+                <Route exact path="/projects/new" component={ProjectNew} />
+                <Route exact path="/projects"     component={ProjectList} />
               </Switch>
-            </BrowserRouter>
-          </Column>
-        </Columns>
+            </Column>
+          </Columns>
+        </BrowserRouter>
       </Provider>
     );
   }
 }
-
-export default App
