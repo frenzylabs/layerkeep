@@ -36,7 +36,7 @@ class RevisionsController < AuthController
         end
       end
     end
-    render json: revisions
+    render json: RevisionsSerializer.new(revisions)
   end
 
   def show
