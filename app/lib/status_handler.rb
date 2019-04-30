@@ -33,16 +33,13 @@ class StatusHandler
     end
   end
 
-
-
   def setup_slice_status_subscriber
     self.status_channel.prefetch(10)
     q = self.status_channel.queue('slice_status', durable: true)
-    q.bind(status_exchange, routing_key: 'slice.*.status.#').subscribe(manual_ack: true) do |meta, properties, payload|
+    q.bind(status_exchange, routing_key: 'slice.status.#').subscribe(manual_ack: true) do |meta, properties, payload|
     
       puts "Status Meta Content #{meta.inspect}"
       puts "Status Payload #{payload.inspect}"
-      
 
       begin
         content = JSON.parse(payload)
