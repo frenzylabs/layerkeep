@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_26_143120) do
+ActiveRecord::Schema.define(version: 2019_04_29_190407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -31,6 +31,30 @@ ActiveRecord::Schema.define(version: 2019_04_26_143120) do
     t.index ["user_id"], name: "index_repos_on_user_id"
   end
 
+  create_table "slice_files", force: :cascade do |t|
+    t.string "commit", null: false
+    t.string "filepath", null: false
+    t.string "repo_path", null: false
+    t.string "kind", null: false
+    t.bigint "slice_id"
+    t.bigint "repo_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["repo_id"], name: "index_slice_files_on_repo_id"
+    t.index ["slice_id", "kind"], name: "index_slice_files_on_slice_id_and_kind"
+  end
+
+  create_table "slices", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "path", null: false
+    t.jsonb "options", default: "{}"
+    t.string "status", default: "waiting"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_slices_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -46,4 +70,7 @@ ActiveRecord::Schema.define(version: 2019_04_26_143120) do
   end
 
   add_foreign_key "repos", "users"
+  add_foreign_key "slice_files", "repos"
+  add_foreign_key "slice_files", "slices"
+  add_foreign_key "slices", "users"
 end
