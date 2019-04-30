@@ -7,11 +7,6 @@
  */
 
 import React from 'react';
-import { Media } from 'bloomer/lib/components/Media/Media';
-import { MediaLeft } from 'bloomer/lib/components/Media/MediaLeft';
-import { MediaContent } from 'bloomer/lib/components/Media/MediaContent';
-import { MediaRight } from 'bloomer/lib/components/Media/MediaRight';
-import { ProjectListItem } from './list_item';
 import { Container } from 'bloomer/lib/layout/Container';
 import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
 import { Pagination } from 'bloomer/lib/components/Pagination/Pagination';
@@ -21,6 +16,7 @@ import { PageList } from 'bloomer/lib/components/Pagination/PageList';
 import { Page } from 'bloomer/lib/components/Pagination/Page';
 import { PageLink } from 'bloomer/lib/components/Pagination/PageLink';
 import { PageEllipsis } from 'bloomer';
+import { RepoList } from '../Repo/list';
 
 export class ProjectList extends React.Component {
   render() {
@@ -40,10 +36,7 @@ export class ProjectList extends React.Component {
         <br/>
 
         <Container>
-          <ProjectListItem />
-          <ProjectListItem />
-          <ProjectListItem />
-          <ProjectListItem />
+          <RepoList type="projects"/>
         </Container>
 
         <br/>

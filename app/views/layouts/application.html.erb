@@ -8,6 +8,13 @@
     <%= stylesheet_link_tag     'application', media: 'all' %>
     <%= javascript_include_tag  'application' %>
     <%= javascript_pack_tag     'application' %>
+
+    <script>
+      window.currentUser = {
+        id:       "<%= current_user.id %>",
+        username: "<%= current_user.username %>"
+      }
+    </script>
   </head>
 
   <body style="width:100vw;100vh;">

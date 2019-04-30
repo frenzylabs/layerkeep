@@ -14,15 +14,16 @@ import {
   Route
 } from 'react-router-dom'
 
+import { Columns }        from 'bloomer/lib/grid/Columns';
+import { Column }         from 'bloomer';
+import { Nav }            from './components/Nav';
+import { LeftColumn }     from './components/LeftColumn';
+import { ProjectList }    from './components/Project/list';
+import { ProjectNew }     from './components/Project/new';
+import { ProjectDetails } from './components/Project/details';
+
 import configureStore from 'configureStore'
 const store = configureStore();
-
-import { Columns }    from 'bloomer/lib/grid/Columns';
-import { Column }     from 'bloomer';
-import { Nav }        from './components/Nav';
-import { LeftColumn } from './components/LeftColumn';
-import { ProjectList } from './components/Project/list';
-import { ProjectNew } from './components/Project/new';
 
 export default class App extends React.Component {
   render () {
@@ -38,9 +39,10 @@ export default class App extends React.Component {
 
             <Column>
               <Switch>
-                <Route exact path="/user/"        render={() => "Hi"} />
-                <Route exact path="/projects/new" component={ProjectNew} />
-                <Route exact path="/projects"     component={ProjectList} />
+                <Route exact path="/user/"                    render={() => "Hi"} />
+                <Route exact path="/projects/new"             component={ProjectNew} />
+                <Route exact path="/projects"                 component={ProjectList} />
+                <Route path="/:username/projects/:name"  component={ProjectDetails} />
               </Switch>
             </Column>
           </Columns>
