@@ -60,7 +60,7 @@ class RepoFilesHandler
         branchlookup = (branches.lines.first || "master").chomp
         @current_branch = @repo.branches[branchlookup]
       end
-      @filepath = filepath || ""
+      @filepath = sanitize_filepath(filepath || "")
     rescue Rugged::ReferenceError
       branchpaths = branch.split('/')
       if branchpaths.length > 1
@@ -71,5 +71,9 @@ class RepoFilesHandler
         throw not_found
       end
     end
+  end
+
+  def sanitize_filepath(filepath)
+    filepath.gsub(/[^0-9A-z.\-\/]/, "")
   end
 end

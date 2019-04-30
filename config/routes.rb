@@ -39,8 +39,7 @@ Rails.application.routes.draw do
   end
 
   scope ':user' do
-    scope 'slices' do
-    end
+    resources :slices, defaults: { format: :json }
 
     scope 'profiles', defaults: {kind: 'profile'} do
       concerns :repo_files, as_kind: 'profiles'
