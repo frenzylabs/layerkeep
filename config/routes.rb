@@ -38,8 +38,8 @@ Rails.application.routes.draw do
     # post 'upload/:treebranch', {action: 'create', as: "upload_#{options[:controller]}", defaults: {treebranch: 'master'}, constraints: { treebranch: /.*/ }}.merge(options)    
   end
 
-  scope ':user' do
-    resources :slices, defaults: { format: :json }
+  scope ':user', constraints: lambda { |req| req.format == :json } do
+    resources :slices
 
     scope 'profiles', defaults: {kind: 'profile'} do
       concerns :repo_files, as_kind: 'profiles'

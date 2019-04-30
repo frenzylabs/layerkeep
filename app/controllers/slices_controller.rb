@@ -85,7 +85,7 @@ class SlicesController < AuthController
 
   def gcodes 
     @slice = Slice.find(params[:id])
-    send_file(Rails.root.to_s + "/../repos/" + @slice.path.downcase, filename: @slice.path.split("/").last, disposition: :inline)
+    send_file("#{Rails.application.config.settings["repo_mount_path"]}/" + @slice.path.downcase, filename: @slice.path.split("/").last, disposition: :inline)
   end
 
   def slice_files(file_params, kind)
