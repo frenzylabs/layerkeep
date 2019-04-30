@@ -8,12 +8,14 @@
 
 class ReposController < AuthController
   before_action :get_user
+  respond_to :json
 
   def index
-    logger.info("hi")
-    repos = @user.repos.where(kind: params["kind"])
-
-    render json: repos
+    repos = @user.repos.where(kind: params["kind"]).
+                        page(params["page"]).per(params["per_page"])
+    
+    serializer = paginate(repos)
+    render json: serializer
   end
 
   def show
@@ -23,7 +25,6 @@ class ReposController < AuthController
 
   def create
     post_params = params[:repo]
-
     
     @repo        = Repo.new(post_params.permit(:name, :description))
     @repo.kind   = params[:kind]

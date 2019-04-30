@@ -1,12 +1,21 @@
 module Publisher
-  # def publish(payload)
-  #   channel_pool.with do |channel|
-  #     configure_channel(channel).publish(payload.to_json)
-  #   end
-  # end
-  # def channel_pool
-  #   @channel_pool ||= AMQPConnectionManager.channel_pool
-  # end
+  def self.publish_header(message = "", route = "#", headers = {}, exchange = "amq.headers")
+    channel.confirm_select
+    x        = channel.headers(exchange, durable: true)
+    x.publish(message,
+              routing_key: route,
+              persistent: true,
+              content_type: 'application/json',
+              app_id: 'layerkeep',
+              headers:  headers
+             )
+    confirmed = channel.wait_for_confirms
+    fail PublisherError unless confirmed
+    confirmed
+  rescue => e
+    puts "PUBLISH EXCEPTION = #{e.inspect}"
+    false
+  end
 
   def self.publish(message = "", route = "#", exchange = "amq.topic")
     channel.confirm_select

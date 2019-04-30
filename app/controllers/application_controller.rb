@@ -30,6 +30,27 @@ class ApplicationController < ActionController::Base
     raise ActionController::RoutingError.new('Not Found')
   end
 
+  def paginate(items, serializer = nil, options = {})    
+    serializer_name = ""
+    if serializer.nil?
+      serializer_name = "#{controller_name}_serializer".camelize      
+    elsif serializer.is_a? String 
+      serializer_name = serializer
+    end
+
+    begin
+      serializer =  serializer_name.constantize
+    rescue
+      serializer = DefaultSerializer
+    end
+
+    if options[:meta].blank? 
+      options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }
+    end
+    serializer.new(items, options)
+  end
+  
+
   protected
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :email, :password, :password_confirmation])
