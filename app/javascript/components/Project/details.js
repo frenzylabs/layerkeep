@@ -16,7 +16,7 @@ export class ProjectDetails extends React.Component {
   render() {
     return (
       <div className="section">
-      <Container>
+      <Container className="is-fluid">
         <Breadcrumb>
           <ul>
             <BreadcrumbItem className="title is-4">
@@ -33,7 +33,7 @@ export class ProjectDetails extends React.Component {
       <hr/>
       <br/>
 
-      <Container>
+      <Container className="is-fluid">
         <RepoDetails/>
       </Container>
       </div>
