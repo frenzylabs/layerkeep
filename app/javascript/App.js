@@ -21,14 +21,12 @@ import { LeftColumn }     from './components/LeftColumn';
 import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
 import { ProjectDetails } from './components/Project/details';
-
-import configureStore from 'configureStore'
-const store = configureStore();
+import AppStore           from './states/store';
 
 export default class App extends React.Component {
   render () {
     return (
-      <Provider store={store}>
+      <Provider store={AppStore}>
         <BrowserRouter>
           <Nav />
 
