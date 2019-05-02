@@ -7,10 +7,7 @@
 #
 
 
-class FilesController < AuthController
-  before_action :get_user
-  before_action :get_repo
-  before_action :init_git_data
+class FilesController < RepoAuthController
 
   def index
     start_commit = @repo_handler.current_commit
@@ -59,7 +56,7 @@ class FilesController < AuthController
       end  
     end
 
-    throw not_found unless @file 
+    throw record_not_found unless @file 
     
     render json: @file
   end
@@ -130,20 +127,5 @@ class FilesController < AuthController
 
     rootpath = filepath.blank? ? "" : filepath + "/"
     file_paths = current_files.map { |f| rootpath + f[:name] }
-  end
-
-
-
-  def get_user()
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
-  def get_repo()
-    @repo = @user.repos.where(kind: params[:kind], name: params.fetch("repo_name", "")).first!
-    @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{@repo.path}/.", :bare)
-  end
-
-  def init_git_data
-    @repo_handler = RepoFilesHandler.new(@git_repo, params)
   end
 end

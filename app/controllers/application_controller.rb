@@ -7,23 +7,50 @@
 #
 
 class ApplicationController < ActionController::Base
+  include Pundit
   skip_before_action :verify_authenticity_token
 
   layout :layout_by_resource
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
-  rescue_from ActiveRecord::RecordNotFound, :with => :record_not_found
+  rescue_from ActiveRecord::RecordNotFound, :with => :handle_record_not_found
+  rescue_from LayerKeepErrors::LayerKeepError, :with => :layerkeep_error
+  rescue_from Pundit::NotAuthorizedError, :with => :user_not_authorized
+  
+  
 
-  def record_not_found(exception)
+  def handle_record_not_found(exception)
     respond_to do |format|
       format.html { render status: 404, :file => File.join(Rails.root, 'public', '404.html') }
       format.json { render status: 404, :json => {"error": "#{exception.message}"} }
     end
   end
 
+  def layerkeep_error(exception)
+    respond_to do |format|
+      format.html { render status: exception.status, :file => File.join(Rails.root, 'public', '404.html') }
+      format.json { render status: exception.status, :json => {"error": "#{exception.message}"} }
+    end
+  end
+
+  def user_not_authorized(exception)
+    logger.info(request.format)
+    if request.format != :json
+      request.format = :html
+    end
+    respond_to do |format|
+      format.html { render status: 401, :file => File.join(Rails.root, 'public', '401.html') }
+      format.json { render status: 401, :json => {"error": "Not Authorized"} }
+    end
+  end
+
   def after_sign_in_path_for(resource)
     "/user/"
+  end
+
+  def record_not_found
+    raise LayerKeepErrors::NotFound.new()  
   end
 
   def not_found

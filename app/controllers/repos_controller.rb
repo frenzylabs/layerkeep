@@ -11,7 +11,7 @@ class ReposController < AuthController
   respond_to :json
 
   def index
-    repos = @user.repos.where(kind: params["kind"]).
+    repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).
                         page(params["page"]).per(params["per_page"])
     
     serializer = paginate(repos)
@@ -20,6 +20,7 @@ class ReposController < AuthController
 
   def show
     repo = @user.repos.find_by(kind: params["kind"], name: params["repo_name"])
+    authorize repo
     render json: repo
   end
 
@@ -29,6 +30,8 @@ class ReposController < AuthController
     @repo        = Repo.new(post_params.permit(:name, :description))
     @repo.kind   = params[:kind]
     @repo.user   = @user
+
+    authorize @repo
 
     repo_path = "#{@user.username}/#{params["kind"]}/#{@repo.name.downcase}" if @repo.name
     @repo.path = repo_path

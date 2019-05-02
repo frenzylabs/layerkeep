@@ -46,12 +46,12 @@ class RepoFilesHandler
         options = {message: "HEAD", parents: [], update_ref: 'HEAD', tree: @repo.index.write_tree}
         @commit_id = Rugged::Commit.create(@repo, options)
       end
-      
+
       obj = @repo.lookup(@repo.rev_parse_oid(branch))
       @current_commit =
       case obj.type 
         when :commit then obj
-        else throw not_found
+        else raise LayerKeepErrors::RevisionNotFound.new("Revision #{branch} Not Found")
       end
       @revision = branch
       @current_branch = @repo.branches.find {|b| b.target_id == @current_commit.oid }
@@ -68,7 +68,12 @@ class RepoFilesHandler
         filepath = [branchpaths[-1], filepath].compact.join('/').strip
         set_commit(branch, filepath)
       else
-        throw not_found
+        matches = branch.match(/^(.*)(\.json)$/)
+        if matches && matches.length > 2
+          set_commit(matches[1], filepath)
+        else
+          raise LayerKeepErrors::RevisionNotFound.new()
+        end
       end
     end
   end
