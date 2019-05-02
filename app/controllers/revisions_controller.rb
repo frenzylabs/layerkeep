@@ -7,10 +7,7 @@
 #
 
 
-class RevisionsController < AuthController
-  before_action :get_user
-  before_action :get_repo
-  before_action :init_git_data
+class RevisionsController < RepoAuthController
 
   def index
     walker = Rugged::Walker.new(@git_repo)
@@ -52,19 +49,5 @@ class RevisionsController < AuthController
       end
     end
     render json: {"message" => res.join("\n")}
-  end
-
-
-  def get_user()
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
-  def get_repo()
-    @repo = @user.repos.where(kind: params[:kind], name: params.fetch("repo_name", "")).first!
-    @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{@repo.path}/.", :bare)
-  end
-
-  def init_git_data
-    @repo_handler = RepoFilesHandler.new(@git_repo, params)
   end
 end

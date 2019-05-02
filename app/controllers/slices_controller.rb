@@ -110,6 +110,6 @@ class SlicesController < AuthController
   end  
 
   def get_user()
-    @user ||= User.find_by!(username: params["user"] || "")
+    @user ||= current_user #User.find_by!(username: params["user"] || "")
   end
 end
