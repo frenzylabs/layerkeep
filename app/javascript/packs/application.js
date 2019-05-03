@@ -15,13 +15,31 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
-import React      from 'react';
-import ReactDOM   from 'react-dom';
-import App        from '../App';
+import React        from 'react';
+import ReactDOM     from 'react-dom';
+import {Provider}   from 'react-redux'
+
+import App    from '../App';
+import store  from '../states/store';
+
+import { ProjectHandler } from '../handlers/project_handler';
+import { ProjectAction }  from '../states/project';
 
 document.addEventListener('DOMContentLoaded', () => {
+  ProjectHandler.list()
+    .then((response) => {
+      store.dispatch(
+        ProjectAction.list(response.data || [])  
+      );  
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
   ReactDOM.render(
-    <App />,
+    <Provider store={store}>
+      <App />
+    </Provider>,
     document.getElementById('app')
-  )
+  );
 });

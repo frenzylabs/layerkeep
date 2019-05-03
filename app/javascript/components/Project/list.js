@@ -7,10 +7,7 @@
  */
 
 import React from 'react';
-
-import { dispatch }       from 'react-redux';
-import { ProjectAction }  from '../../states/project';
-import { ProjectHandler } from '../../handlers/project_handler';
+import { connect } from 'react-redux';
 
 import { Container }      from 'bloomer/lib/layout/Container';
 import { Breadcrumb }     from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
@@ -23,28 +20,20 @@ import { PageLink }       from 'bloomer/lib/components/Pagination/PageLink';
 import { PageEllipsis }   from 'bloomer';
 import { RepoList }       from '../Repo/list';
 
-export class ProjectList extends React.Component {
+
+class List extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {list: []};
-  }
-
-  componentWillMount() {
     
-    ProjectHandler.list()
-    .then((response) => {
-      this.setState({
-          ...this.state, 
-          list: (response.data || [])
-        });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    this.state = {list: []};
 
+    this.unsubscribe = store.subscribe(() => {
+      const newState = store.getState();
+
+      console.log(newState);
+    });
   }
-  
+
   render() {
     return (
       <div className="section">
@@ -89,3 +78,12 @@ export class ProjectList extends React.Component {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  console.dir(state);
+  return {
+    list: state.project.list
+  }
+}
+
+export const ProjectList = connect(mapStateToProps)(List);
