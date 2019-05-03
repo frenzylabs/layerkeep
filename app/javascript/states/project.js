@@ -13,14 +13,24 @@ export function ProjectState(list = []) {
 }
 
 export const ProjectAction = {
-  list: {
-    type: 'PROJECT_LIST',
-    data: []
+  list: (list = []) => {
+    return {
+      type: 'PROJECT_LIST',
+      data: list
+    }
   }
 }
 
 const initialState = ProjectState();
 
 export function ProjectReducer(state = initialState, action) {
-  return state;
+  switch(action.type) {
+  case 'PROJECT_LIST':
+    return {
+      ...state, 
+      list: action.data
+    }
+  default:
+    return state;
+  }
 }

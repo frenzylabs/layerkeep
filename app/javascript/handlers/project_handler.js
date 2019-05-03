@@ -7,10 +7,10 @@
  */
 
 
-import Request from 'request_client';
+import Request from './request_client';
 
 function path(endpoint) {
-  const rootPath = '/' + currentUser.username + '/projects/' + (endpoint || '');
+  return '/' + currentUser.username + '/projects/' + (endpoint || '');
 }
 
 export const ProjectHandler = {
