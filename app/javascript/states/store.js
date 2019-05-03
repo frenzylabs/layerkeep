@@ -10,4 +10,7 @@ import {createStore}  from 'redux';
 import Reducer        from './reducers';
 import {AppState}     from './app';
 
-export default createStore(Reducer);
+const store   = createStore(Reducer);
+window.store  = store;
+
+export default store;
