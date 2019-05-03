@@ -7,18 +7,44 @@
  */
 
 import React from 'react';
-import { Container } from 'bloomer/lib/layout/Container';
-import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
-import { Pagination } from 'bloomer/lib/components/Pagination/Pagination';
+
+import { dispatch }       from 'react-redux';
+import { ProjectAction }  from '../../states/project';
+import { ProjectHandler } from '../../handlers/project_handler';
+
+import { Container }      from 'bloomer/lib/layout/Container';
+import { Breadcrumb }     from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
+import { Pagination }     from 'bloomer/lib/components/Pagination/Pagination';
 import { BreadcrumbItem } from 'bloomer/lib/components/Breadcrumb/BreadcrumbItem';
-import { PageControl } from 'bloomer/lib/components/Pagination/PageControl';
-import { PageList } from 'bloomer/lib/components/Pagination/PageList';
-import { Page } from 'bloomer/lib/components/Pagination/Page';
-import { PageLink } from 'bloomer/lib/components/Pagination/PageLink';
-import { PageEllipsis } from 'bloomer';
-import { RepoList } from '../Repo/list';
+import { PageControl }    from 'bloomer/lib/components/Pagination/PageControl';
+import { PageList }       from 'bloomer/lib/components/Pagination/PageList';
+import { Page }           from 'bloomer/lib/components/Pagination/Page';
+import { PageLink }       from 'bloomer/lib/components/Pagination/PageLink';
+import { PageEllipsis }   from 'bloomer';
+import { RepoList }       from '../Repo/list';
 
 export class ProjectList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {list: []};
+  }
+
+  componentWillMount() {
+    
+    ProjectHandler.list()
+    .then((response) => {
+      this.setState({
+          ...this.state, 
+          list: (response.data || [])
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  }
+  
   render() {
     return (
       <div className="section">
@@ -36,11 +62,12 @@ export class ProjectList extends React.Component {
         <br/>
 
         <Container>
-          <RepoList type="projects"/>
+          <RepoList type="projects" list={this.state.list} />
         </Container>
 
         <br/>
 
+        {this.state.list.count > 0 && 
         <Container>
           <Pagination isAlign="centered">
             <PageControl isPrevious>Previous</PageControl>
@@ -57,6 +84,7 @@ export class ProjectList extends React.Component {
             </PageList>
           </Pagination>
         </Container>
+        }
       </div>
     )
   }
