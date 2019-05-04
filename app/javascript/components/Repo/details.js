@@ -7,11 +7,60 @@
  */
 
 import React from 'react';
+import { connect }  from 'react-redux';
 
 import { Table } from 'bloomer/lib/elements/Table';
 import { RepoDetailItem } from './detail_item';
+import { RepoHandler } from '../../handlers/repo_handler';
 
-export class RepoDetails extends React.Component {
+class Details extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {repo_files: []};
+    this.updateRepoFiles = this.updateRepoFiles.bind(this)
+    
+    this.updateRepoFileList()
+  }
+
+  updateRepoFileList() {
+    var self = this
+    var url = this.props.match.url
+    if (!this.props.match.params.tree) {
+      url = url + "/tree/master"
+    }
+
+    RepoHandler.tree(url)
+    .then((response) => {
+      self.updateRepoFiles(response.data)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.match.url != prevProps.match.url) {
+      console.log("URL DID CHANGE")
+      this.updateRepoFileList()
+    }
+  }
+  
+
+  updateRepoFiles(data) {
+    this.setState({ repo_files: data })
+  }
+
+  items() {
+    if (this.state.repo_files.length > 0) {
+      return this.state.repo_files.map((item) => {
+        return (<RepoDetailItem kind={this.props.kind} item={item} key={item.name} match={this.props.match} />)
+      });
+    } else {
+      return (<tr><td>No Files</td></tr>)
+    }
+  }
+
   render() {
     return (
       <div>
@@ -29,15 +78,18 @@ export class RepoDetails extends React.Component {
           </thead>
 
           <tbody>
-            <RepoDetailItem/>
-            <RepoDetailItem/>
-            <RepoDetailItem/>
-            <RepoDetailItem/>
-            <RepoDetailItem/>
-            <RepoDetailItem/>
+            {this.items()}
           </tbody>
         </Table>
       </div>
     )
   }
 }
+
+
+const mapStateToProps = (state) => {
+  return {
+  }
+}
+
+export const RepoDetails = connect(mapStateToProps)(Details);

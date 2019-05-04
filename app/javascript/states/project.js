@@ -6,17 +6,25 @@
  *  Copyright 2018 WessCope
  */
 
-export function ProjectState(list = []) {
+export function ProjectState(list = {data: [], meta: {}}, project = {}) {
   return {
-    list: list
+    list: list,
+    project: project
   }
 }
 
 export const ProjectAction = {
-  list: (list = []) => {
+  list: (list = {data: [], meta: {}}) => {
     return {
       type: 'PROJECT_LIST',
       data: list
+    }
+  },
+
+  view: (project = {}) => {
+    return {
+      type: 'PROJECT_VIEW',
+      data: project
     }
   }
 }
@@ -30,6 +38,11 @@ export function ProjectReducer(state = initialState, action) {
       ...state, 
       list: action.data
     }
+  case 'PROJECT_VIEW':
+    return {
+      ...state, 
+      project: action.data
+    }  
   default:
     return state;
   }

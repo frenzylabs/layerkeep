@@ -8,7 +8,13 @@
 
 import axios from 'axios';
 
-export default axios.create({
+const instance = axios.create({
   baseURL:      '',
-  responseType: 'json'
+  responseType: 'json',
+  headers: {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json',
+	}
 });
+
+export default instance;

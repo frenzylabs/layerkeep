@@ -7,6 +7,7 @@
  */
 
 import React            from 'react';
+import { connect }      from 'react-redux';
 import { Link }         from 'react-router-dom';
 import { Panel }        from 'bloomer/lib/components/Panel/Panel';
 import { PanelHeading } from 'bloomer/lib/components/Panel/PanelHeading';
@@ -14,20 +15,30 @@ import { Column }       from 'bloomer/lib/grid/Column';
 import { Columns }      from 'bloomer/lib/grid/Columns';
 import { PanelBlock }   from 'bloomer/lib/components/Panel/PanelBlock';
 import { PanelIcon }    from 'bloomer/lib/components/Panel/PanelIcon';
+import { ProjectHandler } from '../../handlers/project_handler';
 
 export class ProjectsPanel extends React.Component {
   constructor(props) {
     super(props);
     
-    this.projects = ["this", "that", "other", "and", "so", "it", "goes"];
+    this.state = {projects: []}
+
+    var self = this
+    ProjectHandler.list({params: {page: 1, per_page: 2}})
+    .then((response) => {
+      self.setState({ projects: response.data.data})
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   projectItems() {
-    return this.projects.map((value, index) => {
+    return this.state.projects.map((project, index) => {
       return (
-        <PanelBlock key={'project-' + value}>
-          <PanelIcon className={"far " + (index % 2 == 0 ? 'fa-layer-group' : 'fa-lock')}/>
-          {value}
+        <PanelBlock key={'project-' + project.id}>
+          <PanelIcon className={"far " + ( project.attributes.is_private ? 'fa-lock' : 'fa-layer-group' )}/>
+          <a href={"/" + project.attributes.path}>{project.attributes.name}</a>
         </PanelBlock>  
       )
     });

@@ -68,7 +68,8 @@ Rails.application.routes.draw do
   # REACT
   
   get '*page', to: 'user#index', constraints: ->(req) do
-    !req.xhr? && req.format.html?
+    req.format = :html
+    !req.xhr? 
   end
 
 end
