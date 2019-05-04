@@ -14,21 +14,38 @@ export class RepoList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.items.bind(this);
+    window.rl = this;
+    // this.empty = this.empty.bind(this);
+    this.items = this.items.bind(this);
   }
+
+  componentDidUpdate(prevProps) {
+    console.log("1 PROPS DID CHANGE");
+    console.log(prevProps);
+    console.log(this.props);
+  }
+  
+  shouldComponentUpdate(nextProps, nextState) {
+      console.log("1 Should comp update");
+      const differentList = this.props.list !== nextProps.list;
+      return differentList;
+  }
+
   empty() {
     return (
-      <RepoEmptyList type="projects" />
+      <RepoEmptyList kind={this.props.kind} />
     );
   }
 
   items() {
-    return this.props.list.map((item) => {
-      return (<RepoListItem />)
-    });
+    console.log(this.props.list.data.length);
+      return this.props.list.data.map((item) => {
+        return (<RepoListItem kind={this.props.kind} item={item} key={item.id} />)
+      });
   }
+  
   render() {
-    const component = this.props.list.count > 0 ? this.items() : this.empty();
+    const component = this.props.list.data.length > 0 ? this.items() : this.empty();
 
     return (
       <div>

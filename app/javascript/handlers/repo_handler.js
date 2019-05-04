@@ -13,9 +13,9 @@ function path(endpoint) {
   return '/' + currentUser.username + '/projects/' + (endpoint || '');
 }
 
-export const ProjectHandler = {
-  list: (query_params = {}) => {
-    return Request.get(path(), query_params);
+export const RepoHandler = {
+  list: () => {
+    return Request.get(path());
   },
 
   get: (name) => {
@@ -46,7 +46,7 @@ export const ProjectHandler = {
     return Request.get(projectsPath(name + '/files/' + revision + '/' + filepath));
   },
 
-  tree: (name, revision) => {
-    return Request.get(projectsPath(name + '/tree/' + revision));
+  tree: (url) => {
+    return Request.get(url);
   }
 }

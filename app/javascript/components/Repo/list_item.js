@@ -17,15 +17,15 @@ import { Icon }         from 'bloomer/lib/elements/Icon';
 export class RepoListItem extends React.Component {
   render() {
     return (
-      <Link to="/wess/projects/blarg" className="box" data-id={this.props.id}>
+      <Link to={this.props.kind + "/" + this.props.item.attributes.name} className="box" data-id={this.props.item.id} key={this.props.item.id} >
         <Media>
           <MediaLeft>
             <Icon className="far fa-layer-group" isSize="medium"/>
           </MediaLeft>
 
           <MediaContent>
-            <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.path || 'path/to/repo'}</p>
-            <p className="has-text-grey">{this.props.description || 'Description goes here.'}</p>
+            <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
+            <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
           </MediaContent>
 
           <MediaRight>

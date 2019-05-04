@@ -26,15 +26,7 @@ import { ProjectHandler } from '../handlers/project_handler';
 import { ProjectAction }  from '../states/project';
 
 document.addEventListener('DOMContentLoaded', () => {
-  ProjectHandler.list()
-    .then((response) => {
-      store.dispatch(
-        ProjectAction.list(response.data || [])  
-      );  
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+
 
   ReactDOM.render(
     <Provider store={store}>

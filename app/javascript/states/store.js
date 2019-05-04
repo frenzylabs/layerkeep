@@ -11,6 +11,6 @@ import Reducer        from './reducers';
 import {AppState}     from './app';
 
 const store   = createStore(Reducer);
-window.store  = store;
+// window.store  = store;
 
 export default store;

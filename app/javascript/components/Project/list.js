@@ -13,31 +13,29 @@ import { Container }      from 'bloomer/lib/layout/Container';
 import { Breadcrumb }     from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
 import { Pagination }     from 'bloomer/lib/components/Pagination/Pagination';
 import { BreadcrumbItem } from 'bloomer/lib/components/Breadcrumb/BreadcrumbItem';
-import { PageControl }    from 'bloomer/lib/components/Pagination/PageControl';
-import { PageList }       from 'bloomer/lib/components/Pagination/PageList';
-import { Page }           from 'bloomer/lib/components/Pagination/Page';
-import { PageLink }       from 'bloomer/lib/components/Pagination/PageLink';
+import { PageControl, PageList, Page, PageLink }    from 'bloomer/lib/components/Pagination/PageControl';
 import { PageEllipsis }   from 'bloomer';
 import { RepoList }       from '../Repo/list';
-
+import { ProjectHandler } from '../../handlers/project_handler';
+import { ProjectAction }  from '../../states/project';
 
 class List extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.state = {list: []};
 
-    this.unsubscribe = store.subscribe(() => {
-      const newState = store.getState();
-
-      console.log(newState);
+    ProjectHandler.list()
+    .then((response) => {
+      props.dispatch(ProjectAction.list(response.data))
+    })
+    .catch((error) => {
+      console.log(error);
     });
   }
 
   render() {
     return (
       <div className="section">
-        <Container>
+        <Container className="is-fluid">
           <Breadcrumb>
             <ul>
               <BreadcrumbItem className="title is-4" isActive>
@@ -48,15 +46,15 @@ class List extends React.Component {
         </Container>
         
         <hr/>
-        <br/>
+        <br/>        
 
-        <Container>
-          <RepoList type="projects" list={this.state.list} />
+        <Container className="is-fluid">
+          <RepoList kind="projects" list={this.props.list} />
         </Container>
 
         <br/>
 
-        {this.state.list.count > 0 && 
+        {this.props.list.data.count > 0 && 
         <Container>
           <Pagination isAlign="centered">
             <PageControl isPrevious>Previous</PageControl>
@@ -80,7 +78,7 @@ class List extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.dir(state);
+  // console.dir(state);
   return {
     list: state.project.list
   }

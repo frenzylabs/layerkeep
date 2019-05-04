@@ -37,9 +37,10 @@ class App extends React.Component {
           <Column>
             <Switch>
               <Route exact path="/user/"                    render={() => "Hi"} />
-              <Route exact path="/projects/new"             component={ProjectNew} />
-              <Route exact path="/projects"                 component={ProjectList} />
-              <Route path="/:username/projects/:name"  component={ProjectDetails} />
+              <Route exact path="/:username/:kind(projects)/new"    component={ProjectNew} />
+              <Route exact path="/:username/:kind(projects)"        component={ProjectList} />
+              <Route path="/:username/:kind(projects)/:name/:tree(tree)/(.*)"  component={ProjectDetails} />
+              <Route exact path="/:username/:kind(projects)/:name"  component={ProjectDetails} />
             </Switch>
           </Column>
         </Columns>
