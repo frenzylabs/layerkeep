@@ -58,7 +58,7 @@ class FilesController < RepoAuthController
 
     throw record_not_found unless @file 
     
-    render json: @file
+    render json: @file.merge({filepath: @repo_handler.filepath})
   end
 
   def create

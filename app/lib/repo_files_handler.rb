@@ -46,7 +46,7 @@ class RepoFilesHandler
         options = {message: "HEAD", parents: [], update_ref: 'HEAD', tree: @repo.index.write_tree}
         @commit_id = Rugged::Commit.create(@repo, options)
       end
-
+      
       obj = @repo.lookup(@repo.rev_parse_oid(branch))
       @current_commit =
       case obj.type 

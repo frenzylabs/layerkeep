@@ -20,19 +20,25 @@ export class RepoDetailItem extends React.Component {
   }
 
   linkToFile(item) {
-    var path = item.path
+    var path = item.name
+    
     if (item.type == "tree") {
+      var url  = this.props.match.url.replace(/(\/)$/, "");
       if (!this.props.match.params.tree) {
-        path = this.props.match.url + "/tree/master/" + path
+        path = url + "/tree/master/" + path
       } else {
-        path = this.props.match.url + "/" + path
+        path = url + "/" + path
       }
       return (<Link to={path}>{item.name}</Link>)
     } else {
       let urlParams = this.props.match.params
-      const filepath = "/" + [urlParams.username, urlParams.kind, urlParams.name, "files", path].join("/")
+      if (!urlParams.revisionPath) {
+        urlParams.revisionPath = "master"
+      }
+      urlParams.revisionPath = urlParams.revisionPath.replace(/(\/)$/, "");      
+      const filepath = "/" + [urlParams.username, urlParams.kind, urlParams.name, "files", urlParams.revisionPath, path].join("/")
 
-      return (<Link to={filepath}>{item.name}</Link>) 
+      return (<Link to={{pathname: filepath, state: {repo: this.props.repo}}} >{item.name}</Link>) 
     }
   }
 
