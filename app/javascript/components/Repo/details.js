@@ -54,7 +54,7 @@ class Details extends React.Component {
   items() {
     if (this.state.repo_files.length > 0) {
       return this.state.repo_files.map((item) => {
-        return (<RepoDetailItem kind={this.props.kind} item={item} key={item.name} match={this.props.match} />)
+        return (<RepoDetailItem kind={this.props.kind} item={item} repo={this.props.item} key={item.name} match={this.props.match} />)
       });
     } else {
       return (<tr><td>No Files</td></tr>)

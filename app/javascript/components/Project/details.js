@@ -66,7 +66,7 @@ class Details extends React.Component {
       <br/>
 
       <Container className="is-fluid">
-        <RepoDetails kind="project" item={this.props.project} match={this.props.match} />
+        <RepoDetails kind="projects" item={this.props.project} match={this.props.match} />
       </Container>
       </div>
     )

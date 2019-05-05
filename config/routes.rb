@@ -38,17 +38,17 @@ Rails.application.routes.draw do
     # post 'upload/:treebranch', {action: 'create', as: "upload_#{options[:controller]}", defaults: {treebranch: 'master'}, constraints: { treebranch: /.*/ }}.merge(options)    
   end
 
-  get ':user/profiles/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_profiles_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'profile'}}
-  get ':user/projects/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_projects_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'project'}}
+  get ':user/profiles/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_profiles_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'profiles'}}
+  get ':user/projects/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_projects_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'projects'}}
 
   resources :slices, constraints: lambda { |req| req.format == :json }
   scope ':user', constraints: lambda { |req| req.format == :json } do
 
-    scope 'profiles', defaults: {kind: 'profile'} do
+    scope 'profiles', defaults: {kind: 'profiles'} do
       concerns :repo_files, as_kind: 'profiles'
     end
 
-    scope 'projects', defaults: {kind: 'project'} do
+    scope 'projects', defaults: {kind: 'projects'} do
       concerns :repo_files, as_kind: 'projects'
     end
   end

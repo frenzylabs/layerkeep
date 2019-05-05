@@ -22,6 +22,7 @@ import { LeftColumn }     from './components/LeftColumn';
 import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
 import { ProjectDetails } from './components/Project/details';
+import { FileViewer } from './components/Repo/file_viewer';
 
 class App extends React.Component {
   render () {
@@ -39,8 +40,9 @@ class App extends React.Component {
               <Route exact path="/user/"                    render={() => "Hi"} />
               <Route exact path="/:username/:kind(projects)/new"    component={ProjectNew} />
               <Route exact path="/:username/:kind(projects)"        component={ProjectList} />
-              <Route path="/:username/:kind(projects)/:name/:tree(tree)/(.*)"  component={ProjectDetails} />
+              <Route path="/:username/:kind(projects)/:name/:tree(tree)/:revisionPath(.*)"  component={ProjectDetails} />
               <Route exact path="/:username/:kind(projects)/:name"  component={ProjectDetails} />
+              <Route path="/:username/:kind(projects)/:name/:files(files)/:revisionPath(.*)"  component={FileViewer} />
             </Switch>
           </Column>
         </Columns>
