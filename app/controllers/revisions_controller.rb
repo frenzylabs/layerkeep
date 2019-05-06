@@ -42,7 +42,7 @@ class RevisionsController < RepoAuthController
 
     res = []
     changes.each do |c|
-      if c.bytesize > 10000
+      if c.bytesize > 60000
         res << c.header
       else
         res << c
