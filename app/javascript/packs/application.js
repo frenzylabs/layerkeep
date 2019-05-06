@@ -22,12 +22,7 @@ import {Provider}   from 'react-redux'
 import App    from '../App';
 import store  from '../states/store';
 
-import { ProjectHandler } from '../handlers/project_handler';
-import { ProjectAction }  from '../states/project';
-
 document.addEventListener('DOMContentLoaded', () => {
-
-
   ReactDOM.render(
     <Provider store={store}>
       <App />
