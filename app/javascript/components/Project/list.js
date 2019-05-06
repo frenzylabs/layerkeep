@@ -15,11 +15,11 @@ import { ProjectHandler } from '../../handlers/project_handler';
 import { ProjectAction }  from '../../states/project';
 import PaginatedList      from '../pagination';
 
-class List extends React.Component {
+export class ProjectList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {page: 1, perPage: 20}
+    this.state = {page: 1, perPage: 20, list: {data: [], meta: {}}}
     this.fetchProjects()
     this.onChangePage = this.onChangePage.bind(this);
 
@@ -28,7 +28,7 @@ class List extends React.Component {
   fetchProjects() {
     ProjectHandler.list({params: {per_page: this.state.perPage, page: this.state.page}})
     .then((response) => {
-      this.props.dispatch(ProjectAction.list(response.data))
+      this.setState({ list: response.data})
     })
     .catch((error) => {
       console.log(error);
@@ -50,8 +50,8 @@ class List extends React.Component {
   
 
   renderPagination() {
-    if (this.props.list.data.length > 0) {
-      var {current_page, last_page, total} = this.props.list.meta;
+    if (this.state.list.data.length > 0) {
+      var {current_page, last_page, total} = this.state.list.meta;
 
       return (
         <PaginatedList currentPage={current_page} pageSize={this.state.perPage} totalPages={last_page} totalItems={total} onChangePage={this.onChangePage} /> 
@@ -60,8 +60,6 @@ class List extends React.Component {
   }
 
   render() {
-    
-
     return (
       <div className="section">
         <Container className="is-fluid">
@@ -78,7 +76,7 @@ class List extends React.Component {
         <br/>
 
         <Container className="is-fluid">
-          <RepoList kind="projects" list={this.props.list} />
+          <RepoList kind="projects" list={this.state.list} />
         </Container>
 
         <br/>
@@ -89,11 +87,12 @@ class List extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  // console.dir(state);
-  return {
-    list: state.project.list
-  }
-}
+// const mapStateToProps = (state) => {
+//   // console.dir(state);
+//   return {
+//     list: state.project.list
+//   }
+// }
 
-export const ProjectList = connect(mapStateToProps)(List);
+// export const ProjectList = connect(mapStateToProps)(List);
+export default ProjectList
