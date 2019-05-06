@@ -10,7 +10,7 @@
 import Request from './request_client';
 
 function path(endpoint) {
-  return '/' + currentUser.username + '/projects/' + (endpoint || '');
+  return `/${currentUser.username}/projects/${(endpoint || '')}`;
 }
 
 export const ProjectHandler = {
@@ -22,8 +22,23 @@ export const ProjectHandler = {
     return Request.get(path(name));
   },
 
-  create: (project) => {
-    return Request.post(projectsPath(), project);
+  create: (project, files = null) => {
+    var params = {'repo' : project};
+
+    if(files == null) {
+      return Request.post(path(), params);
+    }
+
+    var data = new FormData();
+
+    files.forEach(file => {
+      data.append(`files[]`, file);
+    });
+
+    data.append('repo[name]', project.name);
+    data.append('repo[description]', project.description);
+
+    return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
 
   revisions: (name) => {

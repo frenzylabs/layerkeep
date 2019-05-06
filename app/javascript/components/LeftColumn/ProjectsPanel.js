@@ -54,7 +54,7 @@ export class ProjectsPanel extends React.Component {
             </Column>
 
             <Column>
-              <Link to="/projects/new" className="button is-small is-success">New</Link>
+            <Link to={`/${currentUser.username}/projects/new`} className="button is-small is-success">New</Link>
             </Column>
           </Columns>
         </PanelHeading>

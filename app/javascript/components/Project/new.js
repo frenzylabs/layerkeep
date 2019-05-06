@@ -7,6 +7,7 @@
  */
 
 import React            from 'react';
+import { Redirect }     from 'react-router-dom';
 import { Section }      from 'bloomer/lib/layout/Section';
 import { Columns }      from 'bloomer/lib/grid/Columns';
 import { Column }       from 'bloomer/lib/grid/Column';
@@ -14,29 +15,51 @@ import { Box }          from 'bloomer/lib/elements/Box';
 import { Control }      from 'bloomer/lib/elements/Form/Control';
 import { Field }        from 'bloomer/lib/elements/Form/Field/Field';
 import { Button }       from 'bloomer/lib/elements/Button';
-import { UploadField }  from '@navjobs/upload';
 import InputField       from '../Form/InputField';
 import Formsy           from 'formsy-react';
 import TextField        from '../Form/TextField';
 import { Table }        from 'bloomer/lib/elements/Table';
 import { Icon }         from 'bloomer/lib/elements/Icon';
+import { UploadField }  from '@navjobs/upload';
+
+import { ProjectHandler } from '../../handlers/project_handler';
 
 export class ProjectNew extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {canSubmit : false, files: null};
+    this.state = {
+      canSubmit : false, 
+      name:         null,
+      description:  "",
+      files:        null
+    };
     
-    this.disableButton  = this.disableButton.bind(this);
-    this.enableButton   = this.enableButton.bind(this);
-    this.filesChanged   = this.filesChanged.bind(this);
-    this.deleteFile     = this.deleteFile.bind(this);
-    this.renderFiles    = this.renderFiles.bind(this);
+    this.disableButton      = this.disableButton.bind(this);
+    this.enableButton       = this.enableButton.bind(this);
+    this.nameChanged        = this.nameChanged.bind(this);
+    this.descriptionChanged = this.descriptionChanged.bind(this);
+    this.filesChanged       = this.filesChanged.bind(this);
+    this.deleteFile         = this.deleteFile.bind(this);
+    this.renderFiles        = this.renderFiles.bind(this);
+    this.submit             = this.submit.bind(this);
+  }
+
+  nameChanged(e) {
+    this.setState({
+      ...this.state,
+      name: e.currentTarget.value
+    });
+  }
+
+  descriptionChanged(e) {
+    this.setState({
+      ...this.state,
+      description: e.currentTarget.value
+    });
   }
 
   filesChanged(files) {
-    console.log(files);
-
     this.setState({
       files: Array.from(files).concat((this.state.files || []))
     });
@@ -53,26 +76,42 @@ export class ProjectNew extends React.Component {
 
     files.splice(index, 1);
     
-    this.setState({files: files});
+    this.setState({...this.state, files: files});
   }
 
   disableButton() {
-    this.setState({canSubmit: false});
+    this.setState({...this.state, canSubmit: false});
   }
 
   enableButton() {
-    this.setState({canSubmit: true});
+    this.setState({...this.state, canSubmit: true});
   }
 
   submit(model) {
-    console.log(model);
+    ProjectHandler.create(model, this.state.files)
+    .then((response) => {
+      this.setState({
+        ...this.state,
+        redirect:     true,
+        projectName:  response.data.name
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
   }
 
   renderFiles() {
+    if(this.state.redirect) { 
+      return (<Redirect to={`${currentUser.username}/projects/${this.state.projectName}/`}/>);
+    }
+
     if(this.state.files == null) { return }
 
     return this.state.files.map((entry, index) => {
       return (
+        
         <tr key={index}>
           <td>{entry.name}</td>
           <td className="has-text-right" width={2}>
@@ -100,7 +139,8 @@ export class ProjectNew extends React.Component {
 
                   <InputField 
                     label="Name"
-                    name="Name"
+                    name="name"
+                    onChange={this.nameChanged}
                     placeholder="What should we call this project?"
                     validationError="Name is required"
                     required
@@ -109,6 +149,7 @@ export class ProjectNew extends React.Component {
                   <TextField 
                     label="Description"
                     name="description"
+                    onChange={this.descriptionChanged}
                     placeholder="Tell us about it"
                   />
 
