@@ -9,30 +9,59 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { Container }      from 'bloomer/lib/layout/Container';
-import { Breadcrumb }     from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
-import { Pagination }     from 'bloomer/lib/components/Pagination/Pagination';
-import { BreadcrumbItem } from 'bloomer/lib/components/Breadcrumb/BreadcrumbItem';
-import { PageControl, PageList, Page, PageLink }    from 'bloomer/lib/components/Pagination/PageControl';
-import { PageEllipsis }   from 'bloomer';
+import { Container, Breadcrumb, BreadcrumbItem }    from 'bloomer';
 import { RepoList }       from '../Repo/list';
 import { ProjectHandler } from '../../handlers/project_handler';
 import { ProjectAction }  from '../../states/project';
+import PaginatedList      from '../pagination';
 
 class List extends React.Component {
   constructor(props) {
     super(props);
 
-    ProjectHandler.list()
+    this.state = {page: 1, perPage: 20}
+    this.fetchProjects()
+    this.onChangePage = this.onChangePage.bind(this);
+
+  }
+
+  fetchProjects() {
+    ProjectHandler.list({params: {per_page: this.state.perPage, page: this.state.page}})
     .then((response) => {
-      props.dispatch(ProjectAction.list(response.data))
+      this.props.dispatch(ProjectAction.list(response.data))
     })
     .catch((error) => {
       console.log(error);
     });
   }
 
+  onChangePage(page) {
+    // update state with new page of items
+    this.setState({ page: page });    
+  }
+
+  
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.page != prevState.page || this.state.perPage != prevState.perPage) {
+      this.fetchProjects();
+    }
+  }
+
+  
+
+  renderPagination() {
+    if (this.props.list.data.length > 0) {
+      var {current_page, last_page, total} = this.props.list.meta;
+
+      return (
+        <PaginatedList currentPage={current_page} pageSize={this.state.perPage} totalPages={last_page} totalItems={total} onChangePage={this.onChangePage} /> 
+      )
+    }
+  }
+
   render() {
+    
+
     return (
       <div className="section">
         <Container className="is-fluid">
@@ -46,7 +75,7 @@ class List extends React.Component {
         </Container>
         
         <hr/>
-        <br/>        
+        <br/>
 
         <Container className="is-fluid">
           <RepoList kind="projects" list={this.props.list} />
@@ -54,24 +83,7 @@ class List extends React.Component {
 
         <br/>
 
-        {this.props.list.data.count > 0 && 
-        <Container>
-          <Pagination isAlign="centered">
-            <PageControl isPrevious>Previous</PageControl>
-            <PageControl isNext>Next</PageControl>
-
-            <PageList>
-              <Page><PageLink>1</PageLink></Page>
-              <Page><PageEllipsis/></Page>
-              <Page><PageLink>21</PageLink></Page>
-              <Page><PageLink>22</PageLink></Page>
-              <Page><PageLink>23</PageLink></Page>
-              <Page><PageEllipsis/></Page>
-              <Page><PageLink>60</PageLink></Page>
-            </PageList>
-          </Pagination>
-        </Container>
-        }
+        {this.renderPagination()}
       </div>
     )
   }
