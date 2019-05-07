@@ -13,5 +13,6 @@
 //= require rails-ujs
 //= require activestorage
 //= require jquery/dist/jquery.js
+//= require dayjs/dayjs.min.js
 //= require_tree .
 // window.THREE = {}

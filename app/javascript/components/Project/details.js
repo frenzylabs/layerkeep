@@ -14,67 +14,84 @@ import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
 import { BreadcrumbItem } from 'bloomer/lib/components/Breadcrumb/BreadcrumbItem';
 import { ProjectHandler } from '../../handlers/project_handler';
 import { ProjectAction }  from '../../states/project';
+import { Columns } from 'bloomer/lib/grid/Columns';
+import { Column } from 'bloomer/lib/grid/Column';
+import { Button } from 'bloomer/lib/elements/Button';
+import Modal from '../Modal';
 
 class Details extends React.Component {
   constructor(props) {
     super(props);
-
-    this.loadProjectDetails()
+    
+    this.state          = {isUploadActive: false};
+    this.uploadAction   = this.uploadAction.bind(this);
+    this.dismissAction  = this.dismissAction.bind(this);
+    
+    this.loadProjectDetails();
   }
 
   loadProjectDetails() {    
     ProjectHandler.get(this.props.match.params.name)
     .then((response) => {
-        this.props.dispatch(ProjectAction.view(response.data))
+        this.props.dispatch(ProjectAction.view(response.data));
     })
     .catch((error) => {
       console.log(error);
     });
   }
 
+  uploadAction() {
+    this.setState({
+      ...this.state,
+      isUploadActive: true
+    });
+  }
 
-  // componentDidUpdate(prevProps) {
-  //   console.log("PROPS DID CHANGE");
-  //   console.log(prevProps);
-  //   console.log(this.props);
-  // }
-  
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     console.log("Should comp update");
-  //     const differentList = this.props.list !== nextProps.list;
-  //     return differentList;
-  // }
+  dismissAction() {
+    this.setState({
+      ...this.state,
+      isUploadActive: false
+    });
+  }
 
   render() {
     return (
       <div className="section">
-      <Container className="is-fluid">
-        <Breadcrumb>
-          <ul>
-            <BreadcrumbItem className="title is-4">
-              <a href={"/" + this.props.match.params.username + "/projects" }>Projects</a>
-            </BreadcrumbItem>
+        <Container className="is-fluid">
+          <Columns>
+            <Column>
+              <Breadcrumb>
+                <ul>
+                  <BreadcrumbItem className="title is-4">
+                    <a href={"/" + this.props.match.params.username + "/projects" }>Projects</a>
+                  </BreadcrumbItem>
 
-            <BreadcrumbItem className="title is-4" >
-              <a href={"/" + this.props.match.params.username + "/projects/" + this.props.project.name }>{this.props.project.name}</a>
-            </BreadcrumbItem>
-          </ul>
-        </Breadcrumb>
-      </Container>
-      
-      <hr/>
-      <br/>
+                  <BreadcrumbItem className="title is-4" >
+                    <a href={"/" + this.props.match.params.username + "/projects/" + this.props.project.name }>{this.props.project.name}</a>
+                  </BreadcrumbItem>
+                </ul>
+              </Breadcrumb>
+            </Column>
 
-      <Container className="is-fluid">
-        <RepoDetails kind="projects" item={this.props.project} match={this.props.match} />
-      </Container>
+            <Column isSize={2} className="has-text-right">
+              <Button onClick={this.uploadAction}>Upload files</Button>
+            </Column>
+          </Columns>
+        </Container>
+
+        <br/>
+
+        <Container className="is-fluid">
+          <RepoDetails kind="projects" item={this.props.project} match={this.props.match} />
+        </Container>
+
+        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} project={this.props.project.name} />
       </div>
     )
   }   
 }
 
 const mapStateToProps = (state) => {
-  // console.dir(state);
   return {
     project: state.project.project
   }

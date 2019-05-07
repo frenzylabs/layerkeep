@@ -65,7 +65,9 @@ class FilesController < RepoAuthController
     if @repo_handler.current_branch.name != @repo_handler.revision
       render status: 400, json: {'error': 'You must be on a branch to upload'} and return
     end
-    files = params.require(:files)
+
+    files   = params.require(:files)
+    message = params[:message]
 
     commit_id, names = @repo_handler.insert_files(current_user, files)
 
