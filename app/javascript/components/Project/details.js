@@ -9,9 +9,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { RepoDetails } from '../Repo/details';
-import { Container } from 'bloomer/lib/layout/Container';
-import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
-import { BreadcrumbItem } from 'bloomer/lib/components/Breadcrumb/BreadcrumbItem';
+import { Container } from 'bloomer';
+// import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
+import { Breadcrumb, BreadcrumbItem } from 'bloomer';
 import { ProjectHandler } from '../../handlers/project_handler';
 import { ProjectAction }  from '../../states/project';
 import { Columns } from 'bloomer/lib/grid/Columns';
@@ -19,11 +19,11 @@ import { Column } from 'bloomer/lib/grid/Column';
 import { Button } from 'bloomer/lib/elements/Button';
 import Modal from '../Modal';
 
-class Details extends React.Component {
+export class ProjectDetails extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.state          = {isUploadActive: false};
+
+    this.state          = {isUploadActive: false, project: {}};
     this.uploadAction   = this.uploadAction.bind(this);
     this.dismissAction  = this.dismissAction.bind(this);
     
@@ -33,7 +33,7 @@ class Details extends React.Component {
   loadProjectDetails() {    
     ProjectHandler.get(this.props.match.params.name)
     .then((response) => {
-        this.props.dispatch(ProjectAction.view(response.data));
+      this.setState({project: response.data.data.attributes})
     })
     .catch((error) => {
       console.log(error);
@@ -67,7 +67,7 @@ class Details extends React.Component {
                   </BreadcrumbItem>
 
                   <BreadcrumbItem className="title is-4" >
-                    <a href={"/" + this.props.match.params.username + "/projects/" + this.props.project.name }>{this.props.project.name}</a>
+                    <a href={"/" + this.props.match.params.username + "/projects/" + this.state.project.name }>{this.state.project.name}</a>
                   </BreadcrumbItem>
                 </ul>
               </Breadcrumb>
@@ -82,7 +82,7 @@ class Details extends React.Component {
         <br/>
 
         <Container className="is-fluid">
-          <RepoDetails kind="projects" item={this.props.project} match={this.props.match} />
+          <RepoDetails kind="projects" item={this.state.project} match={this.props.match} />
         </Container>
 
         <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} project={this.props.project.name} />
@@ -91,10 +91,5 @@ class Details extends React.Component {
   }   
 }
 
-const mapStateToProps = (state) => {
-  return {
-    project: state.project.project
-  }
-}
 
-export const ProjectDetails = connect(mapStateToProps)(Details);
+export default ProjectDetails;

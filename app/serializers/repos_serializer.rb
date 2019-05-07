@@ -5,5 +5,8 @@ class ReposSerializer
   
   attribute :id, :name, :description, :path, :kind, :is_private, :user_id, :created_at, :updated_at
   
+  attribute :branches do |repo, params|
+    params[:branches] || []
+  end
 
 end

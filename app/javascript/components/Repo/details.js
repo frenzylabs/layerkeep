@@ -9,16 +9,18 @@
 import React from 'react';
 import { connect }  from 'react-redux';
 
-import { Table } from 'bloomer/lib/elements/Table';
+import { Container, Table } from 'bloomer';
 import { RepoDetailItem } from './detail_item';
 import { RepoHandler } from '../../handlers/repo_handler';
+import { SearchDropdown } from '../Form/SearchDropdown'
 
 class Details extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state            = {repo_files: [], message: '', lastUpdate: ''};
-    this.updateRepoFiles  = this.updateRepoFiles.bind(this)
+    this.state = {repo_files: [], meta: {}, branches: this.props.item.branches || [], currentRevision: "", message: '', lastUpdate: ''};
+    this.updateRepoFiles = this.updateRepoFiles.bind(this)
+    this.selectBranch = this.selectBranch.bind(this);
     
     this.updateRepoFileList()
   }
@@ -44,17 +46,33 @@ class Details extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.match.url != prevProps.match.url) {
-      console.log("URL DID CHANGE")
       this.updateRepoFileList()
+    } else if (this.props.item.branches != prevProps.item.branches ) {
+      this.setState({ branches: this.props.item.branches })
     }
   }
   
 
+  
+  selectBranch(item) {
+    var revision = item
+    if (typeof(item) != "string") {
+      revision = item.value
+    }
+    this.setState({ currentRevision: item })
+    var params = this.props.match.params;
+    var newloc = "/" + [params.username, params.kind, params.name, params.tree, revision, this.state.meta.filepath].join("/")
+    document.location.href = newloc;
+  }
+
+
   updateRepoFiles(data) {
     this.setState({ 
-      lastUpdate: data[0].date,
-      message: data[0].message || "",
-      repo_files: data 
+      lastUpdate: data.data[0].date,
+      message: data.data[0].message || "",
+      repo_files: data.data,
+      meta: data.meta,
+      currentRevision: data.meta.revision
     });
   }
 
@@ -71,6 +89,10 @@ class Details extends React.Component {
   render() {
     return (
       <div>
+
+      <Container className="is-fluid">
+        <SearchDropdown options={this.state.branches} selected={this.state.currentRevision} onSelected={this.selectBranch} />
+      </Container>
         <Table isNarrow className="is-fullwidth">
           <thead>
             <tr>

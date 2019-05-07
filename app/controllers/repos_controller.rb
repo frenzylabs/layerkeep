@@ -21,7 +21,13 @@ class ReposController < AuthController
   def show
     repo = @user.repos.find_by(kind: params["kind"], name: params["repo_name"])
     authorize repo
-    render json: repo
+
+    git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
+    branches = git_repo.branches.collect {|branch| branch.name } 
+
+    reposerializer = ReposSerializer.new(repo, {params: {branches: branches}})
+    
+    render json: reposerializer #repo.to_hash.merge({branches: branches})
   end
 
   def create
@@ -49,7 +55,6 @@ class ReposController < AuthController
       render status: 400, json: @repo.errors.to_json
     end
   end
-
 
   def get_user()
     @user ||= User.find_by!(username: params["user"] || "")

@@ -43,7 +43,8 @@ class FilesController < RepoAuthController
       a
     end
 
-    render json: @files
+    metadata = {current_branch: @repo_handler.current_branch.name, revision: @repo_handler.revision, filepath: @repo_handler.filepath}
+    render json: {data: @files, meta: metadata}
   end
 
   def show
