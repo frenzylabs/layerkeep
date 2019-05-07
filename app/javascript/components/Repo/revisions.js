@@ -16,9 +16,7 @@ export class Revisions extends React.Component {
   constructor(props) {
     super(props);
 
-    window.rl = this;
     this.state = { revisions: {data: [], meta: {}}}
-    // this.empty = this.empty.bind(this);
     this.items = this.items.bind(this);
     this.updateRepoRevisionsList()
   }
@@ -39,14 +37,12 @@ export class Revisions extends React.Component {
     this.setState({ revisions: data })
   }
 
-  componentDidUpdate(prevProps) {
-    console.log("1 PROPS DID CHANGE");
-    console.log(prevProps);
-    console.log(this.props);
-  }
+  // componentDidUpdate(prevProps) {
+  //   console.log(prevProps);
+  //   console.log(this.props);
+  // }
   
   shouldComponentUpdate(nextProps, nextState) {
-      console.log("1 Should comp update");
       const differentList = this.state.revisions !== nextState.revisions;
       return differentList;
   }
