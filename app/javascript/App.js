@@ -48,7 +48,7 @@ class App extends React.Component {
               <Route path="/:username/:kind(projects)/:name/:revisions(revisions)/:revisionPath(.*)?"  component={Revisions} />
               <Route path="/:username/:kind(projects)/:name/:tree(tree)/:revisionPath(.*)"  component={ProjectDetails} />
               <Route exact path="/:username/:kind(projects)/:name"  component={ProjectDetails} />
-              <Route path="/:username/:kind(projects)/:name/:files(files)/:revisionPath(.*)"  component={FileViewer} />
+              <Route path="/:username/:kind(projects)/:name/:files(files)/:revisionPath(.*)"  component={MyFileViewer} />
             </Switch>
           </Column>
         </Columns>

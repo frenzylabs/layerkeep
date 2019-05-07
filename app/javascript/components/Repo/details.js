@@ -8,8 +8,10 @@
 
 import React from 'react';
 import { connect }  from 'react-redux';
+import { Link }         from 'react-router-dom';
 
 import { Container, Table } from 'bloomer';
+import { Breadcrumb, BreadcrumbItem } from 'bloomer';
 import { RepoDetailItem } from './detail_item';
 import { RepoHandler } from '../../handlers/repo_handler';
 import { SearchDropdown } from '../Form/SearchDropdown'
@@ -35,8 +37,6 @@ class Details extends React.Component {
 
     RepoHandler.tree(url)
     .then((response) => {
-      console.log(response);
-      
       self.updateRepoFiles(response.data)
     })
     .catch((error) => {
@@ -59,7 +59,7 @@ class Details extends React.Component {
     if (typeof(item) != "string") {
       revision = item.value
     }
-    this.setState({ currentRevision: item })
+    this.setState({ currentRevision: revision })
     var params = this.props.match.params;
     var newloc = "/" + [params.username, params.kind, params.name, params.tree, revision, this.state.meta.filepath].join("/")
     document.location.href = newloc;
@@ -77,7 +77,7 @@ class Details extends React.Component {
   }
 
   items() {
-    if (this.state.repo_files.length > 0) {
+    if (this.state.repo_files.length > 0) {      
       return this.state.repo_files.map((item) => {
         return (<RepoDetailItem kind={this.props.kind} item={item} repo={this.props.item} key={item.name} match={this.props.match} />)
       });
@@ -86,13 +86,45 @@ class Details extends React.Component {
     }
   }
 
+  renderBreadCrumbs() {
+    if (this.state.meta && this.state.meta.filepath) {
+      var params = this.props.match.params;
+      var basepath = "/" + [params.username, params.kind, params.name, params.tree, this.state.currentRevision].join("/")
+      this.state.meta.filepath
+      var filepath = basepath
+      var pathComponents = this.state.meta.filepath.split("/");
+      var crumbs = []
+
+      if (this.state.meta.filepath.length > 1 && pathComponents.length > 0) {        
+        crumbs = crumbs.concat(<BreadcrumbItem key={filepath} className="is-4" >
+                                  <Link to={filepath} >{params.name}</Link>
+                                </BreadcrumbItem>)
+      }
+
+      var res = pathComponents.map((item, index) => {
+        filepath = filepath + "/" + item;
+        return (<BreadcrumbItem key={filepath} {...pathComponents.length-1 == index ? {isActive: true} : ""} className="is-4" >
+                  <Link to={filepath} >{item}</Link>
+                </BreadcrumbItem>)
+        })
+        
+      return (<Breadcrumb style={{display: "inline-flex", paddingLeft: "15px"}}>
+                <ul style={{display: "inline-flex"}}>
+                  {crumbs.concat(res)}
+                </ul>
+              </Breadcrumb>)
+    }
+
+  }
+
   render() {
     return (
       <div>
+        <Container className="is-fluid" style={{display: "flex", alignItems: "center"}}>
+          <SearchDropdown options={this.state.branches} selected={this.state.currentRevision} onSelected={this.selectBranch} />
+          {this.renderBreadCrumbs()}
+        </Container>
 
-      <Container className="is-fluid">
-        <SearchDropdown options={this.state.branches} selected={this.state.currentRevision} onSelected={this.selectBranch} />
-      </Container>
         <Table isNarrow className="is-fullwidth">
           <thead>
             <tr>
