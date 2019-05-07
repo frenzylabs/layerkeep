@@ -41,27 +41,39 @@ export const ProjectHandler = {
     return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
 
+  commit: (project, files, message) => {
+    var data = new FormData();
+
+    files.forEach(file => {
+      data.append(`files[]`, file);
+    });
+
+    data.append('message', message);
+
+    return Request.post(path(`${project}/tree/master`), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+  },
+
   revisions: (name) => {
-    return Request.get(projectsPath(name + '/revisions'));
+    return Request.get(path(name + '/revisions'));
   },
 
   revision: (name, revision) => {
-    return Request.get(projectsPath(name + '/revisions/' + revision));
+    return Request.get(path(name + '/revisions/' + revision));
   },
  
   reference: (name, ref) => {
-    return Request.get(projectsPath(name + '/revision/' + ref));
+    return Request.get(path(name + '/revision/' + ref));
   },
 
   download: (name, revision) => {
-    return Request.get(projectsPath(name + '/content/' + revision));
+    return Request.get(path(name + '/content/' + revision));
   },
 
   files: (name, revision, filepath) => {
-    return Request.get(projectsPath(name + '/files/' + revision + '/' + filepath));
+    return Request.get(path(name + '/files/' + revision + '/' + filepath));
   },
 
   tree: (name, revision) => {
-    return Request.get(projectsPath(name + '/tree/' + revision));
+    return Request.get(path(name + '/tree/' + revision));
   }
 }

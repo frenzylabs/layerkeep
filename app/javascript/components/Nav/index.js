@@ -25,8 +25,8 @@ export class Nav extends React.Component {
             <Link to="/user" className="navbar-item">LayerKeep</Link>
           </NavbarBrand>
           
-          <Link to="/profiles" className="navbar-item">Profiles</Link>
-          <Link to="/projects" className="navbar-item">Projects</Link>
+          <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
+          <Link to={`/${currentUser.username}/projects/`} className="navbar-item">Projects</Link>
         </NavbarStart>
 
         <NavbarEnd>

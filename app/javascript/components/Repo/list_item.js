@@ -17,7 +17,7 @@ import { Icon }         from 'bloomer/lib/elements/Icon';
 export class RepoListItem extends React.Component {
   render() {
     return (
-      <Link to={this.props.kind + "/" + this.props.item.attributes.name} className="box" data-id={this.props.item.id} key={this.props.item.id} >
+      <Link to={this.props.item.attributes.name} className="box" data-id={this.props.item.id} key={this.props.item.id} >
         <Media>
           <MediaLeft>
             <Icon className="far fa-layer-group" isSize="medium"/>

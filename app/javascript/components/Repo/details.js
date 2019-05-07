@@ -17,21 +17,24 @@ class Details extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {repo_files: []};
-    this.updateRepoFiles = this.updateRepoFiles.bind(this)
+    this.state            = {repo_files: [], message: '', lastUpdate: ''};
+    this.updateRepoFiles  = this.updateRepoFiles.bind(this)
     
     this.updateRepoFileList()
   }
 
   updateRepoFileList() {
-    var self = this
-    var url = this.props.match.url
+    var self  = this
+    var url   = this.props.match.url
+
     if (!this.props.match.params.tree) {
       url = url + "/tree/master"
     }
 
     RepoHandler.tree(url)
     .then((response) => {
+      console.log(response);
+      
       self.updateRepoFiles(response.data)
     })
     .catch((error) => {
@@ -48,7 +51,11 @@ class Details extends React.Component {
   
 
   updateRepoFiles(data) {
-    this.setState({ repo_files: data })
+    this.setState({ 
+      lastUpdate: data[0].date,
+      message: data[0].message || "",
+      repo_files: data 
+    });
   }
 
   items() {
@@ -68,11 +75,11 @@ class Details extends React.Component {
           <thead>
             <tr>
               <th colSpan={3}>
-                Did something to make this revision sexy.
+                {this.state.message}
               </th>
 
               <th className="has-text-right" colSpan={2}>
-                Last updated: 01.01.2019
+                Last updated: {dayjs(this.state.lastUpdate).format('DD.MM.YYYY')}
               </th>
             </tr>
           </thead>
