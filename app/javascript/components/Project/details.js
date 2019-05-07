@@ -85,7 +85,7 @@ export class ProjectDetails extends React.Component {
           <RepoDetails kind="projects" item={this.state.project} match={this.props.match} />
         </Container>
 
-        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} project={this.props.project.name} />
+        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} project={this.state.project.name} />
       </div>
     )
   }   
