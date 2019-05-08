@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link }         from 'react-router-dom';
 
 import { Container, Breadcrumb, BreadcrumbItem }    from 'bloomer';
 import { RepoList }       from '../Repo/list';
@@ -66,7 +67,7 @@ export class ProjectList extends React.Component {
           <Breadcrumb>
             <ul>
               <BreadcrumbItem className="title is-4" isActive>
-                <a href="javascript:;">Projects</a>
+                <Link to={`/${this.props.match.params.username}/projects`}>Projects</Link>
               </BreadcrumbItem>
             </ul>
           </Breadcrumb>
@@ -76,7 +77,7 @@ export class ProjectList extends React.Component {
         <br/>
 
         <Container className="is-fluid">
-          <RepoList kind="projects" list={this.state.list} />
+          <RepoList match={this.props.match} list={this.state.list} />
         </Container>
 
         <br/>
