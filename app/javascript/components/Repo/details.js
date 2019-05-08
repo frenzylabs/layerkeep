@@ -56,8 +56,8 @@ class Details extends React.Component {
 
   updateRepoFiles(data) {
     this.setState({ 
-      lastUpdate: data.data[0].date,
-      message: data.data[0].message || "",
+      lastUpdate: data.meta.last_committed_at,
+      message: data.meta.last_commit_message || "",
       repo_files: data.data,
       meta: data.meta,
       currentRevision: data.meta.revision

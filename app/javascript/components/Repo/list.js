@@ -14,19 +14,16 @@ export class RepoList extends React.Component {
   constructor(props) {
     super(props);
 
-    window.rl = this;
     // this.empty = this.empty.bind(this);
     this.items = this.items.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
-    console.log("1 PROPS DID CHANGE");
-    console.log(prevProps);
-    console.log(this.props);
-  }
+  // componentDidUpdate(prevProps) {
+  //   console.log(prevProps);
+  //   console.log(this.props);
+  // }
   
   shouldComponentUpdate(nextProps, nextState) {
-      console.log("1 Should comp update");
       const differentList = this.props.list !== nextProps.list;
       return differentList;
   }
@@ -38,7 +35,6 @@ export class RepoList extends React.Component {
   }
 
   items() {
-    console.log(this.props.list.data.length);
     var params = this.props.match.params;
       return this.props.list.data.map((item) => {
         return (<RepoListItem path={`/${params.username}/${params.kind}/${item.attributes.name}`} item={item} key={item.id} />)

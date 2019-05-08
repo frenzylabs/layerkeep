@@ -44,14 +44,13 @@ function fitCameraToObject  ( camera, object, offset, controls ) {
   var cameraZ = Math.abs( maxDim / 2 * Math.tan( fov * 2 ) ); //Applied fifonik correction
   cameraZ *= offset; // zoom out a little so that objects don't fill the screen
 
-  console.log("FITCAMERA 2.5");
   //Method 1 to get object's world position
-  scene.updateMatrixWorld(); //Update world positions
+  // scene.updateMatrixWorld(); //Update world positions
   var objectWorldPosition = new THREE.Vector3();
-  objectWorldPosition.setFromMatrixPosition( object.matrixWorld );
+  // objectWorldPosition.setFromMatrixPosition( object.matrixWorld );
   
   //Method 2 to get object's world position
-  // objectWorldPosition = object.getWorldPosition();
+  object.getWorldPosition(objectWorldPosition);
 
   const directionVector = camera.position.sub(objectWorldPosition); 	//Get vector from camera to object
 
@@ -86,7 +85,6 @@ function fitCameraToObject  ( camera, object, offset, controls ) {
 
 
 function setupScene(container, geometry) {
-  console.log("SETUP SCENE");
   window.container = container;
 
   var scene   = new THREE.Scene(), 
@@ -141,12 +139,12 @@ function setupScene(container, geometry) {
     // controls.target.set(0, 25, 0);
     // controls.update();
 
-    window.scene = scene;
-    window.camera = camera;
-    window.ground = ground;
-    window.renderer = renderer;
-    window.controls = controls;
-    window.grid     = grid;
+    // window.scene = scene;
+    // window.camera = camera;
+    // window.ground = ground;
+    // window.renderer = renderer;
+    // window.controls = controls;
+    // window.grid     = grid;
     
 
     
@@ -157,13 +155,11 @@ function setupScene(container, geometry) {
       renderer.render(scene, camera);
     };
 
-    console.log("SETUP SCENE 7");
-
     // var scope = new THREE.STLLoader()
     // // canvas.append(renderer.domElement);
     // geometry = scope.parse( response );
     var mesh        = new THREE.Mesh(geometry, material);
-    window.mesh = mesh; 
+    // window.mesh = mesh; 
     const boundingBox = new THREE.Box3();
 
     // get bounding box of object - this will be used to setup controls and camera
@@ -181,11 +177,15 @@ function setupScene(container, geometry) {
     window.addEventListener('resize', function() {
       // console.log("height: ", container.height());
       // console.log("width: ", container.width(), container.innerWidth());
+      // console.log("Renderer Size: ", renderer.getSize());
       renderer.setSize(0, 0);
-      renderer.setSize(container.width(), container.height());
-      
       camera.aspect = container.width() / container.height();
       camera.updateProjectionMatrix();
+
+      renderer.setSize(container.width(), container.height());
+      
+      
+      
       // fitCameraToObject(camera, mesh, 4, controls);
       
 
@@ -203,13 +203,9 @@ export class SceneManager extends React.Component {
     // this.items = this.items.bind(this);
     this.material  = new THREE.MeshPhongMaterial({color: 0x00ff00});
     this.state = {contentType: null, localUrl: null, geometry: null, material: this.material}
-    // this.loadFile();
-    window.t = THREE;
-    // window.tada = STLLoader;
-    var self = this;
+
     this.scene = React.createRef();
-    console.log("INSIDE SM CONSTRUCTOR");
-    console.log(this.props);
+    
     // if (this.props.file.extension == "stl") {
       this.loader = new THREE.STLLoader()
     //   this.loader.load(this.props.file.localUrl, function(resp) {        
@@ -220,18 +216,17 @@ export class SceneManager extends React.Component {
     //   })
     // }
     
-    window.sm = this;
+    // window.sm = this;
   }
 
   componentDidMount() {
     // setupScene($(this.scene.current), this.state.geometry);
     window.addEventListener('load', this.handleLoad);
-    console.log(this.loader);
+    
     var self = this;
     
     this.loader.load(this.props.file.localUrl, function(resp) {        
       self.geometry = resp;
-      console.log(self.scene);
       setupScene($(self.scene.current), self.geometry);
       self.setState( {geometry: resp} )
     })
@@ -241,14 +236,12 @@ export class SceneManager extends React.Component {
    console.log("HANDLE LOAD")
  }
  
-  componentDidUpdate(prevProps) {
-    console.log(" d PROPS DID CHANGE");
+  // componentDidUpdate(prevProps) {
+  //   console.log(" d PROPS DID CHANGE");
     
-    console.log(prevProps);
-    console.log(this.props.file);
-
-    
-  }
+  //   console.log(prevProps);
+  //   console.log(this.props.file);
+  // }
   
   // shouldComponentUpdate(nextProps, nextState) {
   //     console.log("2 Should comp update");
@@ -256,54 +249,9 @@ export class SceneManager extends React.Component {
   //     return differentList;
   // }
 
-  empty() {
-    return (
-      <RepoEmptyList kind={this.props.kind} />
-    );
-  }
 
-  renderImage() {
-    if (this.state.contentType && this.state.contentType.match(/image/)) {
-      return (<img src={this.state.localUrl} />)
-    }
-  }
-
-  renderStl() {
-    // return (<div></div>)
-    
-    // const geometry = (() => new this.loader.load(this.props.file.localUrl), [this.props.file.localUrl])
-    if (this.state.geometry) {
-      // const mesh = new THREE.Mesh(this.state.geometry, this.state.material)
-      
-      // return <primitive object={mesh} position={[0, 0, 0]} />
-      // return (
-      //   <mesh material={this.material}>
-      //     <planeBufferGeometry attach="geometry" args={[1000, 1000]} />
-      //     <meshPhongMaterial attach="material" color="#272727" />
-      //     <primitive object={this.state.geometry} position={[0, 0, 0]} />
-      //   </mesh>
-      // )
-
-      // <bufferGeometry object={this.state.geometry} /> 
-      // return (<primitive object={this.state.geometry} />)
-    // return (
-    //   <mesh geometry={this.state.geometry} material={this.material}></mesh>        
-    // )
-    }
-  }
-  // items() {
-  //   console.log(this.props.list.data.length);
-  //     return this.props.list.data.map((item) => {
-  //       return (<RepoListItem kind={this.props.kind} item={item} key={item.id} />)
-  //     });
-  // }
   
   render() {
     return (<div ref={this.scene} style={{height: '100%', padding: '10px'}} />) 
   }
-    // return (<Canvas style={{ background: '#272727' }}>
-    //   <ambientLight color="lightblue" />
-    //   {this.renderStl()}
-    // </Canvas>)    
-  // }
 }

@@ -42,8 +42,13 @@ class FilesController < RepoAuthController
       end
       a
     end
-
-    metadata = {current_branch: @repo_handler.current_branch.name, revision: @repo_handler.revision, filepath: @repo_handler.filepath}
+    
+    metadata = {last_committed_at: @repo_handler.current_commit.time, 
+                last_commit_message: @repo_handler.current_commit.message,
+                commit_id:  @repo_handler.current_commit.oid,
+                current_branch: @repo_handler.current_branch.name, 
+                revision: @repo_handler.revision, 
+                filepath: @repo_handler.filepath}
     render json: {data: @files, meta: metadata}
   end
 
@@ -58,8 +63,16 @@ class FilesController < RepoAuthController
     end
 
     throw record_not_found unless @file 
-    
-    metadata = {current_branch: @repo_handler.current_branch.name, revision: @repo_handler.revision, filepath: @repo_handler.filepath}
+
+    metadata = {
+      last_committed_at: @repo_handler.current_commit.time, 
+      last_commit_message: @repo_handler.current_commit.message,
+      commit_id:  @repo_handler.current_commit.oid,
+      current_branch: @repo_handler.current_branch.name, 
+      revision: @repo_handler.revision, 
+      filepath: @repo_handler.filepath
+    }
+
     render json: {data: @file, meta: metadata} 
   end
 
