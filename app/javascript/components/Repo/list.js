@@ -33,14 +33,15 @@ export class RepoList extends React.Component {
 
   empty() {
     return (
-      <RepoEmptyList kind={this.props.kind} />
+      <RepoEmptyList kind={this.props.match.params.kind} />
     );
   }
 
   items() {
     console.log(this.props.list.data.length);
+    var params = this.props.match.params;
       return this.props.list.data.map((item) => {
-        return (<RepoListItem kind={this.props.kind} item={item} key={item.id} />)
+        return (<RepoListItem path={`/${params.username}/${params.kind}/${item.attributes.name}`} item={item} key={item.id} />)
       });
   }
   
