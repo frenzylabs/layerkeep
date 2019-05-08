@@ -42,6 +42,19 @@ export class RepoDetailItem extends React.Component {
     }
   }
 
+  downloadLink(item) {
+    var urlparams = this.props.match.params;
+    return (
+      <p className="control">
+          <a className="button is-small" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}/${item.name}?download=true`}>
+                <span className="icon is-small">
+                  <i className="far fa-download"></i>
+                </span>
+              </a>
+            </p>
+    )
+  }
+
   render() {
     return(
       <tr>
@@ -77,13 +90,7 @@ export class RepoDetailItem extends React.Component {
               </a>
             </p>
 
-            <p className="control">
-              <a className="button is-small">
-                <span className="icon is-small">
-                  <i className="far fa-cube"></i>
-                </span>
-              </a>
-            </p>
+            {this.downloadLink(this.props.item)}
 
             <p className="control">
               <a className="button is-small">
