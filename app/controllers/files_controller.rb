@@ -63,6 +63,8 @@ class FilesController < RepoAuthController
   end
 
   def create
+    puts @repo_handler.inspect
+
     if @repo_handler.current_branch.name != @repo_handler.revision
       render status: 400, json: {'error': 'You must be on a branch to upload'} and return
     end
