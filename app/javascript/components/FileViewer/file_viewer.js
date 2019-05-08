@@ -44,7 +44,7 @@ export class FileViewer extends React.Component {
 
       var params = this.props.match.params;
       var url = "/" + [params.username, params.kind, params.name, "content", params.revisionPath].join("/")
-      const ext = url.split(".").pop();
+      const ext = url.split(".").pop().toLowerCase();
       self.setState({ url: url, extension: ext })
     })
     .catch((error) => {
