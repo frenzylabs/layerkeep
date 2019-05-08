@@ -67,8 +67,9 @@ export class RepoDetailItem extends React.Component {
           <p>{dayjs(this.props.item.date).format('DD.MM.YYYY')}</p>
         </td>
 
-        <td className="has-text-right cell-option-buttons"  width={100}>
+        <td className="has-text-right cell-option-buttons"  width={56}>
           <div className="field has-addons">
+            {/*
             <p className="control">
               <a className="button is-small">
                 <span className="icon is-small">
@@ -84,6 +85,7 @@ export class RepoDetailItem extends React.Component {
                 </span>
               </a>
             </p>
+            */}
 
             <p className="control">
               <a className="button is-small">

@@ -116,7 +116,7 @@ export default class UploadModal extends React.Component {
 
         <Field>
           <Control>
-            <Input type="text" placeholder="Comment about changes." onChange={this.messageChanged} />
+            <Input type="text" placeholder="Description of uploads." onChange={this.messageChanged} />
           </Control>
         </Field>
 
