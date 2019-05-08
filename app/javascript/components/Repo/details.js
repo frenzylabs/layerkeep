@@ -31,7 +31,7 @@ class Details extends React.Component {
     var self  = this
     var url   = this.props.match.url
 
-    if (!this.props.match.params.tree) {
+    if (this.props.match.params.resource != "tree") {
       url = url + "/tree/master"
     }
 
@@ -61,7 +61,7 @@ class Details extends React.Component {
     }
     this.setState({ currentRevision: revision })
     var params = this.props.match.params;
-    var newloc = "/" + [params.username, params.kind, params.name, params.tree, revision, this.state.meta.filepath].join("/")
+    var newloc = "/" + [params.username, params.kind, params.name, 'tree', revision, this.state.meta.filepath].join("/")
     document.location.href = newloc;
   }
 
@@ -89,7 +89,7 @@ class Details extends React.Component {
   renderBreadCrumbs() {
     if (this.state.meta && this.state.meta.filepath) {
       var params = this.props.match.params;
-      var basepath = "/" + [params.username, params.kind, params.name, params.tree, this.state.currentRevision].join("/")
+      var basepath = "/" + [params.username, params.kind, params.name, 'tree', this.state.currentRevision].join("/")
       this.state.meta.filepath
       var filepath = basepath
       var pathComponents = this.state.meta.filepath.split("/");

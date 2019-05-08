@@ -22,6 +22,7 @@ import { LeftColumn }     from './components/LeftColumn';
 import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
 import { ProjectDetails } from './components/Project/details';
+import { Project }     from './components/Project/project';
 
 import { FileViewer } from './components/FileViewer/file_viewer';
 import { RepoFileViewer } from './components/Repo/repo_file_viewer';
@@ -43,12 +44,9 @@ class App extends React.Component {
             <Switch>
               <Route exact path="/user/"                    render={() => "Hi"} />
               <Route exact path="/:username/:kind(projects)/new"    component={ProjectNew} />
-              <Route exact path="/:username/:kind(projects)"        component={ProjectList} />
-              <Route path="/:username/:kind(projects)/:name/:revision(revision)/:revisionPath(.*)"  component={Revision} />
-              <Route path="/:username/:kind(projects)/:name/:revisions(revisions)/:revisionPath(.*)?"  component={Revisions} />
-              <Route path="/:username/:kind(projects)/:name/:tree(tree)/:revisionPath(.*)"  component={ProjectDetails} />
-              <Route exact path="/:username/:kind(projects)/:name"  component={ProjectDetails} />
-              <Route path="/:username/:kind(projects)/:name/:files(files)/:revisionPath(.*)"  component={FileViewer} />
+              <Route exact path="/:username/:kind(projects)"        component={ProjectList} />              
+              <Route path="/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?"  component={Project} />
+              <Route exact path="/:username/:kind(projects)/:name"  component={Project} />              
             </Switch>
           </Column>
         </Columns>
@@ -58,3 +56,8 @@ class App extends React.Component {
 }
 
 export default connect()(App);
+
+// <Route path="/:username/:kind(projects)/:name/:resource(revision)/:revisionPath(.*)"  component={Revision} />
+              // <Route path="/:username/:kind(projects)/:name/:resource(revisions)/:revisionPath(.*)?"  component={Revisions} />
+              // <Route path="/:username/:kind(projects)/:name/:resource(tree)/:revisionPath(.*)"  component={ProjectDetails} />
+              // <Route path="/:username/:kind(projects)/:name/:resource(files)/:revisionPath(.*)"  component={FileViewer} />

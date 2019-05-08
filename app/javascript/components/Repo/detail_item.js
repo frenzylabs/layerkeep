@@ -24,7 +24,7 @@ export class RepoDetailItem extends React.Component {
     
     if (item.type == "tree") {
       var url  = this.props.match.url.replace(/(\/)$/, "");
-      if (!this.props.match.params.tree) {
+      if (this.props.match.params.resource != "tree") {
         path = url + "/tree/master/" + path
       } else {
         path = url + "/" + path
