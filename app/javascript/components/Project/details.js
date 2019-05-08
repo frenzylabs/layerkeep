@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link }         from 'react-router-dom';
 import { RepoDetails } from '../Repo/details';
 import { Container } from 'bloomer';
 // import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
@@ -63,11 +64,11 @@ export class ProjectDetails extends React.Component {
               <Breadcrumb>
                 <ul>
                   <BreadcrumbItem className="title is-4">
-                    <a href={"/" + this.props.match.params.username + "/projects" }>Projects</a>
+                    <Link to={`/${this.props.match.params.username}/projects`}>Projects</Link>
                   </BreadcrumbItem>
 
                   <BreadcrumbItem className="title is-4" >
-                    <a href={"/" + this.props.match.params.username + "/projects/" + this.state.project.name }>{this.state.project.name}</a>
+                    <Link to={`/${this.props.match.params.username}/projects/${this.state.project.name}`}>{this.state.project.name}</Link>
                   </BreadcrumbItem>
                 </ul>
               </Breadcrumb>
