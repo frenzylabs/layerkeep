@@ -70,7 +70,6 @@ export default class UploadModal extends React.Component {
 
     return this.state.files.map((entry, index) => {
       return (
-        
         <tr key={index}>
           <td>{entry.name}</td>
           <td className="has-text-right" width={2}>

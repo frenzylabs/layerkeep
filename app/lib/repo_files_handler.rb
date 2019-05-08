@@ -54,7 +54,7 @@ class RepoFilesHandler
         else raise LayerKeepErrors::RevisionNotFound.new("Revision #{branch} Not Found")
       end
       @revision = branch
-      @current_branch = @repo.branches.find {|b| b.target_id == @current_commit.oid }
+      @current_branch = @repo.branches[@revision] || @repo.branches.find {|b| b.target_id == @current_commit.oid }
       if !@current_branch
         branches = `cd #{@repo.path}; git branch --contains #{@current_commit.oid} --format="%(refname:short)"`
         branchlookup = (branches.lines.first || "master").chomp
