@@ -59,7 +59,8 @@ class FilesController < RepoAuthController
 
     throw record_not_found unless @file 
     
-    render json: @file.merge({filepath: @repo_handler.filepath})
+    metadata = {current_branch: @repo_handler.current_branch.name, revision: @repo_handler.revision, filepath: @repo_handler.filepath}
+    render json: {data: @file, meta: metadata} 
   end
 
   def create

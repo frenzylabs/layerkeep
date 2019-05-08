@@ -18,6 +18,7 @@ import { ProjectAction }  from '../../states/project';
 import Modal from '../Modal';
 import { Revisions } from '../Repo/revisions'
 import { Revision } from '../Repo/revision'
+import { RepoFileViewer } from '../Repo/repo_file_viewer'
 import { FileViewer } from '../FileViewer/file_viewer'
 
 
@@ -70,7 +71,7 @@ export class Project extends React.Component {
         return Revisions;
       }
       case 'files': {
-        return FileViewer;
+        return RepoFileViewer;
       }
       default: {
         return RepoDetails;

@@ -29,9 +29,11 @@ export class FileViewer extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {contentType: null, localUrl: null, extension: ''}
-    this.loadFile();
-    window.f = this;
+    
+    this.state = {contentType: null, localUrl: null, url: this.props.url, extension: this.props.extension || ""}
+    if (this.props.url == null) {
+      this.loadFile();
+    }
 
   }
 
