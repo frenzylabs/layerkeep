@@ -21,10 +21,11 @@ import {
   UnsupportedViewer,
   PhotoViewerWrapper,
   AudioViewer,
-  SceneViewer
+  SceneViewer,
+  TextViewer
 } from './drivers/index';
 
-export class MyFileViewer extends React.Component {
+export class FileViewer extends React.Component {
   constructor(props) {
     super(props);
 
@@ -68,6 +69,10 @@ export class MyFileViewer extends React.Component {
     switch (this.state.extension) {
       case 'stl': {
         return SceneViewer;
+      }
+      case 'txt':
+      case 'ini': {
+        return TextViewer;
       }
       case 'csv': {
         return CsvViewer;

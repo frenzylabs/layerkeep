@@ -12,3 +12,4 @@ export { default as PhotoViewer } from './photo-viewer';
 export { default as PhotoViewerWrapper } from './photo-viewer-wrapper';
 export { default as AudioViewer } from './audio-viewer';
 export { default as SceneViewer } from './scene-viewer';
+export { default as TextViewer } from './text-viewer';
