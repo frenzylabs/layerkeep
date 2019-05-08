@@ -13,7 +13,9 @@ import { Container } from 'bloomer/lib/layout/Container';
 import { RepoEmptyList }  from './empty_list';
 import { FileLoader }     from 'three';
 import { SceneManager }  from './scene_manager';
-
+import { Columns, Column }         from 'bloomer';
+import { RepoBreadCrumbs } from './repo_bread_crumbs'
+import { FileViewer } from '../FileViewer/file_viewer'
 
 import { RepoHandler } from '../../handlers/repo_handler';
 
@@ -22,12 +24,8 @@ export class RepoFileViewer extends React.Component {
   constructor(props) {
     super(props);
 
-    console.log(this.props.location.state);
-    
-    // this.items = this.items.bind(this);
-    this.state = {contentType: null, localUrl: null, extension: ''}
+    this.state = {contentType: null, url: null, extension: '', meta: {}}
     this.loadFile();
-    window.f = this;
   }
 
   loadFile() {
@@ -36,79 +34,37 @@ export class RepoFileViewer extends React.Component {
 
     RepoHandler.tree(url)
       .then((response) => {
-      
-      // var regex = new RegExp("(.*)\/" + response.data.path, "is");
-      // matches = params.filepath.match(regex)
 
       var params = this.props.match.params;
       var url = "/" + [params.username, params.kind, params.name, "content", params.revisionPath].join("/")
-      const ext = url.split(".").pop();
-
-      var loader = new FileLoader();
-      loader.setResponseType( 'arraybuffer' );
-      var req = loader.load(url, function(resp) {
-        console.log(req);
-        console.log(resp);
-        var contentType = req.getResponseHeader("content-type").split(";")[0];        
-        var binaryResponse = self.ensureBinary(resp);
-        var blob = new Blob( [ binaryResponse ], { type: contentType } );
-        var localUrl = window.URL.createObjectURL(blob);
-        self.setState({ contentType: contentType, localUrl: localUrl, extension: ext })
-        // console.log("RESP: ", resp);
-      })
+      const ext = url.split(".").pop().toLowerCase();
+      self.setState({ url: url, extension: ext, meta: response.data.meta })
     })
     .catch((error) => {
       console.log(error);
     });
-  }
+  }  
 
-  ensureBinary( buf ) {
-		if ( typeof buf === "string" ) {
-			var array_buffer = new Uint8Array( buf.length );
-			for ( var i = 0; i < buf.length; i ++ ) {
-				array_buffer[ i ] = buf.charCodeAt( i ) & 0xff; // implicitly assumes little-endian
-			}
-			return array_buffer.buffer || array_buffer;
-		} else {
-			return buf;
-		}
-	} 
-  componentDidUpdate(prevProps) {
-    console.log("2 PROPS DID CHANGE");
-    console.log(prevProps);
-    console.log(this.props);
-  }
-  
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     console.log("2 Should comp update");
-  //     const differentList = this.props.list !== nextProps.list;
-  //     return differentList;
-  // }
-
-  empty() {
-    return (
-      <RepoEmptyList kind={this.props.kind} />
-    );
-  }
-
-  renderImage() {
-    if (this.state.contentType && this.state.contentType.match(/image/)) {
-      return (<img src={this.state.localUrl} />)
+  renderFile() {
+    if (this.state.url) {
+      return (<FileViewer {...this.props} url={this.state.url} extension={this.state.extension} />)
     }
   }
 
-  renderCanvas() {
-    if (this.state.extension == "stl" || (this.state.contentType && this.state.contentType.match(/octet-stream/))) {
-      return (<SceneManager file={this.state} />)
-    }
-  }
-  
   render() {
-
+    var urlparams = this.props.match.params;
     return (
       <div className="" style={{height: '100%'}}>
-          {this.renderImage()}
-          {this.renderCanvas()}
+        <Columns isGapless isMultiline >
+          <Column  isSize='3/4'>
+            <RepoBreadCrumbs match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta}></RepoBreadCrumbs>
+          </Column>
+          <Column className="has-text-right">
+            <a className="button" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`}>Download</a>
+          </Column>
+        </Columns>
+
+        {this.renderFile()}
       </div>
     );
   }

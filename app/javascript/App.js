@@ -15,9 +15,8 @@ import {
   Route
 } from 'react-router-dom'
 
-import { Columns }        from 'bloomer/lib/grid/Columns';
-import { Column }         from 'bloomer';
-import { Nav }            from './components/Nav';
+import { Columns, Column }         from 'bloomer';
+import { Nav }              from './components/Nav';
 import { LeftColumn }     from './components/LeftColumn';
 import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
