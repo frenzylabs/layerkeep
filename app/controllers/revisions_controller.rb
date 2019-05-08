@@ -33,7 +33,8 @@ class RevisionsController < RepoAuthController
         end
       end
     end
-    render json: RevisionsSerializer.new(revisions)
+    metadata = {current_branch: @repo_handler.current_branch.name, revision: @repo_handler.revision, filepath: @repo_handler.filepath}
+    render json: RevisionsSerializer.new(revisions, {meta: metadata})
   end
 
   def show
