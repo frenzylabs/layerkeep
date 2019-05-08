@@ -18,7 +18,7 @@ import { SceneManager }  from './scene_manager';
 import { RepoHandler } from '../../handlers/repo_handler';
 
 
-export class FileViewer extends React.Component {
+export class RepoFileViewer extends React.Component {
   constructor(props) {
     super(props);
 
