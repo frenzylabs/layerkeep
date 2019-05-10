@@ -1,11 +1,4 @@
 import React               from 'react';
-import { connect }        from 'react-redux';
-// import { RepoListItem }   from './list_item';
-import { Container } from 'bloomer';
-// import { OtherDrivers }  from './driver';
-import { FileLoader }     from 'three';
-import { SceneManager }  from '../Repo/scene_manager';
-
 
 
 import { RepoHandler } from '../../handlers/repo_handler';
@@ -22,7 +15,8 @@ import {
   PhotoViewerWrapper,
   AudioViewer,
   SceneViewer,
-  TextViewer
+  TextViewer,
+  MarkdownViewer
 } from './drivers/index';
 
 export class FileViewer extends React.Component {
@@ -54,23 +48,14 @@ export class FileViewer extends React.Component {
     });
   }
 
-  // componentDidUpdate(prevProps) {
-  //   console.log("2 PROPS DID CHANGE");
-  //   console.log(prevProps);
-  //   console.log(this.props);
-  // }
-  
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     console.log("2 Should comp update");
-  //     const differentList = this.props.list !== nextProps.list;
-  //     return differentList;
-  // }
-
   getDriver() {
 
     switch (this.state.extension) {
       case 'stl': {
         return SceneViewer;
+      }
+      case 'md': {
+        return MarkdownViewer;
       }
       case 'txt':
       case 'ini': {

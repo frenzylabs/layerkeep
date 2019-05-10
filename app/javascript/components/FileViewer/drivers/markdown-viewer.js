@@ -1,16 +1,17 @@
 /*
- *  text-viewer.js
+ *  markdown-view.js
  *  LayerKeep
  * 
- *  Created by Kevin Musselman (kmussel@gmail.com) on 04/30/19
- *  Copyright 2018 FrenzyLabs
+ *  Created by Wess Cope (me@wess.io) on 05/10/19
+ *  Copyright 2018 WessCope
  */
 
-import React        from 'react';
-import {FileLoader} from 'three';
+import React          from 'react';
+import {FileLoader}   from 'three';
+import ReactMarkdown  from 'react-markdown';
 
 
-class TextViewer extends React.Component {
+export default class MarkdownViewer extends React.Component {
   constructor(props) {
     super(props);
     
@@ -32,11 +33,7 @@ class TextViewer extends React.Component {
   render() {
 
     return (
-      <pre className="" style={{height: '100%'}}>
-          {this.state.text}
-      </pre>
+      <ReactMarkdown source={this.state.text}/>
     );
   }
 }
-
-export default TextViewer

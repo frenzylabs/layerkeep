@@ -106,7 +106,7 @@ export default class UploadModal extends React.Component {
 
           <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
             <tbody>
-              {this.renderFiles() }
+              {this.renderFiles()}
             </tbody>
           </Table>
 

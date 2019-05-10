@@ -63,10 +63,10 @@ export class RepoBreadCrumbs extends React.Component {
 
   render() {
     return(
-      <Container className="is-fluid" style={{display: "flex", alignItems: "center"}}>
+      <div>
         <SearchDropdown options={this.props.branches} selected={this.props.meta.revision} onSelected={this.selectBranch} />
         {this.renderBreadCrumbs()}
-      </Container>
+      </div>
     )
   }
 }
