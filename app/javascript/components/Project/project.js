@@ -105,7 +105,6 @@ export class Project extends React.Component {
             </Column>
           </Columns>
         </Container>
-
         <br/>
 
         <Container className="is-fluid" style={{height: '100%'}}>

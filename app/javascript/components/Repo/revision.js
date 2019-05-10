@@ -53,7 +53,6 @@ export class Revision extends React.Component {
   }
 
   diff() {
-    console.log(this.state.revision);
     if (this.state.revision.message) {
       return (<ReactGhLikeDiff diffString={this.state.revision.message} />)
     }

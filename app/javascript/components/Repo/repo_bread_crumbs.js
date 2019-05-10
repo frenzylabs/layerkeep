@@ -26,7 +26,7 @@ export class RepoBreadCrumbs extends React.Component {
     }
 
     var params = this.props.match.params;
-    var newloc = "/" + [params.username, params.kind, params.name, params.resource, revision, this.props.meta.filepath].join("/")
+    var newloc = "/" + [params.username, params.kind, params.name, (params.resource || 'tree'), revision, this.props.meta.filepath].join("/")
     document.location.href = newloc;
   }
 
