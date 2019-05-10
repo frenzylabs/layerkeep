@@ -33,7 +33,7 @@ export default class MarkdownViewer extends React.Component {
   render() {
 
     return (
-      <ReactMarkdown source={this.state.text}/>
+      <ReactMarkdown source={this.state.text} style={{width: '100%', height: '100%'}}/>
     );
   }
 }
