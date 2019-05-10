@@ -21,8 +21,8 @@ class SlicesController < AuthController
 
   def create
     project_params = params.require("projects")
-    projects = slice_files(project_params, "project")
-    profiles = slice_files(params["profiles"] || [], "profile")
+    projects = slice_files(project_params, "projects")
+    profiles = slice_files(params["profiles"] || [], "profiles")
     
     slice_name = ""
     projects.reduce(slice_name) do |name, pf| 

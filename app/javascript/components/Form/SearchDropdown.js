@@ -9,14 +9,22 @@
 import React                      from 'react';
 import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider, DropdownMenu, DropdownTrigger } from 'bloomer';
 
+let lastId = 0;
 
- export class SearchDropdown extends React.Component {
+export function newID(prefix='id') {
+    lastId++;
+    return `${prefix}${lastId}`;
+}
+
+export class SearchDropdown extends React.Component {
   constructor(props) {
     super(props);
 
 
-    var selectedOption = this.props.selected || {name: "Master", value: "master"}
-    this.state = {isActive: false, dropdownOptions: this.props.options, selected: selectedOption }
+    var selectedOption = this.props.selected 
+    this.state = {prompText: "Select", isActive: false, dropdownOptions: this.props.options, selected: selectedOption }
+
+    this.id = props.id || newID();
 
     this.searchInput     = React.createRef(); 
     this.toggleIsActive  = this.toggleIsActive.bind(this);
@@ -29,7 +37,7 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
 
   componentDidUpdate(prevProps) {
     if (this.props != prevProps) {
-      var selectedOption = this.props.selected || {name: "master", value: "master"}
+      var selectedOption = this.props.selected 
       this.setState({isActive: false, dropdownOptions: this.props.options, selected: selectedOption })
     }
   }
@@ -55,7 +63,7 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
   setSelected(item) {
     this.setState( {selected: item, isActive: false})
     if (this.props.onSelected) {
-      this.props.onSelected(item)
+      this.props.onSelected(item, this.id)
     }
   }
 
@@ -105,16 +113,19 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
   }
 
   optionName(item) {
-    if (typeof(item) == "string") {
-      return item;        
+    if (item == null) {
+      return this.props.promptText || this.state.promptText;
+    }
+    else if (typeof(item) == "string") {
+      return item || this.props.promptText || this.state.promptText;
     } else {
-      return item.name
+      return item.name || this.props.promptText || this.state.promptText;
     }
   }
 
   optionValue(item) {
     if (typeof(item) == "string") {
-      return item;        
+      return item;
     } else {
       return item.value
     }
@@ -130,7 +141,7 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
 
   render() {
     return (
-      <Dropdown onChange={this.onChange} onBlur={this.onBlur} isActive={this.state.isActive}>
+      <Dropdown key={this.id} onChange={this.onChange} onBlur={this.onBlur} isActive={this.state.isActive}>
         <DropdownTrigger onClick={this.toggleIsActive}>
           <Button isOutlined aria-haspopup="true" aria-controls="dropdown-menu" isSize="small">
             <span>{this.optionName(this.state.selected)}</span>
@@ -140,7 +151,7 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
         <DropdownMenu >
           <DropdownContent>
             <DropdownItem>
-                <input ref={this.searchInput} onKeyDown={this.handleKeyEvent} type="text" placeholder="Revision" className="input is-transparent" />
+                <input ref={this.searchInput} onKeyDown={this.handleKeyEvent} type="text" placeholder={this.props.placeholder || "Revision"} className="input is-transparent" />
             </DropdownItem>
             <DropdownDivider />
             {this.renderOptions()}            
