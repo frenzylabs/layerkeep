@@ -51,7 +51,9 @@ export class RepoFileViewer extends React.Component {
 
   renderFile() {
     if (this.state.url) {
-      return (<FileViewer {...this.props} url={this.state.url} extension={this.state.extension} style={{width: '100%', height:'100%'}} />)
+      return (
+        <FileViewer {...this.props} url={this.state.url} extension={this.state.extension} />
+      )
     }
   }
 
@@ -64,7 +66,7 @@ export class RepoFileViewer extends React.Component {
 
         <article className="message is-fullwidth" style={{border: '1px solid #d1d5da'}}>
           <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
-            <div className="level" style={{width: '100%'}}>
+            <div className="level" style={{width: '100%', height: '100%'}}>
               <div className="level-left">
                 <div className="level-item">
                   <RepoBreadCrumbs match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
@@ -72,7 +74,7 @@ export class RepoFileViewer extends React.Component {
               </div>
               
               <div className="level-right">
-                <div className="level-itemn">
+                <div className="level-item">
                   <div className="buttons has-addons">
                     <a className="button is-small" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`}>Download</a>
                   </div>
@@ -81,7 +83,7 @@ export class RepoFileViewer extends React.Component {
             </div>
           </div>
 
-          <div className="message-body is-fullwidth" style={{background: '#fff', padding: 0}}>
+          <div className="message-body" style={{background: 'red', padding: 0, height: '100%', width: '100%'}}>
             {this.renderFile()}
           </div>
         </article>
