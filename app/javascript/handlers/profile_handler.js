@@ -1,19 +1,19 @@
 /*
- *  projects_handler.js
+ *  profile_handler.js
  *  LayerKeep
  * 
- *  Created by Wess Cope (me@wess.io) on 04/30/19
- *  Copyright 2018 WessCope
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 05/09/19
+ *  Copyright 2018 FrenzyLabs
  */
 
 
 import Request from './request_client';
 
 function path(endpoint) {
-  return `/${currentUser.username}/projects/${(endpoint || '')}`;
+  return `/${currentUser.username}/profiles/${(endpoint || '')}`;
 }
 
-export const ProjectHandler = {
+export const ProfileHandler = {
   list: (query_params = {}) => {
     return Request.get(path(), query_params);
   },
@@ -75,9 +75,5 @@ export const ProjectHandler = {
 
   tree: (name, revision) => {
     return Request.get(path(name + '/tree/' + revision));
-  },
-
-  raw: (url) => {
-    return Request.get(url);
   }
 }

@@ -27,6 +27,7 @@ export class Nav extends React.Component {
           
           <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
           <Link to={`/${currentUser.username}/projects/`} className="navbar-item">Projects</Link>
+          <Link to={`/${currentUser.username}/slices/new/`} className="navbar-item">Slices <sup>Alpha</sup></Link>
         </NavbarStart>
 
         <NavbarEnd>

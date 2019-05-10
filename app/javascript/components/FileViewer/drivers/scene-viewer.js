@@ -26,10 +26,7 @@ class SceneViewer extends React.Component {
 
     var loader = new FileLoader();
     loader.setResponseType( 'arraybuffer' );
-    console.log("LOAD SCENE: ", this.props);
     var req = loader.load(this.props.filePath, function(resp) {
-      // console.log(req);
-      // console.log(resp);
       var contentType = req.getResponseHeader("content-type").split(";")[0];        
       var binaryResponse = self.ensureBinary(resp);
       var blob = new Blob( [ binaryResponse ], { type: contentType } );
@@ -49,18 +46,15 @@ class SceneViewer extends React.Component {
 			return buf;
 		}
 	} 
-  // componentDidUpdate(prevProps) {
-  //   console.log("Scene PROPS DID CHANGE");
-  //   console.log(prevProps);
-  //   console.log(this.props);
-  // }
-  
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     console.log("2 Should comp update");
-  //     const differentList = this.props.list !== nextProps.list;
-  //     return differentList;
-  // }
+  componentDidUpdate(prevProps) {
+    // console.log("Scene PROPS DID CHANGE");
+    // console.log(prevProps);
+    // console.log(this.props);
+    if (this.props.filePath != prevProps.filePath) {
+      this.loadFile();
+    }
 
+  }
 
   renderCanvas() {
     if (this.state.localUrl && (this.props.fileType == "stl" || (this.state.contentType && this.state.contentType.match(/octet-stream/)))) {

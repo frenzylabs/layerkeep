@@ -19,7 +19,7 @@ class ReposController < AuthController
   end
 
   def show
-    repo = @user.repos.find_by(kind: params["kind"], name: params["repo_name"])
+    repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
     authorize repo
 
     git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
