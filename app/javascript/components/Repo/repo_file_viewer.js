@@ -21,6 +21,7 @@ import { RepoHandler } from '../../handlers/repo_handler';
 import { Level } from 'bloomer/lib/components/Level/Level';
 import { LevelLeft } from 'bloomer/lib/components/Level/LevelLeft';
 import { LevelRight } from 'bloomer/lib/components/Level/LevelRight';
+import { LevelItem } from 'bloomer/lib/components/Level/LevelItem';
 
 
 export class RepoFileViewer extends React.Component {
@@ -62,18 +63,22 @@ export class RepoFileViewer extends React.Component {
         <br/>
 
         <article className="message is-fullwidth" style={{border: '1px solid #d1d5da'}}>
-          <div className="message-header is-fullwidth" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
-            <Level className="is-fullwidth" style={{paddingTop: '4px', paddingBottom: '4px'}}>
-              <LevelLeft>
-                <RepoBreadCrumbs match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
-              </LevelLeft>
-
-              <LevelRight>
-                <div className="buttons has-addons">
-                  <a className="button is-small" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`}>Download</a>
+          <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
+            <div className="level" style={{width: '100%'}}>
+              <div className="level-left">
+                <div className="level-item">
+                  <RepoBreadCrumbs match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
                 </div>
-              </LevelRight>
-            </Level>
+              </div>
+              
+              <div className="level-right">
+                <div className="level-itemn">
+                  <div className="buttons has-addons">
+                    <a className="button is-small" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`}>Download</a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="message-body is-fullwidth" style={{background: '#fff', padding: 0}}>

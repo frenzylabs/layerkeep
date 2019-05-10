@@ -41,14 +41,14 @@ export class RepoBreadCrumbs extends React.Component {
 
       if (this.props.meta.filepath.length > 1 && pathComponents.length > 0) {        
         crumbs = crumbs.concat(<BreadcrumbItem key={filepath} className="is-4" >
-                                  <Link to={filepath} >{params.name}</Link>
+                                  <Link to={filepath} style={{textDecoration: 'none'}}>{params.name}</Link>
                                 </BreadcrumbItem>)
       }
 
       var res = pathComponents.map((item, index) => {
         filepath = filepath + "/" + item;
         return (<BreadcrumbItem key={filepath} {...pathComponents.length-1 == index ? {isActive: true} : ""} className="is-4" >
-                  <Link to={filepath} >{item}</Link>
+                  <Link to={filepath} style={{textDecoration: 'none'}}>{item}</Link>
                 </BreadcrumbItem>)
         })
         
@@ -63,9 +63,13 @@ export class RepoBreadCrumbs extends React.Component {
 
   render() {
     return(
-      <div>
-        <SearchDropdown options={this.props.branches} selected={this.props.meta.revision} onSelected={this.selectBranch} />
+      <div className="level">
+      <div className="level-item">
+          <SearchDropdown options={this.props.branches} selected={this.props.meta.revision} onSelected={this.selectBranch} />
+        </div>
+        <div className="level-item">
         {this.renderBreadCrumbs()}
+        </div>
       </div>
     )
   }
