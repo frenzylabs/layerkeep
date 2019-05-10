@@ -34,8 +34,6 @@ import AppContainer from './AppContainer';
 class App extends React.Component {
   constructor(props) {
      super(props)
-     console.log("hi")
-     window.ap = this;
   }
   componentDidUpdate(prevProps) {
     console.log("App PROPS DID CHANGE");

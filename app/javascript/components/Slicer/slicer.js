@@ -35,10 +35,7 @@ export class Slicer extends React.Component {
                   projectSelections: [Object.assign({}, this.initialProjectSelection)], 
                   profileSelections: [Object.assign({}, this.initialProfileSelection)] 
                 }
-    // this.state          = { 
-    //                         projects: [], selectedProject: {}, projectRevisions: {}, selectedProjectRevision: {}, 
-    //                         profiles: [], selectedProfile: {}, profileRevisions: {}, selectedProfileRevision: {}
-    //                       };
+    
     this.selectProject          = this.selectProject.bind(this);
     this.selectProjectRevision  = this.selectProjectRevision.bind(this);
     this.selectProjectFile      = this.selectProjectFile.bind(this);
@@ -53,7 +50,7 @@ export class Slicer extends React.Component {
     this.loadProjects();
     this.loadProfiles();
 
-    window.slicer = this;
+    // window.slicer = this;
 
   }
 
@@ -64,7 +61,7 @@ export class Slicer extends React.Component {
       var projects = response.data.data.map((item) => {
         return {name: item.attributes.name, value: item.attributes.path, id: item.id}
       })
-      console.log("PROJECTS: ", projects)
+      // console.log("PROJECTS: ", projects)
       this.setState({ projects: projects})
     })
     .catch((error) => {
@@ -79,7 +76,7 @@ export class Slicer extends React.Component {
       var profiles = response.data.data.map((item) => {
         return {name: item.attributes.name, value: item.attributes.path, id: item.id}
       })
-      console.log("profiles: ", profiles)
+      // console.log("profiles: ", profiles)
       this.setState({ profiles: profiles})
     })
     .catch((error) => {
@@ -113,16 +110,14 @@ export class Slicer extends React.Component {
   }
 
   selectProject(item, id) {
-    console.log("Selected Project: ", id, item)
+    // console.log("Selected Project: ", id, item)
     ProjectHandler.raw(`/${item.value}`)
     .then((response) => {
       var revisions = response.data.data.attributes.branches.map((item) => {
         return {name: item, value: item}
       })
-      console.log("PROJECTS: ", response.data.data)
+      // console.log("PROJECTS: ", response.data.data)
       this.state.projectSelections[0] = {revisions: revisions, selectedProject: item, selectedRevision: null, files: [], selectedFile: null};
-      // this.state.projectSelections[0].projectRevisions = revisions;
-      // this.state.projectSelections[0].selectedProject = item;
       this.forceUpdate()
       // this.setState({ projectSelections: projects})
     })
@@ -132,7 +127,7 @@ export class Slicer extends React.Component {
   }
 
   selectProjectRevision(item, id) {
-    console.log("Selected Project Revision: ", id, item)
+    // console.log("Selected Project Revision: ", id, item)
     var path = this.state.projectSelections[0].selectedProject.value + "/tree/" + item.value;
     ProjectHandler.raw(`/${path}`)
     .then((response) => {
@@ -144,7 +139,7 @@ export class Slicer extends React.Component {
         }
         
       }, [])
-      console.log("PROJECTfilesS: ", files)
+      // console.log("PROJECTfilesS: ", files)
       this.state.projectSelections[0].files = files;
       this.state.projectSelections[0].selectedRevision = item;
       this.forceUpdate()
@@ -162,7 +157,6 @@ export class Slicer extends React.Component {
       revision = item.value
     }
 
-    var params = this.props.match.params;
     var projSel = this.state.projectSelections[0];
     
     var path = "/" + projSel.selectedProject.value + "/content/" + projSel.selectedRevision.value + "/" + item.value;
@@ -174,13 +168,13 @@ export class Slicer extends React.Component {
 
 
   selectProfile(item, id) {
-    console.log("Selected Profile: ", id, item)
+    // console.log("Selected Profile: ", id, item)
     ProjectHandler.raw(`/${item.value}`)
     .then((response) => {
       var revisions = response.data.data.attributes.branches.map((item) => {
         return {name: item, value: item}
       })
-      console.log("PROFILES: ", response.data.data)
+
       this.state.profileSelections[0] = {revisions: revisions, selectedProfile: item, selectedRevision: null, files: [], selectedFile: null};
       this.forceUpdate()
 
@@ -191,7 +185,7 @@ export class Slicer extends React.Component {
   }
 
   selectProfileRevision(item, id) {
-    console.log("Selected Profile Revision: ", id, item)
+    // console.log("Selected Profile Revision: ", id, item)
     var path = this.state.profileSelections[0].selectedProfile.value + "/tree/" + item.value;
     ProjectHandler.raw(`/${path}`)
     .then((response) => {
@@ -203,7 +197,7 @@ export class Slicer extends React.Component {
         }
         
       }, [])
-      console.log("PROJECTfilesS: ", files)
+
       this.state.profileSelections[0].files = files;
       this.state.profileSelections[0].selectedRevision = item;
       this.forceUpdate()
@@ -215,48 +209,44 @@ export class Slicer extends React.Component {
   }
 
   selectProfileFile(item, id) {
-    console.log("Selected Profile File: ", id, item)
-    var revision = item
+
+    var file = item
     if (typeof(item) != "string") {
-      revision = item.value
+      file = item.value
     }
 
     var params = this.props.match.params;
     var projSel = this.state.profileSelections[0];
     
-    var path = "/" + projSel.selectedProfile.value + "/content/" + projSel.selectedRevision.value + "/" + item.value;
-    var ext = item.value.split(".").pop().toLowerCase();
+    var path = "/" + projSel.selectedProfile.value + "/content/" + projSel.selectedRevision.value + "/" + file;
+    var ext = file.split(".").pop().toLowerCase();
     this.setState( {currentProfileFile: path, extension: ext} );
     projSel.selectedFile = item;
     this.forceUpdate()
   }
 
   renderProjectSelections() {
-    var params = this.props.match.params;
-      return this.state.projectSelections.map((item, index) => {
-        console.log("INDEX= ITEM= ", index, item);
-        return (
-          <Container key={index} className="is-fluid" >
-            <div><SearchDropdown id={"projects"+index} options={this.state.projects} selected={item.selectedProject} onSelected={this.selectProject} promptText="Select a Project" placeholder="Project Name" /></div>
-            <div><SearchDropdown id={"project-revision"+index} options={item.revisions} selected={item.selectedRevision} onSelected={this.selectProjectRevision} promptText="Select a Revision" /></div>
-            <div><SearchDropdown id={"project-files"+index} options={item.files} selected={item.selectedFile} onSelected={this.selectProjectFile} promptText="Select a File" placeholder="Project File" /></div>
-          </Container>
-          )
-      });
+    return this.state.projectSelections.map((item, index) => {
+      return (
+        <Container key={index} className="is-fluid" >
+          <div><SearchDropdown id={"projects"+index} options={this.state.projects} selected={item.selectedProject} onSelected={this.selectProject} promptText="Select a Project" placeholder="Project Name" /></div>
+          <div><SearchDropdown id={"project-revision"+index} options={item.revisions} selected={item.selectedRevision} onSelected={this.selectProjectRevision} promptText="Select a Revision" /></div>
+          <div><SearchDropdown id={"project-files"+index} options={item.files} selected={item.selectedFile} onSelected={this.selectProjectFile} promptText="Select a File" placeholder="Project File" /></div>
+        </Container>
+        )
+    });
   }
 
   renderProfileSelections() {
-    var params = this.props.match.params;
-      return this.state.profileSelections.map((item, index) => {
-        console.log("INDEX= ITEM= ", index, item);
-        return (
-          <Container key={index} className="is-fluid" >
-            <div><SearchDropdown id={"profile"+index} options={this.state.profiles} selected={item.selectedProfile} onSelected={this.selectProfile} promptText="Select a Profile" placeholder="Profile Name" /></div>
-            <div><SearchDropdown id={"profile-revision"+index} options={item.revisions} selected={item.selectedRevision} onSelected={this.selectProfileRevision} promptText="Select a Revision" /></div>
-            <div><SearchDropdown id={"profile-files"+index} options={item.files} selected={item.selectedFile} onSelected={this.selectProfileFile} promptText="Select a File" placeholder="Profile File" /></div>
-          </Container>
-          )
-      });
+    return this.state.profileSelections.map((item, index) => {
+      return (
+        <Container key={index} className="is-fluid" >
+          <div><SearchDropdown id={"profile"+index} options={this.state.profiles} selected={item.selectedProfile} onSelected={this.selectProfile} promptText="Select a Profile" placeholder="Profile Name" /></div>
+          <div><SearchDropdown id={"profile-revision"+index} options={item.revisions} selected={item.selectedRevision} onSelected={this.selectProfileRevision} promptText="Select a Revision" /></div>
+          <div><SearchDropdown id={"profile-files"+index} options={item.files} selected={item.selectedFile} onSelected={this.selectProfileFile} promptText="Select a File" placeholder="Profile File" /></div>
+        </Container>
+        )
+    });
   }
 
   renderProjectFile() {
