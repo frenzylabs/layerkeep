@@ -29,7 +29,7 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
 
   componentDidUpdate(prevProps) {
     if (this.props != prevProps) {
-      var selectedOption = this.props.selected || {name: "Master", value: "master"}
+      var selectedOption = this.props.selected || {name: "master", value: "master"}
       this.setState({isActive: false, dropdownOptions: this.props.options, selected: selectedOption })
     }
   }
@@ -132,7 +132,7 @@ import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider,
     return (
       <Dropdown onChange={this.onChange} onBlur={this.onBlur} isActive={this.state.isActive}>
         <DropdownTrigger onClick={this.toggleIsActive}>
-          <Button isOutlined aria-haspopup="true" aria-controls="dropdown-menu">
+          <Button isOutlined aria-haspopup="true" aria-controls="dropdown-menu" isSize="small">
             <span>{this.optionName(this.state.selected)}</span>
             <Icon icon="angle-down" className="fas fa-angle-down" isSize="small" />
           </Button>

@@ -8,25 +8,32 @@
 
 import React from 'react';
 import { connect }  from 'react-redux';
-import { Link }         from 'react-router-dom';
-
-import { Container, Table } from 'bloomer';
-import { Breadcrumb, BreadcrumbItem } from 'bloomer';
-import { Columns, Column }         from 'bloomer';
-
+import { Table } from 'bloomer';
+import { Columns, Column } from 'bloomer';
 import { RepoDetailItem } from './detail_item';
 import { RepoHandler } from '../../handlers/repo_handler';
-import { SearchDropdown } from '../Form/SearchDropdown'
 import { RepoBreadCrumbs } from './repo_bread_crumbs'
+import { Content } from 'bloomer/lib/elements/Content';
+import { FileViewer } from '../FileViewer/file_viewer';
+import { Icon } from 'bloomer/lib/elements/Icon';
 
 class Details extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {repo_files: [], meta: {}, branches: this.props.item.branches || [], currentRevision: "", message: '', lastUpdate: ''};
-    this.updateRepoFiles = this.updateRepoFiles.bind(this)
-    
-    this.updateRepoFileList()
+    this.state = {
+      repo_files: [], 
+      meta: {}, 
+      branches: this.props.item.branches || [], 
+      currentRevision: "", 
+      message: '', 
+      lastUpdate: ''
+    };
+
+    this.updateRepoFiles  = this.updateRepoFiles.bind(this);
+    this.renderReadme     = this.renderReadme.bind(this);
+
+    this.updateRepoFileList();
   }
 
   updateRepoFileList() {
@@ -74,38 +81,93 @@ class Details extends React.Component {
     }
   }
 
+  renderReadme() {
+    const urlparams = this.props.match.params;
+    const readme    = this.state.repo_files.filter((item) => { return item.name.toLowerCase() == 'readme.md'; })[0];
+
+    if(readme == null) {
+      return null;
+    }
+
+    const url = `/${urlparams.username}/projects/${urlparams.name}/content/master/README.md`;
+
+    return (
+      <article className="message is-small" style={{border: '1px solid #d1d5da'}}>
+        <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
+          <p>
+            <Icon className="fal fa-poll-h"/>
+            README.md
+          </p>
+        </div>
+
+        <div className="message-body" style={{background: '#fff', padding: 0}}>
+          <Content>
+            <FileViewer url={url} extension="md"/>
+          </Content>
+        </div>
+      </article>
+    );
+  }
+
   render() {
-    var urlparams = this.props.match.params;
+    const urlparams = this.props.match.params;
+    const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`;
+
     return (
       <div>
-        <div >
-          <Columns isGapless isMultiline >
-            <Column  isSize='3/4'>
-              <RepoBreadCrumbs match={this.props.match} branches={this.state.branches} meta={this.state.meta}></RepoBreadCrumbs>              
+        <hr/>
+        <br/>
+
+        <div>
+          <Columns className="is-narrow is-gapless">
+            <Column>
+              <RepoBreadCrumbs match={this.props.match} branches={this.state.branches} meta={this.state.meta}></RepoBreadCrumbs>        
             </Column>
-            <Column className="has-text-right">
-              <a className="button" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`}>Download</a>
+
+            <Column isSize={2}>
+              <div className="buttons has-addons is-right">
+                <p className="control">
+                  <a className="button is-small" onClick={this.props.uploadAction}>
+                    <span className="icon is-small">
+                      <i className="fas fa-upload"></i>
+                    </span>
+                    <span>Upload</span>
+                  </a>
+                </p>
+                <p className="control">
+                  <a className="button is-small" href={url} target="_blank">
+                    <span className="icon is-small">
+                      <i className="fas fa-download"></i>
+                    </span>
+                    <span>Download</span>
+                  </a>
+                </p>
+              </div>
             </Column>
           </Columns>
         </div>
-        <br/>
-        <Table isNarrow className="is-fullwidth">
+
+        <Table isNarrow className="is-fullwidth" style={{marginTop: '10px'}}>
           <thead>
-            <tr>
-              <th colSpan={3}>
+            <tr style={{background: '#eff7ff', border: '1px solid #c1ddff'}}>
+              <th colSpan={3} style={{fontWeight: 'normal'}}>
                 {this.state.message}
               </th>
 
-              <th className="has-text-right" colSpan={2}>
+              <th className="has-text-right" colSpan={2} style={{fontWeight: 'normal'}}>
                 Last updated: {dayjs(this.state.lastUpdate).format('DD.MM.YYYY')}
               </th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody style={{border: '1px solid #dadee1'}}>
             {this.items()}
           </tbody>
         </Table>
+
+        <div>
+          {this.renderReadme()}
+        </div>
       </div>
     )
   }
