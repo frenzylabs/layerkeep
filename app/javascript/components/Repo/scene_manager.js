@@ -83,22 +83,53 @@ function fitCameraToObject  ( camera, object, offset, controls ) {
   }
 }
 
+export class SceneManager extends React.Component {
+  constructor(props) {
+    super(props);
 
-function setupScene(container, geometry) {
-  window.container = container;
-
-  var scene   = new THREE.Scene(), 
-        camera  = new THREE.PerspectiveCamera(35, container.width() / container.height(), 1, 1000);
-
+    this.state = {contentType: null, localUrl: null, geometry: null}
     
+    this.animate = this.animate.bind(this)
+    this.handleResize = this.handleResize.bind(this)
 
-    camera.position.set(200, 100, 200);
+    this.sceneContainer = React.createRef();
+
+    this.scene   = new THREE.Scene()
+    this.camera  = new THREE.PerspectiveCamera(35, 1, 1, 1000);
+    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+    this.material  = new THREE.MeshPhongMaterial({color: 0x00ff00});
+    this.geometry  = null;
+    this.mesh      = null;
+
+    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+
+  }
+
+  componentDidMount() {
+    // window.addEventListener('load', this.handleLoad);
+
+    this.loader = new THREE.STLLoader()
+    this.loader.load(this.props.file.localUrl, (resp) =>{        
+      this.geometry = resp;
+      this.setupScene()
+      this.addMesh()
+      this.setState( {geometry: resp} )
+    })
+  }
+
+  animate() {
+    requestAnimationFrame(this.animate);
+    this.renderer.render(this.scene, this.camera);
+  }
+
+  setupScene() {
+
+    this.camera.position.set(200, 100, 200);
 
     var hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-
     hemiLight.position.set(0, 200, 0);
 
-    scene.add(hemiLight);
+    this.scene.add(hemiLight);
 
     var directionalLight = new THREE.DirectionalLight(0xffffff);
     directionalLight.position.set( 0, 200, 100 );
@@ -109,7 +140,7 @@ function setupScene(container, geometry) {
     directionalLight.shadow.camera.left   = -120;
     directionalLight.shadow.camera.right  = 120;
 
-    scene.add(directionalLight);
+    this.scene.add(directionalLight);
 
     var ground = new THREE.Mesh( 
       new THREE.PlaneBufferGeometry(4000, 4000), 
@@ -120,138 +151,77 @@ function setupScene(container, geometry) {
     ground.position.y = 0; //- 0.5;
     ground.receiveShadow  = true;
 
-    scene.add(ground);
+    this.scene.add(ground);
 
     var grid                  = new THREE.GridHelper( 4000, 20, 0x000000, 0x000000 );
     grid.material.opacity     = 0.2;
     grid.material.transparent = true;
 
-    scene.add( grid );
+    this.scene.add( grid );
 
-    var renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
-    renderer.setPixelRatio(container.devicePixelRatio);
-    renderer.setSize(container.width(), container.height());
-    renderer.shadowMap.enabled = true;
-
-    container.append(renderer.domElement);
-
-    var controls = new THREE.OrbitControls(camera, renderer.domElement);
-    // controls.target.set(0, 25, 0);
-    // controls.update();
-
-    // window.scene = scene;
-    // window.camera = camera;
-    // window.ground = ground;
-    // window.renderer = renderer;
-    // window.controls = controls;
-    // window.grid     = grid;
+    var container = $(this.sceneContainer.current)
+    this.renderer.setSize(container.width(), container.height());
+    this.renderer.shadowMap.enabled = true;
     
 
-    
-    var material  = new THREE.MeshPhongMaterial({color: 0x00ff00}),
-    animate   = function() {
-      requestAnimationFrame(animate);
-      
-      renderer.render(scene, camera);
-    };
+    this.renderer.domElement.style.border = "1px solid grey";
+    this.sceneContainer.current.append(this.renderer.domElement);
 
-    // var scope = new THREE.STLLoader()
-    // // canvas.append(renderer.domElement);
-    // geometry = scope.parse( response );
-    var mesh        = new THREE.Mesh(geometry, material);
+    window.addEventListener('resize', this.handleResize, false)
+  }
+
+  addMesh() {    
+    this.mesh        = new THREE.Mesh(this.geometry, this.material);
     // window.mesh = mesh; 
     const boundingBox = new THREE.Box3();
 
     // get bounding box of object - this will be used to setup controls and camera
-    boundingBox.setFromObject( mesh );
+    boundingBox.setFromObject( this.mesh );
 
     
-    mesh.castShadow = true;
-    mesh.position.y =  - boundingBox.min.y;
+    this.mesh.castShadow = true;
+    this.mesh.position.y =  - boundingBox.min.y;
 
-    scene.add(mesh);
+    this.scene.add(this.mesh);
 
-    fitCameraToObject  ( camera, mesh, 4, controls )
-    
+    // var container = $(this.sceneContainer.current)
+    this.handleResize();
+    fitCameraToObject  ( this.camera, this.mesh, 4, this.controls )
 
-    window.addEventListener('resize', function() {
-      // console.log("height: ", container.height());
-      // console.log("width: ", container.width(), container.innerWidth());
-      // console.log("Renderer Size: ", renderer.getSize());
-      renderer.setSize(0, 0);
-      camera.aspect = container.width() / container.height();
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(container.width(), container.height());
-      
-      
-      
-      // fitCameraToObject(camera, mesh, 4, controls);
-      
-
-      
-    }, false);
-
-    animate();
-}
-
-
-export class SceneManager extends React.Component {
-  constructor(props) {
-    super(props);
-
-    // this.items = this.items.bind(this);
-    this.material  = new THREE.MeshPhongMaterial({color: 0x00ff00});
-    this.state = {contentType: null, localUrl: null, geometry: null, material: this.material}
-
-    this.scene = React.createRef();
-    
-    // if (this.props.file.extension == "stl") {
-      this.loader = new THREE.STLLoader()
-    //   this.loader.load(this.props.file.localUrl, function(resp) {        
-    //     self.geometry = resp;
-    //     console.log(self.scene);
-    //     setupScene($(this.scene.current), this.state.geometry);
-    //     self.setState( {geometry: resp} )
-    //   })
-    // }
-    
-    // window.sm = this;
+    this.animate();
   }
 
-  componentDidMount() {
-    // setupScene($(this.scene.current), this.state.geometry);
-    window.addEventListener('load', this.handleLoad);
-    
-    var self = this;
-    
-    this.loader.load(this.props.file.localUrl, function(resp) {        
-      self.geometry = resp;
-      setupScene($(self.scene.current), self.geometry);
-      self.setState( {geometry: resp} )
-    })
- }
+  handleResize() {
+    this.renderer.setSize(0, 0);
+        
+    var container = $(this.sceneContainer.current)
+    this.camera.aspect = container.width() / container.height();
+    this.renderer.setSize(container.width(), container.height(), true);
+        // renderer.domElement.style.display = "block"
+    this.camera.aspect = container.width() / container.height();
+    this.camera.updateProjectionMatrix();
+  }
 
- handleLoad() {
-   console.log("HANDLE LOAD")
- }
  
-  // componentDidUpdate(prevProps) {
-  //   console.log(" d PROPS DID CHANGE");
+  componentDidUpdate(prevProps) {
+    // console.log("SceneManager PROPS DID CHANGE");
     
-  //   console.log(prevProps);
-  //   console.log(this.props.file);
-  // }
-  
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     console.log("2 Should comp update");
-  //     const differentList = this.props.list !== nextProps.list;
-  //     return differentList;
-  // }
+    if (this.props.file.localUrl != prevProps.file.localUrl) {
+      this.loader = new THREE.STLLoader()
+      this.loader.load(this.props.file.localUrl, (resp) => {        
 
+        this.geometry = resp;
+        if (this.mesh) {
+          this.scene.remove(this.mesh)
+        }
+        this.addMesh();
+        this.setState( {geometry: resp} )
+        this.forceUpdate()
+      })
+    }
+  }
 
-  
   render() {
-    return (<div ref={this.scene} style={{height: '100%', padding: '10px'}} />) 
+    return (<div ref={this.sceneContainer} style={{height: '100%', padding: '10px'}} />) 
   }
 }
