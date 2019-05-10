@@ -60,7 +60,7 @@ export class RepoFileViewer extends React.Component {
   render() {
     var urlparams = this.props.match.params;
     return (
-      <div style={{width: '100%', height: '80%'}}>
+      <div style={{width: '100%', height: '100%'}}>
         <hr/>
         <br/>
 
