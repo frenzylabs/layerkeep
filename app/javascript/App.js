@@ -12,7 +12,8 @@ import { connect }  from 'react-redux';
 import {
   BrowserRouter,
   Switch,
-  Route
+  Route,
+  withRouter
 } from 'react-router-dom'
 
 import { Columns, Column }         from 'bloomer';
@@ -22,39 +23,51 @@ import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
 import { ProjectDetails } from './components/Project/details';
 import { Project }     from './components/Project/project';
+import { Slicer }     from './components/Slicer/slicer';
 
 import { FileViewer } from './components/FileViewer/file_viewer';
 import { RepoFileViewer } from './components/Repo/repo_file_viewer';
 import { Revisions } from './components/Repo/revisions';
 import { Revision } from './components/Repo/revision';
+import AppContainer from './AppContainer';
 
 class App extends React.Component {
+  constructor(props) {
+     super(props)
+  }
+  componentDidUpdate(prevProps) {
+    console.log("App PROPS DID CHANGE");
+    
+    console.log(prevProps);
+    console.log(this.props);
+  }
+  
+  routeChanged(previousRoute, nextRoute) {
+    console.log("route changed ", previousRoute, nextRoute);
+  }
+
   render () {
     return (
-      <BrowserRouter>
-        <Nav />
-
-        <Columns isGapless id="dashboard">
-          <Column isSize={2}>
-            <LeftColumn />
-          </Column>
-
-          <Column>
-            <Switch>
-              <Route exact path="/user/"                    render={() => "Hi"} />
-              <Route exact path="/:username/:kind(projects)/new"    component={ProjectNew} />
-              <Route exact path="/:username/:kind(projects)"        component={ProjectList} />              
-              <Route path="/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?"  component={Project} />
-              <Route exact path="/:username/:kind(projects)/:name"  component={Project} />              
-            </Switch>
-          </Column>
-        </Columns>
+      <BrowserRouter >
+        <AppContainer />
+        
       </BrowserRouter>
     );
   }
 }
 
-export default connect()(App);
+const mapStateToProps = (state) => {
+  // console.dir(state);
+  return state
+}
+
+function mapDispatchToProps() {
+  return {};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+
+// export default connect()(App);
 
 // <Route path="/:username/:kind(projects)/:name/:resource(revision)/:revisionPath(.*)"  component={Revision} />
               // <Route path="/:username/:kind(projects)/:name/:resource(revisions)/:revisionPath(.*)?"  component={Revisions} />

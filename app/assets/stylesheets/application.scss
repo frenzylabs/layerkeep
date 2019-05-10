@@ -33,11 +33,15 @@
 @import "prismjs/themes/prism";
 
 html, body {
-  width:100vw !important;
-  height: 100vh !important;
+  width:100% !important;
+  height: 100% !important;
   background: $background_color;
 }
 
 body {
   font-family: 'Nunito Sans', sans-serif !important;
+}
+
+#dashboard {
+  height: 100%;
 }
