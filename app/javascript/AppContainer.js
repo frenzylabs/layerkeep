@@ -71,7 +71,6 @@ class AppContainer extends React.Component {
        ],
 
        sidebarLayoutRoutes: [
-        {path: '/user', component: `{render={() => "Hi"}}`},
         {path: '/:username/:kind(projects)/new', component: ProjectNew},
         {path: '/:username/:kind(projects)', component: ProjectList},
         {path: '/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?', component: Project},

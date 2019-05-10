@@ -64,15 +64,13 @@ export class RepoBreadCrumbs extends React.Component {
   render() {
     return(
       <div className="level">
-      <div className="level-left">
-        <div className="level-item">
-          <SearchDropdown options={this.props.branches} selected={this.props.meta.revision} onSelected={this.selectBranch} />
-        </div>
-      </div>
-        <div className="level-right">
+        <div className="level-left">
           <div className="level-item">
-            {this.renderBreadCrumbs()}
+            <SearchDropdown options={this.props.branches} selected={this.props.meta.revision} onSelected={this.selectBranch} />
           </div>
+          <div className="level-item">
+              {this.renderBreadCrumbs()}
+            </div>
         </div>
       </div>
     )
