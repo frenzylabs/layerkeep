@@ -100,7 +100,7 @@ class Details extends React.Component {
           </p>
         </div>
 
-        <div className="message-body" style={{background: '#fff', padding: 0}}>
+        <div className="message-body" style={{background: '#fff'}}>
           <Content>
             <FileViewer url={url} extension="md"/>
           </Content>

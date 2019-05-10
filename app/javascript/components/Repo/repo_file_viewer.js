@@ -60,13 +60,13 @@ export class RepoFileViewer extends React.Component {
   render() {
     var urlparams = this.props.match.params;
     return (
-      <div>
+      <div style={{width: '100%', height: '80%'}}>
         <hr/>
         <br/>
 
-        <article className="message is-fullwidth" style={{border: '1px solid #d1d5da'}}>
+        <article className="message is-fullwidth" style={{border: '1px solid #d1d5da', width: '100%', height: '100%'}}>
           <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
-            <div className="level" style={{width: '100%', height: '100%'}}>
+          <div className="level" style={{width: '100%', height: '100%'}}>
               <div className="level-left">
                 <div className="level-item">
                   <RepoBreadCrumbs match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
