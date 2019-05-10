@@ -83,7 +83,7 @@ export class RepoFileViewer extends React.Component {
             </div>
           </div>
 
-          <div className="message-body" style={{background: 'red', padding: 0, height: '100%', width: '100%'}}>
+          <div className="message-body" style={{padding: 0, height: '100%', width: '100%'}}>
             {this.renderFile()}
           </div>
         </article>
