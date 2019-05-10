@@ -48,6 +48,14 @@ export class FileViewer extends React.Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    // console.log("FilePROPS DID CHANGE");    
+    if (this.props.url != prevProps.url) {
+      this.setState( {url: this.props.url, extension: this.props.extension} )
+    }
+  }
+  
+
   getDriver() {
 
     switch (this.state.extension) {
@@ -105,7 +113,7 @@ export class FileViewer extends React.Component {
 
     var Driver = this.getDriver(this.state);
     return (
-      <div className="section" style={{height: '100%'}}>
+      <div className="section" style={{height: '100%', margin: 0, padding: 0}}>
         <Driver fileType={this.state.extension} filePath={this.state.url} onError={this.onError}/>
       </div>)      
   }
