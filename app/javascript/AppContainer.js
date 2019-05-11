@@ -36,12 +36,12 @@ class SideLayout extends React.Component {
   render() {
     const Component = this.props.component;
     return (
-       <Columns isGapless id="dashboard">
-          <Column isSize={2}>
+       <Columns id="layout-column" isGapless >
+          <Column isSize={2} className="is-hidden-mobile" >
             <LeftColumn />
           </Column>
           <Column>
-          <Component {...this.props} />
+            <Component {...this.props} />
           </Column>
       </Columns>
     );
@@ -52,8 +52,8 @@ class FullScreenLayout extends React.Component {
   render() {
     const Component = this.props.component;
     return (
-       <Columns isGapless id="dashboard">
-          <Column>
+       <Columns id="layout-column" isGapless >
+          <Column isFullWidth >
             <Component {...this.props} />
           </Column>
       </Columns>
@@ -104,7 +104,7 @@ class AppContainer extends React.Component {
 
   render () {
     return (
-      <div style={{height: '100%'}}>
+      <div id="dashboard" style={{height: '100%'}}>
         <Nav />
         <Switch>
           {this.renderFullLayoutRoutes()}
