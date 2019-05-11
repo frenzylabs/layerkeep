@@ -9,18 +9,21 @@
  @import "colors";
 
  #app {
-  width:100% !important;
-  height:100% !important;
+
+  #layout-column {
+    min-height: 100vh;
+  }
 
   #left-column {
-    width:100% !important;
+    // width:100% !important;
     height:100% !important;
     background: $left_column_background_color;
     border-right: 1px solid $seperator_color;
   }
 
   section {
-    padding: 1em;
+    padding: 0em;
+    margin: 1em;
   }
 
   hr {
@@ -43,5 +46,26 @@
     }
   }
 
+  #pg-photo-container, #pg-photo-container img {
+    height: 100% !important;
+  }
+
+  .flex-wrapper {
+    flex-direction: column;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+
+    .message {
+      flex-grow: 1;
+      
+      
+      .message-body {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
  }
 

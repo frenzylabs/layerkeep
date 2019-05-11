@@ -60,11 +60,11 @@ export class RepoFileViewer extends React.Component {
   render() {
     var urlparams = this.props.match.params;
     return (
-      <div style={{width: '100%', height: '100%'}}>
+      <div className="flex-wrapper">
         <hr/>
         <br/>
 
-        <article className="message is-fullwidth" style={{border: '1px solid #d1d5da', width: '100%', height: '100%'}}>
+        <article className="message is-fullwidth flex-wrapper" style={{border: '1px solid #d1d5da'}}>
           <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
           <div className="level" style={{width: '100%', height: '100%'}}>
               <div className="level-left">
@@ -83,7 +83,7 @@ export class RepoFileViewer extends React.Component {
             </div>
           </div>
 
-          <div className="message-body" style={{padding: 0, height: '100%', width: '100%'}}>
+          <div className="message-body" style={{padding: 0}}>
             {this.renderFile()}
           </div>
         </article>

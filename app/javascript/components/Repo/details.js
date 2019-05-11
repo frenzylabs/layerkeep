@@ -114,7 +114,7 @@ class Details extends React.Component {
     const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`;
 
     return (
-      <div>
+      <div className="flex-wrapper">
         <hr/>
         <br/>
 
@@ -124,7 +124,7 @@ class Details extends React.Component {
               <RepoBreadCrumbs match={this.props.match} branches={this.state.branches} meta={this.state.meta}></RepoBreadCrumbs>        
             </Column>
 
-            <Column isSize={2}>
+            <Column isSize={3}>
               <div className="buttons has-addons is-right">
                 <p className="control">
                   <a className="button is-small" onClick={this.props.uploadAction}>
