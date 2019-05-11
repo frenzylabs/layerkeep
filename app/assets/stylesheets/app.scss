@@ -37,12 +37,12 @@
     }
   }
 
-  #project-panel {
-    .panel-heading {
+  #projects-panel, #profiles-panel {
+    .panel-heading, .panel-block {
       margin-bottom: 0 !important;
       padding-bottom: 0 !important;
-
-      background: $left_column_background_color !important;
+      border: 0;      
+      background-color: $left_column_background_color !important;
     }
   }
 
