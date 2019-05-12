@@ -104,7 +104,7 @@ export class ProjectNew extends React.Component {
 
   renderFiles() {
     if(this.state.redirect) { 
-      return (<Redirect to={`${currentUser.username}/projects/${this.state.projectName}/`}/>);
+      return (<Redirect to={`/${currentUser.username}/projects/${this.state.projectName}/`}/>);
     }
 
     if(this.state.files == null) { return }

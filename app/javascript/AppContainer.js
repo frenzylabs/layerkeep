@@ -23,7 +23,7 @@ import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
 import { ProjectDetails } from './components/Project/details';
 import { Project }     from './components/Project/project';
-import { Slicer }     from './components/Slicer/slicer';
+import { Slicer }     from './components/Slices/slicer';
 
 import { FileViewer } from './components/FileViewer/file_viewer';
 import { RepoFileViewer } from './components/Repo/repo_file_viewer';
@@ -36,6 +36,7 @@ class SideLayout extends React.Component {
   render() {
     const Component = this.props.component;
     return (
+      <div className="has-navbar-fixed-top" style={{flex: '1'}}>
        <Columns id="layout-column" isGapless >
           <Column isSize={2} className="is-hidden-mobile" >
             <LeftColumn />
@@ -44,6 +45,7 @@ class SideLayout extends React.Component {
             <Component {...this.props} />
           </Column>
       </Columns>
+      </div>
     );
  }
 }
@@ -52,11 +54,13 @@ class FullScreenLayout extends React.Component {
   render() {
     const Component = this.props.component;
     return (
+      <div id="" className="has-navbar-fixed-top" style={{height: '100vh', flex: '1'}}>
        <Columns id="layout-column" isGapless >
           <Column isFullWidth >
             <Component {...this.props} />
           </Column>
       </Columns>
+      </div>
     );
  }
 }
@@ -67,7 +71,8 @@ class AppContainer extends React.Component {
 
      this.state = {
        fullLayoutRoutes: [
-        {path: '/:username/:kind(slices)/new', component: Slicer}
+        {path: '/:username/:resource(slices)/new', component: Slicer},
+        {path: '/:username/:kind(projects)/:name/:resouce(slices)/new', component: Slicer},
        ],
 
        sidebarLayoutRoutes: [

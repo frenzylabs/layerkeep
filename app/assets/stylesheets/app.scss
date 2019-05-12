@@ -9,9 +9,11 @@
  @import "colors";
 
  #app {
+  min-height: 100vh;
 
   #layout-column {
-    min-height: 100vh;
+    // 
+    height: 100%;
   }
 
   #left-column {
@@ -69,3 +71,6 @@
   }
  }
 
+.has-navbar-fixed-top {
+ padding-top: 3.25rem;
+}
