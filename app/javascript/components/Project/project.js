@@ -93,7 +93,7 @@ export class Project extends React.Component {
               <ProjectBreadCrumbs username={this.props.match.params.username} project={this.state.project} />
     
               <p style={{margin: 0, padding: 0}}>
-                This is a little description or headline for a project.
+                {this.state.project.description}
               </p>      
             </Column>
 
