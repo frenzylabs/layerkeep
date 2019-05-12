@@ -24,7 +24,7 @@ export class RepoEmptyList extends React.Component {
           </MediaLeft>
 
           <MediaContent>
-            {"You have no " + this.props.type+ " created."}
+            {"You have no " + this.props.kind + " created."}
           </MediaContent>
 
           <MediaRight>

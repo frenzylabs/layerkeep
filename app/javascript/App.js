@@ -23,7 +23,7 @@ import { ProjectList }    from './components/Project/list';
 import { ProjectNew }     from './components/Project/new';
 import { ProjectDetails } from './components/Project/details';
 import { Project }     from './components/Project/project';
-import { Slicer }     from './components/Slicer/slicer';
+import { Slicer }     from './components/Slices/slicer';
 
 import { FileViewer } from './components/FileViewer/file_viewer';
 import { RepoFileViewer } from './components/Repo/repo_file_viewer';
