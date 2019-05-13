@@ -38,7 +38,6 @@ import { renderComponent } from 'recompose';
 
 class SideLayout extends React.Component {
   render() {
-    console.log("INSIDE SIDE LAYOUT");
     const Component = this.props.component;
     return (
       <div className="has-navbar-fixed-top" style={{flex: '1'}}>
@@ -73,7 +72,6 @@ class FullScreenLayout extends React.Component {
 class AppContainer extends React.Component {
   constructor(props) {
      super(props)
-
      this.state = {
        fullLayoutRoutes: [
         {path: '/:username/:resource(slices)/new', component: Slicer},
@@ -108,7 +106,6 @@ class AppContainer extends React.Component {
 
  renderSideBarLayoutRoutes() {
   return this.state.sidebarLayoutRoutes.map((item) => {
-    console.log("THE SIDE ITEM= ", item);
     return (<Route key={item.path} exact path={item.path} 
       render={ props => 
         <SideLayout {...item}  {...props} /> 

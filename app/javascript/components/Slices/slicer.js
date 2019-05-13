@@ -327,7 +327,7 @@ export class Slicer extends React.Component {
 
   renderProjectFile() {
     if (this.state.currentProjectFile) {
-      return (<FileViewer url={this.state.currentProjectFile} extension={this.state.extension} />)
+      return (<FileViewer url={this.state.currentProjectFile} extension={this.state.extension} showAxes={true} />)
     }
   }
 
