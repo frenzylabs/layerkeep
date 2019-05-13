@@ -10,33 +10,32 @@ import React from 'react';
 import { Link }         from 'react-router-dom';
 import { RepoDetails } from '../Repo/details';
 import { Container, Columns, Column, Button } from 'bloomer';
-import { ProjectHandler } from '../../handlers/project_handler';
+import { ProfileHandler } from '../../handlers/profile_handler';
 import Modal from '../Modal';
 import { Revisions } from '../Repo/revisions'
 import { Revision } from '../Repo/revision'
 import { RepoFileViewer } from '../Repo/repo_file_viewer'
 import { SliceList } from '../Slices/list'
 import { SliceDetails } from '../Slices/details'
-import ProjectBreadCrumbs from './breadcrumbs';
+import RepoBreadCrumbs from '../Repo/breadcrumbs';
 
 
 // import { ProjectDetails } from './components/Project/details';
 
-export class Project extends React.Component {
+export class Profile extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state          = {isUploadActive: false, project: {}};
+    this.state          = {isUploadActive: false, repo: {}};
     this.uploadAction   = this.uploadAction.bind(this);
     this.dismissAction  = this.dismissAction.bind(this);
     
-    this.loadProjectDetails();
+    this.loadRepoDetails();
   }
 
-  loadProjectDetails() {    
-    ProjectHandler.get(this.props.match.params.name)
+  loadRepoDetails() {    
+    ProfileHandler.get(this.props.match.params.name)
     .then((response) => {
-      this.setState({project: response.data.data.attributes})
+      this.setState({repo: response.data.data.attributes})
     })
     .catch((error) => {
       console.log(error);
@@ -71,12 +70,6 @@ export class Project extends React.Component {
       case 'files': {
         return RepoFileViewer;
       }
-      case 'slices': {
-        if (this.props.match.params.revisionPath && this.props.match.params.revisionPath.match(/[\d]+/)) {
-          return SliceDetails;
-        }
-        return SliceList;
-      }
       default: {
         return RepoDetails;
       }
@@ -90,34 +83,31 @@ export class Project extends React.Component {
         <Container className="is-fluid">
           <Columns>
             <Column>
-              <ProjectBreadCrumbs username={this.props.match.params.username} project={this.state.project} />
+              <RepoBreadCrumbs params={this.props.match.params} repo={this.state.repo} />
     
               <p style={{margin: 0, padding: 0}}>
-                {this.state.project.description}
+                {this.state.repo.description}
               </p>      
             </Column>
 
             <Column isSize={3} className="has-text-right">
-              <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/revisions`}>Revisions</Link>
-              { currentUser.username == this.props.match.params.username ? 
-              <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/slices`}>Slices</Link>
-              : "" }
+              <Link className="button" to={`/${this.props.match.params.username}/${this.props.match.params.kind}/${this.state.repo.name}/revisions`}>Revisions</Link>
             </Column>
           </Columns>
         </Container>
         
 
         <Container className="is-fluid" style={{height: '100%'}}>
-         {this.state.project && this.state.project.id ?
-          <Resource kind="projects" item={this.state.project} match={this.props.match} uploadAction={this.uploadAction} />
+         {this.state.repo && this.state.repo.id ?
+          <Resource kind={this.props.match.params.kind} item={this.state.repo} match={this.props.match} uploadAction={this.uploadAction} />
           : "" }
         </Container>
 
-        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} kind={this.props.match.params.kind} repo_name={this.state.project.name} />
+        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} kind={this.props.match.params.kind} repo_name={this.state.repo.name} />
       </div>
     )
   }   
 }
 
 
-export default Project;
+export default Profile;

@@ -111,7 +111,7 @@ class Details extends React.Component {
 
   render() {
     const urlparams = this.props.match.params;
-    const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`;
+    const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath || 'master'}?download=true`;
 
     return (
       <div className="flex-wrapper">

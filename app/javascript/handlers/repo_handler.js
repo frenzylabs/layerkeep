@@ -9,8 +9,8 @@
 
 import Request from './request_client';
 
-function path(endpoint) {
-  return '/' + currentUser.username + '/projects/' + (endpoint || '');
+function path(kind, endpoint) {
+  return `/${currentUser.username}/${kind}/${endpoint || ''}`;
 }
 
 export const RepoHandler = {
@@ -18,32 +18,16 @@ export const RepoHandler = {
     return Request.get(path());
   },
 
-  get: (name) => {
-    return Request.get(path(name));
-  },
+  commit: (kind, repo, files, message) => {
+    var data = new FormData();
 
-  create: (project) => {
-    return Request.post(projectsPath(), project);
-  },
+    files.forEach(file => {
+      data.append(`files[]`, file);
+    });
 
-  revisions: (name) => {
-    return Request.get(projectsPath(name + '/revisions'));
-  },
+    data.append('message', message);
 
-  revision: (name, revision) => {
-    return Request.get(projectsPath(name + '/revisions/' + revision));
-  },
- 
-  reference: (name, ref) => {
-    return Request.get(projectsPath(name + '/revision/' + ref));
-  },
-
-  download: (name, revision) => {
-    return Request.get(projectsPath(name + '/content/' + revision));
-  },
-
-  files: (name, revision, filepath) => {
-    return Request.get(projectsPath(name + '/files/' + revision + '/' + filepath));
+    return Request.post(path(kind, `${repo}/tree/master`), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
 
   tree: (url, params = {}) => {

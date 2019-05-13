@@ -18,7 +18,7 @@ import { Columns }      from 'bloomer/lib/grid/Columns';
 import { Column }       from 'bloomer/lib/grid/Column';
 import { Input }        from 'bloomer/lib/elements/Form/Input';
 
-import { ProjectHandler } from '../../handlers/project_handler';
+import { RepoHandler } from '../../handlers/repo_handler';
 
 export default class UploadModal extends React.Component {
   title = "Upload files";
@@ -83,7 +83,7 @@ export default class UploadModal extends React.Component {
   }
 
   submitAction() {
-    ProjectHandler.commit(this.props.project, this.state.files, this.state.message)
+    RepoHandler.commit(this.props.kind, this.props.repo_name, this.state.files, this.state.message)
     .then((response) => {
       window.location.href = window.location.href;
     })
@@ -123,7 +123,7 @@ export default class UploadModal extends React.Component {
 
         <Columns>
           <Column>
-            <p>Above files will be uploaded to project.</p>
+            <p>Above files will be uploaded to {this.props.kind}.</p>
           </Column>
 
           <Column>

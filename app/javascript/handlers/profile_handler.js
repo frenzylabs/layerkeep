@@ -22,8 +22,8 @@ export const ProfileHandler = {
     return Request.get(path(name));
   },
 
-  create: (project, files = null) => {
-    var params = {'repo' : project};
+  create: (profile, files = null) => {
+    var params = {'repo' : profile};
 
     if(files == null) {
       return Request.post(path(), params);
@@ -35,8 +35,8 @@ export const ProfileHandler = {
       data.append(`files[]`, file);
     });
 
-    data.append('repo[name]', project.name);
-    data.append('repo[description]', project.description);
+    data.append('repo[name]', profile.name);
+    data.append('repo[description]', profile.description);
 
     return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
