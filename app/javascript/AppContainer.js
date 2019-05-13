@@ -25,6 +25,10 @@ import { ProjectDetails } from './components/Project/details';
 import { Project }     from './components/Project/project';
 import { Slicer }     from './components/Slices/slicer';
 
+import { ProfileList }     from './components/Profiles/list';
+import { Profile }     from './components/Profiles/profile';
+import { ProfileNew }     from './components/Profiles/new';
+
 import { FileViewer } from './components/FileViewer/file_viewer';
 import { RepoFileViewer } from './components/Repo/repo_file_viewer';
 import { Revisions } from './components/Repo/revisions';
@@ -34,6 +38,7 @@ import { renderComponent } from 'recompose';
 
 class SideLayout extends React.Component {
   render() {
+    console.log("INSIDE SIDE LAYOUT");
     const Component = this.props.component;
     return (
       <div className="has-navbar-fixed-top" style={{flex: '1'}}>
@@ -79,7 +84,11 @@ class AppContainer extends React.Component {
         {path: '/:username/:kind(projects)/new', component: ProjectNew},
         {path: '/:username/:kind(projects)', component: ProjectList},
         {path: '/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?', component: Project},
-        {path: '/:username/:kind(projects)/:name', component: Project}
+        {path: '/:username/:kind(projects)/:name', component: Project},
+        {path: '/:username/:kind(profiles)/new', component: ProfileNew},
+        {path: '/:username/:kind(profiles)', component: ProfileList},
+        {path: '/:username/:kind(profiles)/:name/:resource/:revisionPath(.*)?', component: Profile},        
+        {path: '/:username/:kind(profiles)/:name?', component: Profile}
        ]
       }
   }
@@ -99,6 +108,7 @@ class AppContainer extends React.Component {
 
  renderSideBarLayoutRoutes() {
   return this.state.sidebarLayoutRoutes.map((item) => {
+    console.log("THE SIDE ITEM= ", item);
     return (<Route key={item.path} exact path={item.path} 
       render={ props => 
         <SideLayout {...item}  {...props} /> 
