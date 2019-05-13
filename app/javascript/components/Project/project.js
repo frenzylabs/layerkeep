@@ -15,6 +15,8 @@ import Modal from '../Modal';
 import { Revisions } from '../Repo/revisions'
 import { Revision } from '../Repo/revision'
 import { RepoFileViewer } from '../Repo/repo_file_viewer'
+import { SliceList } from '../Slices/list'
+import { SliceDetails } from '../Slices/details'
 import ProjectBreadCrumbs from './breadcrumbs';
 
 
@@ -69,6 +71,12 @@ export class Project extends React.Component {
       case 'files': {
         return RepoFileViewer;
       }
+      case 'slices': {
+        if (this.props.match.params.revisionPath && this.props.match.params.revisionPath.match(/[\d]+/)) {
+          return SliceDetails;
+        }
+        return SliceList;
+      }
       default: {
         return RepoDetails;
       }
@@ -76,7 +84,7 @@ export class Project extends React.Component {
   }
 
   render() {
-    const Resource = this.renderResource()
+    const Resource = this.renderResource();
     return (
       <div className="section" style={{height: '100%'}}>
         <Container className="is-fluid">
@@ -85,19 +93,24 @@ export class Project extends React.Component {
               <ProjectBreadCrumbs username={this.props.match.params.username} project={this.state.project} />
     
               <p style={{margin: 0, padding: 0}}>
-                This is a little description or headline for a project.
+                {this.state.project.description}
               </p>      
             </Column>
 
-            <Column isSize={2} className="has-text-right">
+            <Column isSize={3} className="has-text-right">
               <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/revisions`}>Revisions</Link>
+              { currentUser.username == this.props.match.params.username ? 
+              <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/slices`}>Slices</Link>
+              : "" }
             </Column>
           </Columns>
         </Container>
         
 
         <Container className="is-fluid" style={{height: '100%'}}>
+         {this.state.project && this.state.project.id ?
           <Resource kind="projects" item={this.state.project} match={this.props.match} uploadAction={this.uploadAction} />
+          : "" }
         </Container>
 
         <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} project={this.state.project.name} />

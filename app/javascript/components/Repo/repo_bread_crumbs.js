@@ -58,7 +58,6 @@ export class RepoBreadCrumbs extends React.Component {
                 </ul>
               </Breadcrumb>)
     }
-
   }
 
   render() {

@@ -164,7 +164,7 @@ export class SceneManager extends React.Component {
     this.renderer.shadowMap.enabled = true;
     
 
-    this.renderer.domElement.style.border = "1px solid grey";
+    // this.renderer.domElement.style.border = "1px solid grey";
     this.sceneContainer.current.append(this.renderer.domElement);
 
     window.addEventListener('resize', this.handleResize, false)
@@ -222,6 +222,6 @@ export class SceneManager extends React.Component {
   }
 
   render() {
-    return (<div ref={this.sceneContainer} style={{height: '100%', padding: '10px'}} />) 
+    return (<div ref={this.sceneContainer} style={{height: '100%', minHeight: "300px", padding: '0'}} />) 
   }
 }

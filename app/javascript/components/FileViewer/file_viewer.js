@@ -113,8 +113,8 @@ export class FileViewer extends React.Component {
 
     var Driver = this.getDriver(this.state);
     return (
-      <div className="section" style={{height: '100%', margin: 0, padding: 0}}>
-        <Driver fileType={this.state.extension} filePath={this.state.url} onError={this.onError} />
+      <div className="" style={{height: '100%', width: "100%", margin: 0, padding: 0}}>
+        <Driver fileType={this.state.extension} filePath={this.state.url} {...this.props} height={'100%'} onError={this.onError} />
       </div>)      
   }
 }
