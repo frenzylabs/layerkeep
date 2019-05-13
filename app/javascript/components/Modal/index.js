@@ -13,10 +13,12 @@ import { ModalContent as BulmaModalContent }        from 'bloomer/lib/components
 import { ModalClose as BulmaModalClose }            from 'bloomer/lib/components/Modal/ModalClose';
 import { Box }                                      from 'bloomer/lib/elements/Box';
 
-import UploadModal from './upload';
+import UploadModal    from './upload';
+import SettingsModal  from './settings';
 
 export default class Modal extends React.Component {
-  static upload = UploadModal;
+  static upload     = UploadModal;
+  static settings   = SettingsModal;
 
   render() {
     return (
