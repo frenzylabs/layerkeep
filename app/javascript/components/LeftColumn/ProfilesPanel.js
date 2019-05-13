@@ -7,31 +7,40 @@
  */
 
 import React    from 'react';
-import { Panel } from 'bloomer/lib/components/Panel/Panel';
-import { PanelHeading } from 'bloomer/lib/components/Panel/PanelHeading';
-import { Column } from 'bloomer/lib/grid/Column';
-import { Columns } from 'bloomer/lib/grid/Columns';
-import { Button } from 'bloomer/lib/elements/Button';
-import { PanelBlock } from 'bloomer/lib/components/Panel/PanelBlock';
-import { PanelIcon } from 'bloomer/lib/components/Panel/PanelIcon';
+import { Link } from 'react-router-dom';
+
+import { Columns, Column, Panel, PanelHeading, PanelBlock, PanelIcon, Button  } from 'bloomer';
+
+import { ProfileHandler } from '../../handlers/profile_handler';
 
 export class ProfilesPanel extends React.Component {
   constructor(props) {
     super(props);
     
-    this.profiles = ["this", "that", "other", "and", "so", "it", "goes"];
+
+    this.state = {profiles: []}
+
+    var self = this
+    ProfileHandler.list({params: {page: 1, per_page: 2}})
+    .then((response) => {
+      self.setState({ profiles: response.data.data})
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   profileItems() {
-    return this.profiles.map((value, index) => {
+    return this.state.profiles.map((profile, index) => {
       return (
-        <PanelBlock key={'profile-' + value}>
-          <PanelIcon className="far fa-cubes"/>
-          {value}
+        <PanelBlock key={'profile-' + profile.id}>
+          <PanelIcon className={"far " + ( profile.attributes.is_private ? 'fa-lock' : 'fa-layer-group' )}/>
+          <a href={"/" + profile.attributes.path}>{profile.attributes.name}</a>
         </PanelBlock>  
       )
     });
   }
+
 
   render() {
     return (
@@ -43,7 +52,7 @@ export class ProfilesPanel extends React.Component {
             </Column>
 
             <Column>
-              <Button id="new-profile-button" isSize='small' isColor='success'>New</Button>
+              <Link to={`/${currentUser.username}/profiles/new`} className="button is-small is-success">New</Link>
             </Column>
           </Columns>
         </PanelHeading>
