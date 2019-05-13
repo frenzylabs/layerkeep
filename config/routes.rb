@@ -42,16 +42,18 @@ Rails.application.routes.draw do
   get ':user/projects/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_projects_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'projects'}}
 
   
-  scope ':user', constraints: lambda { |req| req.format == :json } do
-
+  scope ':user' do
+    get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
     resources :slices, constraints: lambda { |req| req.format == :json }
+    
 
-    scope 'profiles', defaults: {kind: 'profiles'} do
+    scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'
     end
 
-    scope 'projects', defaults: {kind: 'projects'} do
+    scope 'projects', defaults: {kind: 'projects'}, constraints: lambda { |req| req.format == :json } do
       concerns :repo_files, as_kind: 'projects'
+      
     end
   end
     

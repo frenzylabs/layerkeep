@@ -18,6 +18,10 @@ export const SliceHandler = {
     return Request.get(path(), params);
   },
 
+  show: (sliceID, params = {}) => {
+    return Request.get(path(sliceID), params);
+  },
+
   slice: (projects, profiles) => {
     var params = {'projects' : projects, 'profiles': profiles};
     return Request.post(path(), params);

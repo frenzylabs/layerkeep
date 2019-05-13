@@ -114,7 +114,7 @@ class Details extends React.Component {
     const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`;
 
     return (
-      <div>
+      <div className="flex-wrapper">
         <hr/>
         <br/>
 

@@ -3,16 +3,20 @@ class SlicesController < AuthController
   respond_to :json
 
   def new
-
   end
 
   def index
     if !request.format.json?
       request.format = :json
     end
+    slices = Slice.where(user_id: @user.id)
+    if params["repo_id"] 
+      slices = slices.joins(:project_files).where(slice_files: {repo_id: params["repo_id"]})
+      slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
+    end
 
-    slices = Slice.where(user_id: current_user.id).includes(:project_files, :profile_files)
-              .order("id desc")
+    slices = slices.includes(:project_files, :profile_files)
+              .order("slices.id desc")
               .page(params["page"]).per(params["per_page"])
     
     serializer = paginate(slices)
@@ -63,7 +67,7 @@ class SlicesController < AuthController
   end
 
   def show
-    slice = Slice.find_by!(id: params[:id], user_id: current_user.id)
+    slice = Slice.find_by!(id: params[:id], user_id: @user.id)
     slice = SlicesSerializer.new(slice).serializable_hash
     respond_with(slice)
   end

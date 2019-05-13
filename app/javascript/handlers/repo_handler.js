@@ -46,7 +46,7 @@ export const RepoHandler = {
     return Request.get(projectsPath(name + '/files/' + revision + '/' + filepath));
   },
 
-  tree: (url) => {
-    return Request.get(url);
+  tree: (url, params = {}) => {
+    return Request.get(url, params);
   }
 }
