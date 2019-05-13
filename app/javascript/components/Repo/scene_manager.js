@@ -87,7 +87,11 @@ export class SceneManager extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {contentType: null, localUrl: null, geometry: null}
+    var axes = null;
+    if (this.props.showAxes) {
+      axes = this.buildAxes(1000)      
+    }
+    this.state = {contentType: null, localUrl: null, geometry: null, axes: axes}
     
     this.animate = this.animate.bind(this)
     this.handleResize = this.handleResize.bind(this)
@@ -102,6 +106,7 @@ export class SceneManager extends React.Component {
     this.mesh      = null;
 
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    window.sm = this;
 
   }
 
@@ -159,6 +164,11 @@ export class SceneManager extends React.Component {
 
     this.scene.add( grid );
 
+    if (this.state.axes) {
+      this.scene.add( this.state.axes);
+    }
+    
+
     var container = $(this.sceneContainer.current)
     this.renderer.setSize(container.width(), container.height());
     this.renderer.shadowMap.enabled = true;
@@ -191,6 +201,11 @@ export class SceneManager extends React.Component {
     this.animate();
   }
 
+  buildAxes( length ) {
+    return new THREE.AxesHelper( length );;
+  }
+
+
   handleResize() {
     this.renderer.setSize(0, 0);
         
@@ -218,6 +233,18 @@ export class SceneManager extends React.Component {
         this.setState( {geometry: resp} )
         this.forceUpdate()
       })
+    }
+    if (this.props.showAxes != prevProps.showAxes) {
+      if (this.props.showAxes) {
+        var axes = this.state.axes
+        if (!axes)
+          axes = this.buildAxes(1000)
+        this.scene.add(axes)
+        this.setState( {axes: axes} )
+      } else {
+        this.scene.remove(this.state.axes)
+        this.setState( {axes: null})
+      }
     }
   }
 
