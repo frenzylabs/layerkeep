@@ -24,7 +24,7 @@ export default class Modal extends React.Component {
         <BulmaModalBackground onClick={this.props.dismissAction}/>
         <BulmaModalContent>
           <Box>
-            <this.props.component dismissAction={this.props.dismissAction} project={this.props.project} />
+            <this.props.component dismissAction={this.props.dismissAction} {...this.props} />
           </Box>
         </BulmaModalContent>
         <BulmaModalClose onClick={this.props.dismissAction}/>

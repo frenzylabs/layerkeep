@@ -66,10 +66,3 @@ function mapDispatchToProps() {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-
-// export default connect()(App);
-
-// <Route path="/:username/:kind(projects)/:name/:resource(revision)/:revisionPath(.*)"  component={Revision} />
-              // <Route path="/:username/:kind(projects)/:name/:resource(revisions)/:revisionPath(.*)?"  component={Revisions} />
-              // <Route path="/:username/:kind(projects)/:name/:resource(tree)/:revisionPath(.*)"  component={ProjectDetails} />
-              // <Route path="/:username/:kind(projects)/:name/:resource(files)/:revisionPath(.*)"  component={FileViewer} />

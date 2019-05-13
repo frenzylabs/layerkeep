@@ -58,7 +58,7 @@ class SceneViewer extends React.Component {
 
   renderCanvas() {
     if (this.state.localUrl && (this.props.fileType == "stl" || (this.state.contentType && this.state.contentType.match(/octet-stream/)))) {
-      return (<SceneManager file={this.state} />)
+      return (<SceneManager file={this.state} {...this.props} />)
     }
   }
   
