@@ -6,23 +6,10 @@
  *  Copyright 2018 WessCope
  */
 
-import React               from 'react';
-import { connect }        from 'react-redux';
-import { RepoListItem }   from './list_item';
-import { Container } from 'bloomer/lib/layout/Container';
-import { RepoEmptyList }  from './empty_list';
-import { FileLoader }     from 'three';
-import { SceneManager }  from './scene_manager';
-import { Columns, Column }         from 'bloomer';
-import { RepoBreadCrumbs } from './repo_bread_crumbs'
-import { FileViewer } from '../FileViewer/file_viewer'
-
-import { RepoHandler } from '../../handlers/repo_handler';
-import { Level } from 'bloomer/lib/components/Level/Level';
-import { LevelLeft } from 'bloomer/lib/components/Level/LevelLeft';
-import { LevelRight } from 'bloomer/lib/components/Level/LevelRight';
-import { LevelItem } from 'bloomer/lib/components/Level/LevelItem';
-
+import React                from 'react';
+import { RepoBreadCrumbs }  from './repo_bread_crumbs'
+import { FileViewer }       from '../FileViewer'
+import { RepoHandler }      from '../../handlers/repo_handler';
 
 export class RepoFileViewer extends React.Component {
   constructor(props) {

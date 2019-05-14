@@ -13,7 +13,7 @@ import {
 } from 'bloomer';
 
 
- export default class ProjectBreadCrumbs extends React.Component {
+ export class ProjectBreadCrumbs extends React.Component {
    render(){
      return(
       <Breadcrumb style={{margin: 0, padding: 0}}>

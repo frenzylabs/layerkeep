@@ -6,24 +6,25 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { Link }         from 'react-router-dom';
-
-import { Container, Breadcrumb, BreadcrumbItem }    from 'bloomer';
+import React              from 'react';
+import { Link }           from 'react-router-dom';
 import { RepoList }       from '../Repo/list';
 import { ProfileHandler } from '../../handlers/profile_handler';
 import PaginatedList      from '../pagination';
+
+import { 
+  Container, 
+  Breadcrumb, 
+  BreadcrumbItem 
+} from 'bloomer';
 
 export class ProfileList extends React.Component {
   constructor(props) {
     super(props);
 
-    
-    
     this.state = {page: 1, perPage: 20, list: {data: [], meta: {}}}
     this.fetchProfiles()
     this.onChangePage = this.onChangePage.bind(this);
-
   }
 
   fetchProfiles() {

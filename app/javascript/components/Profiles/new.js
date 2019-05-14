@@ -6,18 +6,26 @@
  *  Copyright 2018 WessCope
  */
 
-import React            from 'react';
-import { Redirect }     from 'react-router-dom';
-import { Section, Columns, Column, Table, Icon }      from 'bloomer';
-
-import { Box, Control, Field, Button }          from 'bloomer';
-
-import InputField       from '../Form/InputField';
-import Formsy           from 'formsy-react';
-import TextField        from '../Form/TextField';
-import { UploadField }  from '@navjobs/upload';
-
+import React              from 'react';
+import { Redirect }       from 'react-router-dom';
+import InputField         from '../Form/InputField';
+import Formsy             from 'formsy-react';
+import TextField          from '../Form/TextField';
+import { UploadField }    from '@navjobs/upload';
 import { ProfileHandler } from '../../handlers/profile_handler';
+
+import { 
+  Section, 
+  Columns, 
+  Column, 
+  Table, 
+  Icon,
+  Box, 
+  Control, 
+  Field, 
+  Button
+} from 'bloomer';
+
 
 export class ProfileNew extends React.Component {
   constructor(props) {

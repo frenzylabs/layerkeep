@@ -6,11 +6,10 @@
  *  Copyright 2018 WessCope
  */
 
-import React               from 'react';
-import { Container, Breadcrumb, BreadcrumbItem }    from 'bloomer';
-import { RepoEmptyList }  from './empty_list';
-import { RepoHandler } from '../../handlers/repo_handler';
-import { ReactGhLikeDiff } from 'react-gh-like-diff';
+import React                from 'react';
+import { RepoEmptyList }    from './empty_list';
+import { RepoHandler }      from '../../handlers/repo_handler';
+import { ReactGhLikeDiff }  from 'react-gh-like-diff';
 
 export class Revision extends React.Component {
   constructor(props) {
@@ -36,11 +35,6 @@ export class Revision extends React.Component {
     this.setState({ revision: data })
   }
 
-  // componentDidUpdate(prevProps) {
-  //   console.log(prevProps);
-  //   console.log(this.props);
-  // }
-  
   shouldComponentUpdate(nextProps, nextState) {
       const differentList = this.state.revision !== nextState.revision;
       return differentList;

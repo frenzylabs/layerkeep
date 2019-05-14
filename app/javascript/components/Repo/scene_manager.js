@@ -7,20 +7,11 @@
  */
 
 import React               from 'react';
-import { connect }        from 'react-redux';
-import { RepoListItem }   from './list_item';
-import { RepoEmptyList }  from './empty_list';
-// import { FileLoader }     from 'three';
-
 
 global.THREE = require('three');
 
 require('three/examples/js/loaders/STLLoader');
 require('three/examples/js/controls/OrbitControls.js')
-
-
-import { RepoHandler } from '../../handlers/repo_handler';
-import { BufferGeometry } from 'three';
 
 
 function fitCameraToObject  ( camera, object, offset, controls ) {

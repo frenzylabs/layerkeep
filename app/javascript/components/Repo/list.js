@@ -6,7 +6,7 @@
  *  Copyright 2018 WessCope
  */
 
-import React               from 'react';
+import React              from 'react';
 import { RepoListItem }   from './list_item';
 import { RepoEmptyList }  from './empty_list';
 

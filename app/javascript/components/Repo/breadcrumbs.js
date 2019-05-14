@@ -13,7 +13,7 @@ import {
 } from 'bloomer';
 
 
- export default class RepoBreadCrumbs extends React.Component {
+ export class RepoBreadCrumbs extends React.Component {
    titleCase() {
     return (this.props.params.kind.charAt(0).toUpperCase() + this.props.params.kind.slice(1)); 
    }

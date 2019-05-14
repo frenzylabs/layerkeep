@@ -7,12 +7,17 @@
 #
 
 Rails.application.routes.draw do
+  
+  authenticated :user do
+    root to: redirect {|params, request| 
+    current_user = request.env["warden"].user(:user)
+
+    current_user ? "/#{current_user.username}/projects/" : '/'
+  }
+  end
+
   # User
   get 'user', to: 'user#index'
-
-  authenticated :user do
-    root to: redirect("/user")
-  end
 
   root to: 'main#index'
 
