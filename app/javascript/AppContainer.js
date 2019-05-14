@@ -29,6 +29,8 @@ import { ProfileList }     from './components/Profiles/list';
 import { Profile }     from './components/Profiles/profile';
 import { ProfileNew }     from './components/Profiles/new';
 
+import { Settings }     from './components/Settings/settings';
+
 import { FileViewer } from './components/FileViewer/file_viewer';
 import { RepoFileViewer } from './components/Repo/repo_file_viewer';
 import { Revisions } from './components/Repo/revisions';
@@ -79,6 +81,7 @@ class AppContainer extends React.Component {
        ],
 
        sidebarLayoutRoutes: [
+        {path: '/:username/:kind(settings)', component: Settings},
         {path: '/:username/:kind(projects)/new', component: ProjectNew},
         {path: '/:username/:kind(projects)', component: ProjectList},
         {path: '/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?', component: Project},
