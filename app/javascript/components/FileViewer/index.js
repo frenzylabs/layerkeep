@@ -1,8 +1,14 @@
-import React               from 'react';
+/*
+ *  file_viewer.js
+ *  LayerKeep
+ * 
+ *  Created by Wess Cope (me@wess.io) on 05/13/19
+ *  Copyright 2018 FrenzyLabs, llc.
+ */
 
 
-import { RepoHandler } from '../../handlers/repo_handler';
-// import  *  as FV from 'react-file-viewer';
+import React          from 'react';
+import {RepoHandler}  from '../../handlers/repo_handler';
 
 import {
   CsvViewer,
@@ -17,7 +23,7 @@ import {
   SceneViewer,
   TextViewer,
   MarkdownViewer
-} from './drivers/index';
+} from './drivers';
 
 export class FileViewer extends React.Component {
   constructor(props) {

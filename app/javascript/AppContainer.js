@@ -16,27 +16,19 @@ import {
   withRouter
 } from 'react-router-dom'
 
-import { Columns, Column }         from 'bloomer';
-import { Nav }              from './components/Nav';
-import { LeftColumn }     from './components/LeftColumn';
-import { ProjectList }    from './components/Project/list';
-import { ProjectNew }     from './components/Project/new';
-import { ProjectDetails } from './components/Project/details';
-import { Project }     from './components/Project/project';
-import { Slicer }     from './components/Slices/slicer';
-
-import { ProfileList }     from './components/Profiles/list';
-import { Profile }     from './components/Profiles/profile';
-import { ProfileNew }     from './components/Profiles/new';
-
-import { Settings }     from './components/Settings/settings';
-
-import { FileViewer } from './components/FileViewer/file_viewer';
-import { RepoFileViewer } from './components/Repo/repo_file_viewer';
-import { Revisions } from './components/Repo/revisions';
-import { Revision } from './components/Repo/revision';
-import { renderComponent } from 'recompose';
-
+import { Columns, Column }  from 'bloomer';
+import { 
+  Nav,
+  LeftColumn,
+  ProjectList,
+  ProjectNew,
+  Project,
+  Slicer,
+  ProfileList,
+  Profile,
+  ProfileNew,
+  Settings
+} from './components';
 
 class SideLayout extends React.Component {
   render() {

@@ -6,15 +6,18 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
-import { Link }         from 'react-router-dom';
+import React    from 'react';
+import { Link } from 'react-router-dom';
 
-import { Container, Breadcrumb, BreadcrumbItem }    from 'bloomer';
 import { RepoList }       from '../Repo/list';
 import { ProjectHandler } from '../../handlers/project_handler';
-import { ProjectAction }  from '../../states/project';
 import PaginatedList      from '../pagination';
+
+import { 
+  Container, 
+  Breadcrumb, 
+  BreadcrumbItem 
+} from 'bloomer';
 
 export class ProjectList extends React.Component {
   constructor(props) {

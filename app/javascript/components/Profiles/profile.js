@@ -15,12 +15,8 @@ import Modal from '../Modal';
 import { Revisions } from '../Repo/revisions'
 import { Revision } from '../Repo/revision'
 import { RepoFileViewer } from '../Repo/repo_file_viewer'
-import { SliceList } from '../Slices/list'
-import { SliceDetails } from '../Slices/details'
 import RepoBreadCrumbs from '../Repo/breadcrumbs';
 
-
-// import { ProjectDetails } from './components/Project/details';
 
 export class Profile extends React.Component {
   constructor(props) {

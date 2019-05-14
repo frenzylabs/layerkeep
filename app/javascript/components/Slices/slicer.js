@@ -6,26 +6,19 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
-import { Link }         from 'react-router-dom';
-import { Redirect }     from 'react-router-dom';
+import React        from 'react';
+import { Redirect } from 'react-router-dom';
 
 import { Container, Columns, Column, Button } from 'bloomer';
-import { Panel, PanelHeading, PanelBlock } from 'bloomer';
+import { Panel, PanelHeading, PanelBlock }    from 'bloomer';
 
 
-import { Revisions } from '../Repo/revisions'
-import { Revision } from '../Repo/revision'
-import { RepoFileViewer } from '../Repo/repo_file_viewer'
-import { FileViewer } from '../FileViewer/file_viewer'
-
+import { FileViewer }     from '../FileViewer'
 import { ProjectHandler } from '../../handlers/project_handler';
 import { ProfileHandler } from '../../handlers/profile_handler';
-import { SliceHandler } from '../../handlers/slice_handler';
+import { SliceHandler }   from '../../handlers/slice_handler';
 import { SearchDropdown } from '../Form/SearchDropdown'
 
-// import { ProjectDetails } from './components/Project/details';
 
 export class Slicer extends React.Component {
   constructor(props) {
@@ -34,10 +27,12 @@ export class Slicer extends React.Component {
 
     this.initialRepoSelection = { selectedRepo: {}, revisions: [], selectedRevision: {}, files: [], selectedFile: {}}
 
-    this.state = { projects: [], profiles: [], 
-                  projectSelections: {"0": Object.assign({}, this.initialRepoSelection)}, 
-                  profileSelections: {"0": Object.assign({}, this.initialRepoSelection)} 
-                }
+    this.state = { 
+      projects: [], 
+      profiles: [], 
+      projectSelections: {"0": Object.assign({}, this.initialRepoSelection)}, 
+      profileSelections: {"0": Object.assign({}, this.initialRepoSelection)} 
+    }
     
     this.selectProject          = this.selectProject.bind(this);
     this.selectProjectRevision  = this.selectProjectRevision.bind(this);

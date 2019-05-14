@@ -46,7 +46,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    "/user/"
+    "/#{current_user.username}/projects/"
   end
 
   def record_not_found

@@ -14,7 +14,7 @@ import { RepoDetailItem } from './detail_item';
 import { RepoHandler } from '../../handlers/repo_handler';
 import { RepoBreadCrumbs } from './repo_bread_crumbs'
 import { Content } from 'bloomer/lib/elements/Content';
-import { FileViewer } from '../FileViewer/file_viewer';
+import { FileViewer } from '../FileViewer';
 import { Icon } from 'bloomer/lib/elements/Icon';
 
 class Details extends React.Component {

@@ -6,21 +6,24 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { Link }         from 'react-router-dom';
-import { RepoDetails } from '../Repo/details';
-import { Container, Columns, Column, Button } from 'bloomer';
-import { ProjectHandler } from '../../handlers/project_handler';
-import Modal from '../Modal';
-import { Revisions } from '../Repo/revisions'
-import { Revision } from '../Repo/revision'
-import { RepoFileViewer } from '../Repo/repo_file_viewer'
-import { SliceList } from '../Slices/list'
-import { SliceDetails } from '../Slices/details'
-import ProjectBreadCrumbs from './breadcrumbs';
+import React                from 'react';
+import { Link }             from 'react-router-dom';
+import { RepoDetails }      from '../Repo/details';
+import { ProjectHandler }   from '../../handlers/project_handler';
+import { Revisions }        from '../Repo/revisions'
+import { Revision }         from '../Repo/revision'
+import { RepoFileViewer }   from '../Repo/repo_file_viewer'
+import { SliceList }        from '../Slices/list'
+import { SliceDetails }     from '../Slices/details'
+import Modal                from '../Modal';
+import ProjectBreadCrumbs   from './breadcrumbs';
 
+import { 
+  Container, 
+  Columns, 
+  Column 
+} from 'bloomer';
 
-// import { ProjectDetails } from './components/Project/details';
 
 export class Project extends React.Component {
   constructor(props) {
