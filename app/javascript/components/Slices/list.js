@@ -9,7 +9,7 @@
 import React               from 'react';
 import { Link }         from 'react-router-dom';
 import { SliceListItem }   from './list_item';
-import { RepoEmptyList }  from '../Repo/empty_list';
+import { SliceEmptyList }  from './empty_list';
 import { SliceHandler } from '../../handlers/slice_handler';
 
 import { Columns, Column } from 'bloomer';
@@ -56,7 +56,7 @@ export class SliceList extends React.Component {
 
   empty() {
     return (
-      <RepoEmptyList kind={this.props.match.params.kind} />
+      <SliceEmptyList params={this.props.match.params} />
     );
   }
 

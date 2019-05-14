@@ -7,6 +7,7 @@
  */
 
 import React              from 'react';
+import { Link }           from 'react-router-dom';
 import { NavbarItem }     from 'bloomer/lib/components/Navbar/NavbarItem';
 import { NavbarLink }     from 'bloomer/lib/components/Navbar/NavbarLink';
 import { Icon }           from 'bloomer/lib/elements/Icon';
@@ -52,7 +53,9 @@ export class UserNavMenu extends React.Component {
 
         <NavbarDropdown isBoxed className="is-right">
           {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
-          <NavbarItem href="#" onClick={this.settingsAction}>Settings</NavbarItem>
+          <NavbarItem >
+          <Link to={`/${currentUser.username}/settings`}> Settings </Link>
+          </NavbarItem>
 
           <NavbarDivider />
 
