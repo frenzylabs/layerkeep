@@ -12,7 +12,7 @@ import { Table }            from 'bloomer';
 import { Columns, Column }  from 'bloomer';
 import { RepoDetailItem }   from './detail_item';
 import { RepoHandler }      from '../../handlers';
-import { RepoBreadCrumbs }  from './repo_bread_crumbs'
+import { RevisionPathTrail }  from './revision_path_trail'
 import { Content }          from 'bloomer/lib/elements/Content';
 import { FileViewer }       from '../FileViewer';
 import { Icon }             from 'bloomer/lib/elements/Icon';
@@ -121,7 +121,7 @@ class Details extends React.Component {
         <div>
           <Columns className="is-narrow is-gapless">
             <Column>
-              <RepoBreadCrumbs match={this.props.match} branches={this.state.branches} meta={this.state.meta}></RepoBreadCrumbs>        
+              <RevisionPathTrail match={this.props.match} branches={this.state.branches} meta={this.state.meta}></RevisionPathTrail>        
             </Column>
 
             <Column isSize={3}>

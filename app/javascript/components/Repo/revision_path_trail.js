@@ -12,7 +12,7 @@ import { Container } from 'bloomer';
 import { Breadcrumb, BreadcrumbItem } from 'bloomer';
 import { SearchDropdown } from '../Form/SearchDropdown'
 
-export class RepoBreadCrumbs extends React.Component {
+export class RevisionPathTrail extends React.Component {
   constructor(props) {
     super(props);
 

@@ -34,3 +34,5 @@ import {
      )
    }
  }
+
+ export default RepoBreadCrumbs
