@@ -118,7 +118,7 @@ export class AccountSettings extends React.Component {
         ...this.state,
         errors: {
           ...this.getErrors(),
-          password: ((e.currentTarget.value == this.state.password.new || e.currentTarget.value == "") ? null : "Confirm and new do not match")
+          password: ((e.currentTarget.value == this.state.password.new || e.currentTarget.value == "") ? "" : "Confirm and new do not match")
         }
       });
   
