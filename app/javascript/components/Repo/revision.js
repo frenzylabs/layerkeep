@@ -8,7 +8,7 @@
 
 import React                from 'react';
 import { RepoEmptyList }    from './empty_list';
-import { RepoHandler }      from '../../handlers/repo_handler';
+import { RepoHandler }      from '../../handlers';
 import { ReactGhLikeDiff }  from 'react-gh-like-diff';
 
 export class Revision extends React.Component {

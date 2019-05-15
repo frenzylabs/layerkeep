@@ -10,7 +10,7 @@ import React    from 'react';
 import { Link } from 'react-router-dom';
 
 import { RepoList }       from '../Repo/list';
-import { ProjectHandler } from '../../handlers/project_handler';
+import { ProjectHandler } from '../../handlers';
 import PaginatedList      from '../pagination';
 
 import { 

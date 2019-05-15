@@ -6,16 +6,21 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { Link }         from 'react-router-dom';
-import { RepoDetails } from '../Repo/details';
-import { Container, Columns, Column, Button } from 'bloomer';
-import { ProfileHandler } from '../../handlers/profile_handler';
-import Modal from '../Modal';
-import { Revisions } from '../Repo/revisions'
-import { Revision } from '../Repo/revision'
-import { RepoFileViewer } from '../Repo/repo_file_viewer'
-import RepoBreadCrumbs from '../Repo/breadcrumbs';
+import React                from 'react';
+import { Link }             from 'react-router-dom';
+import { RepoDetails }      from '../Repo/details';
+import { ProfileHandler }   from '../../handlers';
+import Modal                from '../Modal';
+import { Revisions }        from '../Repo/revisions'
+import { Revision }         from '../Repo/revision'
+import { RepoFileViewer }   from '../Repo/repo_file_viewer'
+import { RepoBreadCrumbs }  from '../Repo/breadcrumbs';
+
+import { 
+  Container, 
+  Columns, 
+  Column 
+} from 'bloomer';
 
 
 export class Profile extends React.Component {

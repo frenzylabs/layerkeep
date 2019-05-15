@@ -9,7 +9,7 @@
 import React                from 'react';
 import { RepoBreadCrumbs }  from './repo_bread_crumbs'
 import { FileViewer }       from '../FileViewer'
-import { RepoHandler }      from '../../handlers/repo_handler';
+import { RepoHandler }      from '../../handlers';
 
 export class RepoFileViewer extends React.Component {
   constructor(props) {

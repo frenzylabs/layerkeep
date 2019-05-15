@@ -6,11 +6,11 @@
  *  Copyright 2018 WessCope
  */
 
-import React               from 'react';
-import { Container, Breadcrumb, BreadcrumbItem }    from 'bloomer';
-import { RevisionListItem }   from './revision_item';
-import { RepoEmptyList }  from './empty_list';
-import { RepoHandler } from '../../handlers/repo_handler';
+import React                from 'react';
+import { RevisionListItem } from './revision_item';
+import { RepoEmptyList }    from './empty_list';
+import { RepoHandler }      from '../../handlers';
+import { Container }        from 'bloomer';
 
 export class Revisions extends React.Component {
   constructor(props) {

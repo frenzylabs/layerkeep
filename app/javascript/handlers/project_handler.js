@@ -13,7 +13,7 @@ function path(endpoint) {
   return `/${currentUser.username}/projects/${(endpoint || '')}`;
 }
 
-export const ProjectHandler = {
+export default {
   list: (query_params = {}) => {
     return Request.get(path(), query_params);
   },

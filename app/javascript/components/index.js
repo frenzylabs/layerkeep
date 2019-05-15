@@ -6,9 +6,6 @@
  *  Copyright 2018 WessCope
  */
 
-// export { CsvViewer }           from './csv-viewer';
-
-
 export { Nav }              from './Nav';
 export { LeftColumn }       from './LeftColumn';
 export { ProjectList }      from './Project/list';

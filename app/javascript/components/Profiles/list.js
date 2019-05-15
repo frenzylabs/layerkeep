@@ -9,7 +9,7 @@
 import React              from 'react';
 import { Link }           from 'react-router-dom';
 import { RepoList }       from '../Repo/list';
-import { ProfileHandler } from '../../handlers/profile_handler';
+import { ProfileHandler } from '../../handlers';
 import PaginatedList      from '../pagination';
 
 import { 

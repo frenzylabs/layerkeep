@@ -9,14 +9,14 @@
 import React                from 'react';
 import { Link }             from 'react-router-dom';
 import { RepoDetails }      from '../Repo/details';
-import { ProjectHandler }   from '../../handlers/project_handler';
+import { ProjectHandler }   from '../../handlers';
 import { Revisions }        from '../Repo/revisions'
 import { Revision }         from '../Repo/revision'
 import { RepoFileViewer }   from '../Repo/repo_file_viewer'
 import { SliceList }        from '../Slices/list'
 import { SliceDetails }     from '../Slices/details'
 import Modal                from '../Modal';
-import ProjectBreadCrumbs   from './breadcrumbs';
+import {ProjectBreadCrumbs} from './breadcrumbs';
 
 import { 
   Container, 

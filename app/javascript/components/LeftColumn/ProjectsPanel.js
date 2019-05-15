@@ -6,16 +6,15 @@
  *  Copyright 2018 WessCope
  */
 
-import React            from 'react';
-import { connect }      from 'react-redux';
-import { Link }         from 'react-router-dom';
-import { Panel }        from 'bloomer/lib/components/Panel/Panel';
-import { PanelHeading } from 'bloomer/lib/components/Panel/PanelHeading';
-import { Column }       from 'bloomer/lib/grid/Column';
-import { Columns }      from 'bloomer/lib/grid/Columns';
-import { PanelBlock }   from 'bloomer/lib/components/Panel/PanelBlock';
-import { PanelIcon }    from 'bloomer/lib/components/Panel/PanelIcon';
-import { ProjectHandler } from '../../handlers/project_handler';
+import React              from 'react';
+import { Link }           from 'react-router-dom';
+import { Panel }          from 'bloomer/lib/components/Panel/Panel';
+import { PanelHeading }   from 'bloomer/lib/components/Panel/PanelHeading';
+import { Column }         from 'bloomer/lib/grid/Column';
+import { Columns }        from 'bloomer/lib/grid/Columns';
+import { PanelBlock }     from 'bloomer/lib/components/Panel/PanelBlock';
+import { PanelIcon }      from 'bloomer/lib/components/Panel/PanelIcon';
+import { ProjectHandler } from '../../handlers';
 
 export class ProjectsPanel extends React.Component {
   constructor(props) {

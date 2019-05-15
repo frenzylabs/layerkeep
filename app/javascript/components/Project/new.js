@@ -22,7 +22,7 @@ import { Table }        from 'bloomer/lib/elements/Table';
 import { Icon }         from 'bloomer/lib/elements/Icon';
 import { UploadField }  from '@navjobs/upload';
 
-import { ProjectHandler } from '../../handlers/project_handler';
+import { ProjectHandler } from '../../handlers';
 
 export class ProjectNew extends React.Component {
   constructor(props) {
