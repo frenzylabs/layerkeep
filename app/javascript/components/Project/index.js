@@ -16,7 +16,7 @@ import { RepoFileViewer }   from '../Repo/repo_file_viewer'
 import { SliceList }        from '../Slices/list'
 import { SliceDetails }     from '../Slices/details'
 import Modal                from '../Modal';
-import {ProjectBreadCrumbs} from './breadcrumbs';
+import {RepoBreadCrumbs} from '../Repo/breadcrumbs';
 
 import { 
   Container, 
@@ -93,7 +93,7 @@ export class Project extends React.Component {
         <Container className="is-fluid">
           <Columns>
             <Column>
-              <ProjectBreadCrumbs username={this.props.match.params.username} project={this.state.project} />
+              <RepoBreadCrumbs params={this.props.match.params} repo={this.state.project} />
     
               <p style={{margin: 0, padding: 0}}>
                 {this.state.project.description}
