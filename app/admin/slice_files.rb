@@ -11,5 +11,7 @@ ActiveAdmin.register SliceFile do
 #   permitted << :other if params[:action] == 'create' && current_user.admin?
 #   permitted
 # end
-
+  # belongs_to :slice
+  # belongs_to :repo
+  
 end

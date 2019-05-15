@@ -57,6 +57,12 @@ class ApplicationController < ActionController::Base
     raise ActionController::RoutingError.new('Not Found')
   end
 
+
+  def access_denied(som) 
+    logger.info("some = #{som.inspect}")
+    raise LayerKeepErrors::NotFound.new()  
+  end
+
   def paginate(items, serializer = nil, options = {})    
     serializer_name = ""
     if serializer.nil?
