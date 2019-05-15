@@ -47,8 +47,17 @@ export class AccountSettings extends React.Component {
     this.confirmPasswordChanged = this.confirmPasswordChanged.bind(this);
     this.renderErrors           = this.renderErrors.bind(this);
     this.renderStatus           = this.renderStatus.bind(this);
+    this.getErrors              = this.getErrors.bind(this);
   }
 
+  getErrors() {
+    return this.state.errors || {
+      username: "",
+      email:    "",
+      password: "",
+      server:   []
+    };
+  }
   usernameChanged(e) {
     this.setState({
       ...this.state,
@@ -81,8 +90,8 @@ export class AccountSettings extends React.Component {
         new: e.currentTarget.value || ''
       },
       errors: {
-        ...(this.state.errors || {}),
-        password: ((e.currentTarget.value == this.state.password.confirm || e.currentTarget.value == "") ? null : "New and confirm do not match")
+        ...this.getErrors(),
+        password: ((e.currentTarget.value == this.state.password.confirm) ? "" : "New and confirm do not match")
       }
     });
   }
@@ -95,8 +104,8 @@ export class AccountSettings extends React.Component {
         confirm: e.currentTarget.value
       },
       errors: {
-        ...(this.state.errors || {}),
-        password: ((e.currentTarget.value == this.state.password.confirm || e.currentTarget.value == "") ? null : "New and confirm do not match")
+        ...this.getErrors(),
+        password: ((e.currentTarget.value == this.state.password.new) ? "" : "New and confirm do not match")
       }
     });
   }
@@ -108,7 +117,7 @@ export class AccountSettings extends React.Component {
       this.setState({
         ...this.state,
         errors: {
-          ...(this.state.errors || {}),
+          ...this.getErrors(),
           password: ((e.currentTarget.value == this.state.password.new || e.currentTarget.value == "") ? null : "Confirm and new do not match")
         }
       });
@@ -125,6 +134,7 @@ export class AccountSettings extends React.Component {
     .then((response) => {
       this.setState({
         ...this.state,
+        errors: this.getErrors(),
         success: true
       });
     })
@@ -133,7 +143,7 @@ export class AccountSettings extends React.Component {
         ...this.state,
         success: false,
         errors: {
-          ...(this.state.errors || {}),
+          ...this.getErrors(),
           server: error.response.data.error
         }
       })
@@ -174,12 +184,7 @@ export class AccountSettings extends React.Component {
   }
 
   render() {
-    const errors = this.state.errors || {
-      username: "",
-      email:    "",
-      password: "",
-      server:   []
-    };
+    var errors = this.getErrors();
 
     return(
       <div className="tab-content" id="user-details">
@@ -192,24 +197,16 @@ export class AccountSettings extends React.Component {
             <Field>
               <Label>Username</Label>
               <input type="text" name="username" className="input" defaultValue={currentUser.username} onChange={this.usernameChanged}/>
-              {errors.username.length > 0 && 
-                <p className="help is-danger">{errors.username}</p>
-              }
             </Field>
 
             <Field>
               <Label>Email Address</Label>
               <input type="text" name="email" className="input" defaultValue={currentUser.email} onChange={this.emailChanged}/>
-              {errors.email.length > 0 && 
-                <p className="help is-danger">{errors.email}</p>
-              }
             </Field>
 
             <br/>
             <hr/>
             <br/>
-
-            <h2 className="title is-6">Security.</h2>
 
             <Field>
               <Label>Current Password</Label>
