@@ -10,14 +10,18 @@ Rails.application.routes.draw do
   
   authenticated :user do
     root to: redirect {|params, request| 
-    current_user = request.env["warden"].user(:user)
-
-    current_user ? "/#{current_user.username}/projects/" : '/'
-  }
+      current_user = request.env["warden"].user(:user)
+      current_user ? "/#{current_user.username}/projects/" : '/'
+    }
   end
 
-  devise_for :users, ActiveAdmin::Devise.config
+  
+  
+  devise_for :admin_users, {class_name: 'User'}.merge(ActiveAdmin::Devise.config)
   ActiveAdmin.routes(self)
+
+  devise_for :users
+  
   
 
   root to: 'main#index'

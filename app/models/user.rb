@@ -8,9 +8,8 @@
 
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
-  devise :database_authenticatable, 
-         :recoverable, :rememberable, :validatable
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable  
+  devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable         
   # has_and_belongs_to_many :organizations  
   # has_many :slices
 
@@ -18,8 +17,8 @@ class User < ApplicationRecord
   has_many :profiles, -> { where(kind: 'profile') }, class_name: 'Repo'
   has_many :projects, -> { where(kind: 'project') }, class_name: 'Repo'
 
-  devise :database_authenticatable,  :recoverable, :rememberable, :validatable
 
+  
   attr_accessor :login
 
   def self.find_for_database_authentication(warden_conditions) 

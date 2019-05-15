@@ -37,7 +37,7 @@ export class Project extends React.Component {
   }
 
   loadProjectDetails() {    
-    ProjectHandler.get(this.props.match.params.name)
+    ProjectHandler.get(this.props.match.params.username, this.props.match.params.name)
     .then((response) => {
       this.setState({project: response.data.data.attributes})
     })
