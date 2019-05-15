@@ -26,17 +26,16 @@ export class AccountSettings extends React.Component {
       username: currentUser.username,
       email:    currentUser.email,
       password: {
-        current:  '',
-        new:      '',
-        confirm:  ''
+        current:  "",
+        new:      "",
+        confirm:  ""
       },
+      success: false,
       errors: {
-        username: null,
-        email:    null,
-        password: {
-          current:  null,
-          confirm:  null
-        }
+        server:   [],
+        username: "",
+        email:    "",
+        password: ""
       }
     }
     
@@ -46,19 +45,21 @@ export class AccountSettings extends React.Component {
     this.currentPasswordChanged = this.currentPasswordChanged.bind(this);
     this.newPasswordChanged     = this.newPasswordChanged.bind(this);
     this.confirmPasswordChanged = this.confirmPasswordChanged.bind(this);
+    this.renderErrors           = this.renderErrors.bind(this);
+    this.renderStatus           = this.renderStatus.bind(this);
   }
 
   usernameChanged(e) {
     this.setState({
       ...this.state,
-      username: e.currentTarget.value
+      username: e.currentTarget.value || ''
     });
   }
 
   emailChanged(e) {
     this.setState({
       ...this.state,
-      email: e.currentTarget.value
+      email: e.currentTarget.value || ''
     });
   }
 
@@ -66,8 +67,8 @@ export class AccountSettings extends React.Component {
     this.setState({
       ...this.state,
       password: {
-        ...this.state.password,
-        current: e.currentTarget.value
+        ...(this.state.password || {}),
+        current: e.currentTarget.value || ''
       }
     });
   }
@@ -76,15 +77,12 @@ export class AccountSettings extends React.Component {
     this.setState({
       ...this.state,
       password: {
-        ...this.state.password,
-        new: e.currentTarget.value
+        ...(this.state.password || {}),
+        new: e.currentTarget.value || ''
       },
       errors: {
-        ...this.state.errors,
-        password: {
-          ...this.state.errors.password,
-          confirm: ((e.currentTarget.value == this.state.password.confirm || e.currentTarget.value == "") ? null : "New and confirm do not match")
-        }
+        ...(this.state.errors || {}),
+        password: ((e.currentTarget.value == this.state.password.confirm || e.currentTarget.value == "") ? null : "New and confirm do not match")
       }
     });
   }
@@ -93,15 +91,12 @@ export class AccountSettings extends React.Component {
     this.setState({
       ...this.state,
       password: {
-        ...this.state.password,
+        ...(this.state.password || {}),
         confirm: e.currentTarget.value
       },
       errors: {
-        ...this.state.errors,
-        password: {
-          ...this.state.errors.password,
-          confirm: ((e.currentTarget.value == this.state.password.new || e.currentTarget.value == "") ? null : "Confirm and new do not match")
-        }
+        ...(this.state.errors || {}),
+        password: ((e.currentTarget.value == this.state.password.confirm || e.currentTarget.value == "") ? null : "New and confirm do not match")
       }
     });
   }
@@ -113,11 +108,8 @@ export class AccountSettings extends React.Component {
       this.setState({
         ...this.state,
         errors: {
-          ...this.state.errors,
-          password: {
-            ...this.state.errors.password,
-            confirm: ((e.currentTarget.value == this.state.password.new || e.currentTarget.value == "") ? null : "Confirm and new do not match")
-          }
+          ...(this.state.errors || {}),
+          password: ((e.currentTarget.value == this.state.password.new || e.currentTarget.value == "") ? null : "Confirm and new do not match")
         }
       });
   
@@ -127,42 +119,93 @@ export class AccountSettings extends React.Component {
     var data = this.state;
     delete data.errors;
     delete data.password.confirm;
+    delete data.success;
 
     UserHandler.saveSettings(data)
     .then((response) => {
-      console.dir(response);
+      this.setState({
+        ...this.state,
+        success: true
+      });
     })
     .catch((error) => {
-      console.log(error);
+      this.setState({
+        ...this.state,
+        success: false,
+        errors: {
+          ...(this.state.errors || {}),
+          server: error.response.data.error
+        }
+      })
     });
-    
+  }
+
+  renderSuccess() {
+    return (
+      <article className="message is-success">
+        <div className="message-body">
+          Your info has been updated successfully.
+        </div>
+      </article>
+    ) 
+  }
+
+  renderErrors() {
+    if(this.state.errors.server.length < 1) { return; }
+
+    const items = this.state.errors.server.map((item, idx) => {
+      return(
+        <p key={idx}>{item}</p>
+      )
+    });
+
+    return (
+      <article className="message is-danger">
+        <div className="message-body">
+          {items}
+        </div>
+      </article>
+    )
+  }
+
+  renderStatus() {
+    return this.state.success == true ?
+      this.renderSuccess() : this.renderErrors();
   }
 
   render() {
+    const errors = this.state.errors || {
+      username: "",
+      email:    "",
+      password: "",
+      server:   []
+    };
+
     return(
       <div className="tab-content" id="user-details">
-        <Formsy onValidSubmit={this.submitAction}>
-        </Formsy>
         <form>
           <Box style={{border: 'none', boxShadow: 'none'}}>
+            {this.renderStatus()}
+
             <br/>
 
             <Field>
               <Label>Username</Label>
               <input type="text" name="username" className="input" defaultValue={currentUser.username} onChange={this.usernameChanged}/>
-              {this.state.errors.username && 
-                <p className="help is-danger">{this.state.errors.username}</p>
+              {errors.username.length > 0 && 
+                <p className="help is-danger">{errors.username}</p>
               }
             </Field>
 
             <Field>
               <Label>Email Address</Label>
               <input type="text" name="email" className="input" defaultValue={currentUser.email} onChange={this.emailChanged}/>
-              {this.state.errors.email && 
-                <p className="help is-danger">{this.state.errors.email}</p>
+              {errors.email.length > 0 && 
+                <p className="help is-danger">{errors.email}</p>
               }
             </Field>
 
+            <br/>
             <hr/>
             <br/>
 
@@ -176,16 +219,16 @@ export class AccountSettings extends React.Component {
             <Field>
               <Label>New Password</Label>
               <input type="password" name="password[new]" className="input" placeholder="" onChange={this.newPasswordChanged}/>
-              {this.state.errors.password.confirm && 
-                <p className="help is-danger">{this.state.errors.password.confirm}</p>
+              {errors.password.length > 0 && 
+                <p className="help is-danger">{errors.password}</p>
               }
             </Field>
 
             <Field>
               <Label>Confirm New Password</Label>
               <input type="password" name="password[confirm]" className="input" placeholder="" onChange={this.confirmPasswordChanged}/>
-              {this.state.errors.password.confirm && 
-                <p className="help is-danger">{this.state.errors.password.confirm}</p>
+              {errors.password.length > 0 && 
+                <p className="help is-danger">{errors.password}</p>
               }
             </Field>
 
