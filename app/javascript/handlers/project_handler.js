@@ -12,14 +12,17 @@ import Request from './request_client';
 function path(endpoint) {
   return `/${currentUser.username}/projects/${(endpoint || '')}`;
 }
+function user_project(user, endpoint) {
+  return `/${user || currentUser.username}/projects/${(endpoint || '')}`;
+}
 
 export default {
-  list: (query_params = {}) => {
-    return Request.get(path(), query_params);
+  list: (user, query_params = {}) => {
+    return Request.get(user_project(user), query_params);
   },
 
-  get: (name) => {
-    return Request.get(path(name));
+  get: (user, name) => {
+    return Request.get(user_project(user, name));
   },
 
   create: (project, files = null) => {

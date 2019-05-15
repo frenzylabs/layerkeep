@@ -23,7 +23,7 @@ export class ProjectsPanel extends React.Component {
     this.state = {projects: []}
 
     var self = this
-    ProjectHandler.list({params: {page: 1, per_page: 2}})
+    ProjectHandler.list(null, {params: {page: 1, per_page: 2}})
     .then((response) => {
       self.setState({ projects: response.data.data})
     })

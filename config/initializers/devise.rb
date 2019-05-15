@@ -305,7 +305,7 @@ Warden::Manager.after_authentication do |user,auth,opts|
 end
 
 Warden::Manager.before_logout do |user,auth,opts|
-  user.forget_me!
+  user.forget_me! if user
   auth.cookies.delete(:user_id)
   auth.cookies.delete(:remember_token)
 end

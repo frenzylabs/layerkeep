@@ -74,7 +74,7 @@ export class Slicer extends React.Component {
   }
 
   loadProjects() {    
-    ProjectHandler.list()
+    ProjectHandler.list(null)
     .then((response) => {
       // console.log()
       var projects = response.data.data.map((item) => {

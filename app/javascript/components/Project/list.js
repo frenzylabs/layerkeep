@@ -30,7 +30,7 @@ export class ProjectList extends React.Component {
   }
 
   fetchProjects() {
-    ProjectHandler.list({params: {per_page: this.state.perPage, page: this.state.page}})
+    ProjectHandler.list(this.props.match.params.username, {params: {per_page: this.state.perPage, page: this.state.page}})
     .then((response) => {
       this.setState({ list: response.data})
     })
