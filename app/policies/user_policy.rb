@@ -1,4 +1,4 @@
-class RepoPolicy
+class UserPolicy
   attr_reader :user, :repo
 
   class Scope
@@ -10,7 +10,7 @@ class RepoPolicy
     end
 
     def resolve
-      if user && user.id == scope.id 
+      if user && (user.id == scope.id || user.admin)
         scope.repos
       else
         scope.repos.where(is_private: false)
