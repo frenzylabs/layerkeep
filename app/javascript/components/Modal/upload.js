@@ -6,19 +6,21 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { Box }          from 'bloomer/lib/elements/Box';
-import { Table }        from 'bloomer/lib/elements/Table';
-import { Icon }         from 'bloomer/lib/elements/Icon';
+import React            from 'react';
 import { UploadField }  from '@navjobs/upload';
-import { Button }       from 'bloomer/lib/elements/Button';
-import { Field }        from 'bloomer/lib/elements/Form/Field/Field';
-import { Control }      from 'bloomer/lib/elements/Form/Control';
-import { Columns }      from 'bloomer/lib/grid/Columns';
-import { Column }       from 'bloomer/lib/grid/Column';
-import { Input }        from 'bloomer/lib/elements/Form/Input';
+import { RepoHandler }  from '../../handlers';
 
-import { RepoHandler } from '../../handlers/repo_handler';
+import { 
+  Box,
+  Table,
+  Icon,
+  Button,
+  Field,
+  Control,
+  Columns,
+  Column,
+  Input
+} from 'bloomer';
 
 export default class UploadModal extends React.Component {
   title = "Upload files";

@@ -6,12 +6,18 @@
  *  Copyright 2018 WessCope
  */
 
-import React    from 'react';
-import { Link } from 'react-router-dom';
+import React              from 'react';
+import { Link }           from 'react-router-dom';
+import { ProfileHandler } from '../../handlers';
 
-import { Columns, Column, Panel, PanelHeading, PanelBlock, PanelIcon, Button  } from 'bloomer';
-
-import { ProfileHandler } from '../../handlers/profile_handler';
+import { 
+  Columns, 
+  Column, 
+  Panel, 
+  PanelHeading, 
+  PanelBlock, 
+  PanelIcon
+} from 'bloomer';
 
 export class ProfilesPanel extends React.Component {
   constructor(props) {

@@ -1,5 +1,5 @@
 /*
- *  projects_handler.js
+ *  slice_handler.js
  *  LayerKeep
  * 
  *  Created by Wess Cope (me@wess.io) on 04/30/19
@@ -13,7 +13,7 @@ function path(endpoint) {
   return '/' + currentUser.username + '/slices/' + (endpoint || '');
 }
 
-export const SliceHandler = {
+export default {
   list: (params = {}) => {
     return Request.get(path(), params);
   },

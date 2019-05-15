@@ -7,8 +7,8 @@
  */
 
 
-import React          from 'react';
-import {RepoHandler}  from '../../handlers/repo_handler';
+import React            from 'react';
+import { RepoHandler }  from '../../handlers';
 
 import {
   CsvViewer,

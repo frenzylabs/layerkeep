@@ -16,12 +16,11 @@ Rails.application.routes.draw do
   }
   end
 
-  # User
-  get 'user', to: 'user#index'
-
   root to: 'main#index'
 
   devise_for :users
+
+  post 'user/settings', to: 'user#settings'
 
   concern :repo_files do |options|
     options ||= {}
@@ -75,7 +74,7 @@ Rails.application.routes.draw do
 
 
   # REACT
-  
+
   get '*page', to: 'user#index', constraints: ->(req) do
     req.format = :html
     !req.xhr? 

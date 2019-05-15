@@ -40,6 +40,7 @@ import { Input }                  from 'bloomer/lib/elements/Form/Input';
             className={className} 
             onChange={this.changeValue}
             value={this.props.getValue() || ''}
+            defaultValue={this.props.defaultValue || ''}
           />
 
           {null && 

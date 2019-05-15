@@ -13,7 +13,7 @@ function path(kind, endpoint) {
   return `/${currentUser.username}/${kind}/${endpoint || ''}`;
 }
 
-export const RepoHandler = {
+export default {
   list: () => {
     return Request.get(path());
   },

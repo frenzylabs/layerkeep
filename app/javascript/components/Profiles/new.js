@@ -12,7 +12,7 @@ import InputField         from '../Form/InputField';
 import Formsy             from 'formsy-react';
 import TextField          from '../Form/TextField';
 import { UploadField }    from '@navjobs/upload';
-import { ProfileHandler } from '../../handlers/profile_handler';
+import { ProfileHandler } from '../../handlers';
 
 import { 
   Section, 

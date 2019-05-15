@@ -6,22 +6,34 @@
  *  Copyright 2018 WessCope
  */
 
-import React               from 'react';
-import { Link }         from 'react-router-dom';
-import { SliceListItem }   from './list_item';
-import { SliceEmptyList }  from './empty_list';
-import { SliceHandler } from '../../handlers/slice_handler';
+import React                from 'react';
+import { Link }             from 'react-router-dom';
+import { SliceListItem }    from './list_item';
+import { SliceEmptyList }   from './empty_list';
+import { SliceHandler }     from '../../handlers';
 
-import { Columns, Column } from 'bloomer';
-import { RepoBreadCrumbs } from '../Repo/repo_bread_crumbs'
+import { 
+  Columns, 
+  Column 
+} from 'bloomer';
 
 export class SliceList extends React.Component {
   constructor(props) {
     super(props);
 
 
-    this.state = {project: this.props.item, page: 1, perPage: 20, list: {data: [], meta: {}}}
+    this.state = {
+      project: this.props.item, 
+      page: 1, 
+      perPage: 20, 
+      list: {
+        data: [], 
+        meta: {}
+      }
+    }
+    
     this.items = this.items.bind(this);
+
     this.updateSlicesList()
   }
 

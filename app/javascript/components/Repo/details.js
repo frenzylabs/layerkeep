@@ -6,28 +6,28 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { connect }  from 'react-redux';
-import { Table } from 'bloomer';
-import { Columns, Column } from 'bloomer';
-import { RepoDetailItem } from './detail_item';
-import { RepoHandler } from '../../handlers/repo_handler';
-import { RepoBreadCrumbs } from './repo_bread_crumbs'
-import { Content } from 'bloomer/lib/elements/Content';
-import { FileViewer } from '../FileViewer';
-import { Icon } from 'bloomer/lib/elements/Icon';
+import React                from 'react';
+import { connect }          from 'react-redux';
+import { Table }            from 'bloomer';
+import { Columns, Column }  from 'bloomer';
+import { RepoDetailItem }   from './detail_item';
+import { RepoHandler }      from '../../handlers';
+import { RepoBreadCrumbs }  from './repo_bread_crumbs'
+import { Content }          from 'bloomer/lib/elements/Content';
+import { FileViewer }       from '../FileViewer';
+import { Icon }             from 'bloomer/lib/elements/Icon';
 
 class Details extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      repo_files: [], 
-      meta: {}, 
-      branches: this.props.item.branches || [], 
-      currentRevision: "", 
-      message: '', 
-      lastUpdate: ''
+      repo_files:       [], 
+      meta:             {}, 
+      branches:         this.props.item.branches || [], 
+      currentRevision:  "", 
+      message:          '', 
+      lastUpdate:       ''
     };
 
     this.updateRepoFiles  = this.updateRepoFiles.bind(this);

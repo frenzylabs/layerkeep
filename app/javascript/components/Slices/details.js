@@ -6,15 +6,21 @@
  *  Copyright 2018 Frenzylabs
  */
 
-import React               from 'react';
-import { Link }         from 'react-router-dom';
-import { SliceListItem }   from './list_item';
+import React              from 'react';
+import { Link }           from 'react-router-dom';
 import { RepoEmptyList }  from '../Repo/empty_list';
-import { SliceHandler } from '../../handlers/slice_handler';
+import { SliceHandler }   from '../../handlers';
 
-import { Columns, Column, Level, LevelItem, LevelLeft, LevelRight } from 'bloomer';
-import { Media, MediaLeft, MediaContent, MediaRight }     from 'bloomer';
-import { RepoBreadCrumbs } from '../Repo/repo_bread_crumbs'
+import { 
+  Columns, 
+  Column, 
+  Level, 
+  LevelItem, 
+  LevelLeft, 
+  LevelRight,
+  Media, 
+  MediaContent
+} from 'bloomer';
 
 export class SliceDetails extends React.Component {
   constructor(props) {

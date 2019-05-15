@@ -13,7 +13,7 @@ function path(endpoint) {
   return `/${currentUser.username}/profiles/${(endpoint || '')}`;
 }
 
-export const ProfileHandler = {
+export default {
   list: (query_params = {}) => {
     return Request.get(path(), query_params);
   },

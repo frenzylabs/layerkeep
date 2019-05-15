@@ -9,15 +9,26 @@
 import React        from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { Container, Columns, Column, Button } from 'bloomer';
-import { Panel, PanelHeading, PanelBlock }    from 'bloomer';
 
 
 import { FileViewer }     from '../FileViewer'
-import { ProjectHandler } from '../../handlers/project_handler';
-import { ProfileHandler } from '../../handlers/profile_handler';
-import { SliceHandler }   from '../../handlers/slice_handler';
+import { SliceHandler }   from '../../handlers';
 import { SearchDropdown } from '../Form/SearchDropdown'
+
+import { 
+  ProjectHandler, 
+  ProfileHandler 
+} from '../../handlers';
+
+import { 
+  Container, 
+  Columns, 
+  Column, 
+  Button, 
+  Panel, 
+  PanelHeading, 
+  PanelBlock 
+} from 'bloomer';
 
 
 export class Slicer extends React.Component {
