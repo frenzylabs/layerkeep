@@ -32,7 +32,7 @@ class UserController < AuthController
   
         render json: {'success' => {username: username, email: email}}
       else
-        render json: user.errors.full_messages      
+        render json: {'error' => user.errors.full_messages}, status: 400
       end
     else
       if user.update(updated)
@@ -40,7 +40,7 @@ class UserController < AuthController
   
         render json: {'success' => {username: username, email: email}}
       else
-        render json: user.errors.full_messages      
+        render json: {'error' => user.errors.full_messages}, status: 400
       end
   
     end
