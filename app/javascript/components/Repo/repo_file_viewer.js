@@ -7,7 +7,7 @@
  */
 
 import React                from 'react';
-import { RepoBreadCrumbs }  from './repo_bread_crumbs'
+import { RevisionPathTrail }  from './revision_path_trail'
 import { FileViewer }       from '../FileViewer'
 import { RepoHandler }      from '../../handlers';
 
@@ -56,7 +56,7 @@ export class RepoFileViewer extends React.Component {
           <div className="level" style={{width: '100%', height: '100%'}}>
               <div className="level-left">
                 <div className="level-item">
-                  <RepoBreadCrumbs match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
+                  <RevisionPathTrail match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
                 </div>
               </div>
               
