@@ -18,7 +18,8 @@ Rails.application.routes.draw do
 
   root to: 'main#index'
 
-  devise_for :users
+  devise_for :users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
 
   post 'user/settings', to: 'user#settings'
 
