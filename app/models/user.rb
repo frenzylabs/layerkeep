@@ -21,6 +21,14 @@ class User < ApplicationRecord
   
   attr_accessor :login
 
+  def active_for_authentication?
+    super && active? && approved?
+  end
+  
+  def inactive_message
+    self.approved? ? (self.active? ? super : "User Not Active") : "User Has Not Been Approved" 
+  end
+
   def self.find_for_database_authentication(warden_conditions) 
     conditions = warden_conditions
     login = conditions.delete(:login)
