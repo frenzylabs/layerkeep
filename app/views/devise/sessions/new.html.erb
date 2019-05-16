@@ -1,4 +1,7 @@
 
+<% flash.each do |name, msg| %>
+  <%= content_tag(:div, msg, class: "alert alert-#{name}") %>
+<% end %>
 <div class="box">
   <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
       <h1 class="title">Log in</h1>

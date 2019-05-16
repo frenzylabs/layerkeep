@@ -35,7 +35,7 @@ export class UserNavMenu extends React.Component {
 
           <NavbarDivider />
 
-          <NavbarItem href="#">Sign out.</NavbarItem>
+          <NavbarItem href="/users/sign_out">Sign out.</NavbarItem>
         </NavbarDropdown>
       </NavbarItem>
     );
