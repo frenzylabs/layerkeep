@@ -98,6 +98,7 @@ export class FileViewer extends React.Component {
       case 'mp3': {
         return AudioViewer;
       }
+      case 'mpg':
       case 'webm':
       case 'mp4': {
         return VideoViewer;

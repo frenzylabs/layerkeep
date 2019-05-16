@@ -10,6 +10,7 @@ import React                from 'react';
 import { RepoEmptyList }    from './empty_list';
 import { RepoHandler }      from '../../handlers';
 import { ReactGhLikeDiff }  from 'react-gh-like-diff';
+import { Container }        from 'bloomer';
 
 export class Revision extends React.Component {
   constructor(props) {
