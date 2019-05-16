@@ -6,7 +6,7 @@
  *  Copyright 2018 WessCope
  */
 
-import {ProjectState} from './project';
+import { ProjectState } from './project';
 
 export const AppState = {
   project: ProjectState()

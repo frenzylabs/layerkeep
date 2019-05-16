@@ -43,7 +43,7 @@ export class SliceList extends React.Component {
     if (this.state.project) {
       params["repo_id"] = this.state.project.id
     }
-    SliceHandler.list({params})
+    SliceHandler.list(this.props.match.params.username, {params})
     .then((response) => {
       this.updateSlices(response.data)
     })
