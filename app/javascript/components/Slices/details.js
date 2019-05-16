@@ -41,7 +41,7 @@ export class SliceDetails extends React.Component {
       params["repo_id"] = this.state.project.id
     }
     var id = this.props.match.params.revisionPath;
-    SliceHandler.show(id, {params})
+    SliceHandler.show(this.props.match.params.username, id, {params})
     .then((response) => {
       this.updateSlice(response.data)
     })

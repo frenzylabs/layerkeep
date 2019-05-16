@@ -6,6 +6,7 @@ class SlicesController < AuthController
   end
 
   def index
+    authorize(@user)
     if !request.format.json?
       request.format = :json
     end
@@ -67,13 +68,16 @@ class SlicesController < AuthController
   end
 
   def show
+    authorize(@user)
     slice = Slice.find_by!(id: params[:id], user_id: @user.id)
+    
     slice = SlicesSerializer.new(slice).serializable_hash
     respond_with(slice)
   end
 
   def destroy
-    slice = Slice.find_by!(id: params[:id], user_id: current_user.id)
+    authorize(@user)
+    slice = Slice.find_by!(id: params[:id], user_id: @user.id)
     throw not_found unless slice
     
     if !(slice.path.nil? || slice.path.blank?)
@@ -88,6 +92,7 @@ class SlicesController < AuthController
   end
 
   def gcodes 
+    authorize(@user)
     @slice = Slice.find(params[:id])
     send_file("#{Rails.application.config.settings["repo_mount_path"]}/" + @slice.path.downcase, filename: @slice.path.split("/").last, disposition: :inline)
   end
@@ -114,6 +119,6 @@ class SlicesController < AuthController
   end  
 
   def get_user()
-    @user ||= current_user #User.find_by!(username: params["user"] || "")
+    @user ||= User.find_by!(username: params["user"] || "")
   end
 end

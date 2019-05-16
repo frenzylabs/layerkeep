@@ -13,13 +13,17 @@ function path(endpoint) {
   return '/' + currentUser.username + '/slices/' + (endpoint || '');
 }
 
+function user_path(username, endpoint) {
+  return `/${(username || currentUser.endpoint)}/slices/${endpoint || ''}`
+}
+
 export default {
-  list: (params = {}) => {
-    return Request.get(path(), params);
+  list: (username, params = {}) => {
+    return Request.get(user_path(username), params);
   },
 
-  show: (sliceID, params = {}) => {
-    return Request.get(path(sliceID), params);
+  show: (username, sliceID, params = {}) => {
+    return Request.get(user_path(username, sliceID), params);
   },
 
   slice: (projects, profiles) => {
