@@ -32,6 +32,11 @@
     margin: 0.5em !important;
   }
 
+  td.file-details, td.cell-content {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
   #left-new-button {
     .button {
       margin: 0 !important;
