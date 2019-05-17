@@ -31,9 +31,14 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.raise_delivery_errors = false
-
-  config.action_mailer.perform_caching = false
+  config.action_mailer.default_url_options    = {:host => 'layerkeep.local'}
+  config.action_mailer.raise_delivery_errors  = true
+  config.action_mailer.perform_caching        = false
+  config.action_mailer.delivery_method        = :mailgun
+  config.action_mailer.mailgun_settings       = {
+    api_key:  '9976cc208e611e66025bb711d8d00965-4a62b8e8-3090ffc6',
+    domain:   'sandboxd4797dd729004c628a2f4044bcbf3894.mailgun.org'
+  }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
