@@ -7,6 +7,19 @@ ActiveAdmin.register_page "Dashboard" do
         span I18n.t("active_admin.dashboard_welcome.welcome")
         small I18n.t("active_admin.dashboard_welcome.call_to_action")
       end
+
+    end
+
+    columns do
+      column do
+        panel "Users" do
+          ul do
+            User.all.map do |user|
+              li link_to(user.username, admin_user_path(user))
+            end
+          end
+        end
+      end
     end
 
     # Here is an example of a simple dashboard with columns and panels.

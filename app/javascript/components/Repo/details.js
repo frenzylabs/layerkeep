@@ -155,7 +155,7 @@ class Details extends React.Component {
               </th>
 
               <th className="has-text-right" colSpan={2} style={{fontWeight: 'normal'}}>
-                Last updated: {dayjs(this.state.lastUpdate).format('DD.MM.YYYY')}
+                Last updated: {dayjs(this.state.lastUpdate).format('MM.DD.YYYY')}
               </th>
             </tr>
           </thead>
