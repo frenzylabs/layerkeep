@@ -37,14 +37,14 @@ export class RevisionListItem extends React.Component {
 
           <MediaContent>
             <Link to={this.revisionPath(this.props.item)} data-id={this.props.item.id} key={this.props.item.id} >
-            <p className="title is-6" style={{marginBottom: "0"}}>{this.props.item.id}</p>
-            <p className="has-text-grey">{this.props.item.attributes.message || 'Description goes here.'}</p>
+            <p className="title is-6" style={{marginBottom: "0"}}>{this.props.item.id.slice(0, 7)}</p>
+            <p className="has-text-grey">{this.props.item.attributes.message || ''}</p>
             </Link>
           </MediaContent>
 
           <MediaRight>
-            <p>Updated: {this.props.item.attributes.time}</p>
-            <Link to={this.filesPath(this.props.item)} data-id={this.props.item.id} key={this.props.item.id} >Files</Link>
+            <p>Updated: {dayjs(this.props.item.attributes.time).format('MM.DD.YYYY')}</p>
+            <Link to={this.filesPath(this.props.item)} data-id={this.props.item.id} key={this.props.item.id} >Browse Files</Link>
           </MediaRight>
         </Media>
       

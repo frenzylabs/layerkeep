@@ -91,7 +91,7 @@ export class Project extends React.Component {
     return (
       <div className="section" style={{height: '100%'}}>
         <Container className="is-fluid">
-          <Columns>
+          <Columns className="is-mobile">
             <Column>
               <RepoBreadCrumbs params={this.props.match.params} repo={this.state.project} />
     
@@ -100,7 +100,7 @@ export class Project extends React.Component {
               </p>      
             </Column>
 
-            <Column isSize={3} className="has-text-right">
+            <Column className="has-text-right">
               <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/revisions`}>Revisions</Link>
               { currentUser.username == this.props.match.params.username ? 
               <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/slices`}>Slices</Link>

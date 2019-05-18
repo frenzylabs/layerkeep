@@ -48,7 +48,7 @@ export class ProjectsPanel extends React.Component {
       <Panel id="projects-panel">
         <PanelHeading tag='div'>        
           <Columns>
-            <Column isSize={9}>
+            <Column isSize={8}>
               <p>Projects</p>
             </Column>
 

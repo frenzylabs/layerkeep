@@ -44,7 +44,7 @@ export class SliceListItem extends React.Component {
           </MediaContent>
 
           <MediaRight>
-            <p>Last updated: {dayjs(this.props.item.attributes.updated_at).format('DD.MM.YYYY')}</p>
+            <p>Created: {dayjs(this.props.item.attributes.updated_at).format('DD.MM.YYYY')}</p>
             <p>Status: {this.renderStatus()}</p>
           </MediaRight>
         </Media>

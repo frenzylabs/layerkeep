@@ -83,19 +83,24 @@ export class SliceList extends React.Component {
     const component = this.state.list.data.length > 0 ? this.items() : this.empty();
     var params = this.props.match.params;
     return (
-      <div>
-        <div>
-          <Columns className="is-narrow is-gapless">
+      <div className="flex-wrapper">
+        <hr/>
+        <br/>
+
+        
+          <Columns className="is-narrow is-gapless is-mobile">
             <Column>
-              
+                <h3 className="subtitle">Slices</h3>
             </Column>
 
-            <Column isSize={2} className="has-text-right">
+            <Column isSize={3} className="has-text-right">
             <Link className="button" to={`/${params.username}/projects/${params.name}/slices/new`}>New Slice</Link>
           </Column>
-          </Columns>
+        </Columns>
+
+        <div> 
+          {component}
         </div>
-        {component}
       </div>
     );
   }

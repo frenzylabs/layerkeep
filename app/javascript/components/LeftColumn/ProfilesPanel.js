@@ -53,7 +53,7 @@ export class ProfilesPanel extends React.Component {
       <Panel id="profiles-panel">
         <PanelHeading tag='div'>        
           <Columns>
-            <Column isSize={9}>
+            <Column isSize={8}>
               <p>Profiles</p>
             </Column>
 

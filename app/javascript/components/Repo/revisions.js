@@ -64,9 +64,11 @@ export class Revisions extends React.Component {
     const component = this.state.revisions.data.length > 0 ? this.items() : this.empty();
 
     return (
-      <div className="section">
+      <div className="section" style={{padding: 0}}>
+        <hr/>
+        <br/>
         <Container className="is-fluid">
-          <h3> Revisions </h3>
+          <h2 className="subtitle"> Revisions </h2>
           {component}
         </Container>
       </div>
