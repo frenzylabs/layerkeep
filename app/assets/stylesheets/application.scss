@@ -17,7 +17,8 @@
 @charset "utf-8";
 
 @import 'vars';
-@import 'bulma/bulma';
+@import "navbar";
+// @import 'bulma/bulma';
 
 @import 'fontawesome/scss/light';
 @import 'fontawesome/scss/regular';
@@ -27,7 +28,7 @@
 
 @import 'noty/src/noty';
 @import 'noty/src/themes/sunset'; 
-@import "navbar";
+
 
 @import "diff2html/dist/diff2html";
 @import "prismjs/themes/prism";

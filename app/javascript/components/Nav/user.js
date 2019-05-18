@@ -8,7 +8,7 @@
 
 import React              from 'react';
 import { Link }           from 'react-router-dom';
-import { NavbarItem }     from 'bloomer/lib/components/Navbar/NavbarItem';
+import { NavbarStart, NavbarItem }     from 'bloomer';
 import { NavbarLink }     from 'bloomer/lib/components/Navbar/NavbarLink';
 import { Icon }           from 'bloomer/lib/elements/Icon';
 import { NavbarDropdown } from 'bloomer/lib/components/Navbar/NavbarDropdown';
@@ -21,23 +21,23 @@ export class UserNavMenu extends React.Component {
 
   render() {
     return(
-      <NavbarItem hasDropdown isHoverable>
-        <NavbarLink href="#">
-          <Icon isSize="small" className="far fa-robot" />
-        </NavbarLink>
+        <NavbarItem hasDropdown isHoverable >
+          <NavbarLink href="#"  className="is-hidden-touch is-flex-desktop">
+            <Icon isSize="small" className="far fa-robot" />
+          </NavbarLink>
 
-        <NavbarDropdown isBoxed className="is-right">
-          {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
+          <NavbarDropdown isBoxed className="is-right">
+            {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
 
-          <NavbarItem >
-            <Link to={`/${currentUser.username}/settings`}> Settings </Link>
-          </NavbarItem>
+            <NavbarItem >
+              <Link to={`/${currentUser.username}/settings`}> Settings </Link>
+            </NavbarItem>
 
-          <NavbarDivider />
+            <NavbarDivider />
 
-          <NavbarItem href="/users/sign_out">Sign out.</NavbarItem>
-        </NavbarDropdown>
-      </NavbarItem>
+            <NavbarItem href="/users/sign_out">Sign out.</NavbarItem>
+          </NavbarDropdown>
+        </NavbarItem>
     );
   }
 }

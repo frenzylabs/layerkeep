@@ -8,8 +8,6 @@
 
  @import "colors";
 
- @import 'bulma/bulma';
-
  @import 'utility';
  
 
@@ -31,7 +29,6 @@
       .panel-heading {
         @include responsive-font(2vw, 12px, 20px);
       }
-      
     }
 
   }
