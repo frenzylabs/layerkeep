@@ -57,9 +57,11 @@ export class Revision extends React.Component {
     const component = this.state.revision.message ? this.diff() : this.empty();
 
     return (
-      <div className="section">
+      <div className="section" style={{padding: 0}}>
+        <hr/>
+        <br/>
         <Container className="is-fluid">
-          <h3> Revision </h3>
+          <h3 className="subtitle"> Revision </h3>
           {this.diff()}
         </Container>
       </div>

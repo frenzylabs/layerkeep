@@ -82,13 +82,6 @@ export class RepoDetailItem extends React.Component {
 
         <td className="has-text-right cell-option-buttons"  width={66}>
           <div className="field has-addons">
-            <p className="control">
-              <a className="button is-small">
-                <span className="icon is-small">
-                  <i className="fas fa-scalpel-path"></i>
-                </span>
-              </a>
-            </p>
 
             {this.downloadLink(this.props.item)}
 

@@ -59,7 +59,7 @@ export class ProjectDetails extends React.Component {
     return (
       <div className="section">
         <Container className="is-fluid">
-          <Columns>
+          <Columns className="is-mobile">
             <Column>
               <Breadcrumb>
                 <ul>

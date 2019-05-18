@@ -119,12 +119,12 @@ class Details extends React.Component {
         <br/>
 
         <div>
-          <Columns className="is-narrow is-gapless">
+          <Columns className="is-narrow is-gapless is-mobile">
             <Column>
               <RevisionPathTrail match={this.props.match} branches={this.state.branches} meta={this.state.meta}></RevisionPathTrail>        
             </Column>
 
-            <Column isSize={3}>
+            <Column >
               <div className="buttons has-addons is-right">
                 <p className="control">
                   <a className="button is-small" onClick={this.props.uploadAction}>

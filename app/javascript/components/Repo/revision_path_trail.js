@@ -52,8 +52,8 @@ export class RevisionPathTrail extends React.Component {
                 </BreadcrumbItem>)
         })
         
-      return (<Breadcrumb style={{display: "inline-flex", paddingLeft: "15px"}}>
-                <ul style={{display: "inline-flex"}}>
+      return (<Breadcrumb className="is-inline-flex">
+                <ul className="is-inline-flex">
                   {crumbs.concat(res)}
                 </ul>
               </Breadcrumb>)
@@ -64,10 +64,10 @@ export class RevisionPathTrail extends React.Component {
     return(
       <div className="level">
         <div className="level-left">
-          <div className="level-item">
+          <div className="is-inline-flex" style={{paddingRight: "15px"}}>
             <SearchDropdown options={this.props.branches} selected={this.props.meta.revision} onSelected={this.selectBranch} />
           </div>
-          <div className="level-item">
+          <div className="is-inline-flex">
               {this.renderBreadCrumbs()}
             </div>
         </div>
