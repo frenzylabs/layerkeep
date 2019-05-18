@@ -52,7 +52,7 @@ export class RepoFileViewer extends React.Component {
         <br/>
 
         <article className="message is-fullwidth flex-wrapper" style={{border: '1px solid #d1d5da'}}>
-          <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
+          <div className="message-header" style={{display: 'block', background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
           <div className="columns is-mobile" style={{width: '100%', height: '100%'}}>
               <div className="column" style={{flex: 'unset'}}>
                 <div className="level-item">
