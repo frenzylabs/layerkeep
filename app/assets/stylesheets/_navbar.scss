@@ -7,18 +7,39 @@
  */
 
  @import "colors";
+ @import 'utility';
 
  .navbar {
   border-bottom: 1px solid $seperator_color;
   height: 44px !important;
-  
+  flex-direction: row;   
+
+  @include touch {
+    flex-direction: column;    
+  }
   .navbar-brand {
-    a {
+    flex: 0;
+    @include touch {
+      flex: 1;      
+    }
+  }
+
+  @include desktop {
+    .navbar-menu {
+      box-shadow: none;
+      background: transparent;
+    }
+    .navbar-menu.is-active {
+      display: flex;
+    }
+  }
+  
+  
+  a.navbar-logo {
       font-family: 'Nunito Sans', sans-serif !important;
       font-size: 30px !important;
       font-weight: bold !important;
       // color: #373737 !important;
-    }
   }
 }
 
