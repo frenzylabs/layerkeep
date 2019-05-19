@@ -118,6 +118,29 @@ class FilesController < RepoAuthController
 
   end
 
+
+  def destroy
+    if @repo_handler.current_branch.name != @repo_handler.revision
+      render status: 400, json: {'error': 'You must be on a branch to upload'} and return
+    end
+    current_repo = @repo_handler.repo
+    index = current_repo.index
+    index.read_tree(@repo_handler.current_branch.target.tree)
+    index.remove(@repo_handler.filepath)
+
+
+    options = {}
+    options[:tree] = index.write_tree(current_repo)
+
+    options[:author] = { :email => current_user.email, :name => current_user.username, :time => Time.now }
+    options[:committer] = { :email => current_user.email, :name => current_user.username, :time => Time.now }
+    options[:message] ||= "Deleted file #{@repo_handler.filepath}"
+    options[:parents] = current_repo.empty? ? [] : [ @repo_handler.current_commit ].compact
+    options[:update_ref] = 'HEAD'
+
+    @commit_id = Rugged::Commit.create(current_repo, options)
+    render json: {'success': "Deleted #{@repo_handler.filepath}"}
+  end
   
 
   def build_filepath(filepath, pathmatch)

@@ -32,6 +32,7 @@ class Details extends React.Component {
 
     this.updateRepoFiles  = this.updateRepoFiles.bind(this);
     this.renderReadme     = this.renderReadme.bind(this);
+    this.deleteFile       = this.deleteFile.bind(this)
 
     this.updateRepoFileList();
   }
@@ -47,6 +48,17 @@ class Details extends React.Component {
     RepoHandler.tree(url)
     .then((response) => {
       self.updateRepoFiles(response.data)
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  deleteFile(path) {
+    var urlparams = this.props.match.params;
+    RepoHandler.deleteFile(urlparams, path)
+    .then((response) => {
+      this.updateRepoFileList()
     })
     .catch((error) => {
       console.log(error);
@@ -74,7 +86,7 @@ class Details extends React.Component {
   items() {
     if (this.state.repo_files.length > 0) {      
       return this.state.repo_files.map((item) => {
-        return (<RepoDetailItem kind={this.props.kind} item={item} repo={this.props.item} key={item.name} match={this.props.match} />)
+        return (<RepoDetailItem kind={this.props.kind} item={item} repo={this.props.item} key={item.name} match={this.props.match} deleteFile={this.deleteFile} />)
       });
     } else {
       return (<tr><td>No Files</td></tr>)

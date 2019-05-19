@@ -8,8 +8,12 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from 'bloomer';
 
 export class RepoDetailItem extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
   icon(type) {
     if (type == "tree") {
@@ -42,7 +46,7 @@ export class RepoDetailItem extends React.Component {
     }
   }
 
-  downloadLink(item) {
+  downloadLink(item) {    
     var urlparams = this.props.match.params;
     return (
       <p className="control">
@@ -52,6 +56,21 @@ export class RepoDetailItem extends React.Component {
                 </span>
               </a>
             </p>
+    )
+  }
+
+  deleteButton(item) {
+    if (item.type == "tree") {
+      return 
+    }
+    return (
+      <p className="control">
+        <Button className="button is-small" onClick={() => { this.props.deleteFile(item.name)} }>
+          <span className="icon is-small">
+            <i className="far fa-trash"></i>
+          </span>
+        </Button>
+      </p>
     )
   }
 
@@ -85,13 +104,7 @@ export class RepoDetailItem extends React.Component {
 
             {this.downloadLink(this.props.item)}
 
-            <p className="control">
-              <a className="button is-small">
-                <span className="icon is-small">
-                  <i className="far fa-trash"></i>
-                </span>
-              </a>
-            </p>
+            {this.deleteButton(this.props.item)}
           </div>
         </td>
       </tr>

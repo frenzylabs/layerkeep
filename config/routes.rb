@@ -37,17 +37,12 @@ Rails.application.routes.draw do
     get ':repo_name/revision/:revision', {action: 'show', to: 'revisions#show', as: "show_#{options[:as_kind]}_revision", constraints: { view: 'files', revision: /.*/ }}.merge(options)
     # get ':repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/ }}.merge(options)
     get ':repo_name/files/:revision/:filepath', {action: 'show', to: 'files#show', as: "edit_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/, filepath: /.*/ }}.merge(options)
+    delete ':repo_name/files/:revision/:filepath', {action: 'destroy', to: 'files#destroy', as: "destroy_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/, filepath: /.*/ }}.merge(options)
     get ':repo_name/tree/:revision', {action: 'index', to: 'files#index', as: "#{options[:as_kind]}_revision_tree", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
     post ':repo_name/tree/:revision', {action: 'create', to: 'files#create', as: "create_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
     get ':repo_name', {action: 'show', to: 'repos#show', as: "edit_#{options[:as_kind]}"}.merge(options)
     get '/', {action: 'index', to: 'repos#index', as: "#{options[:as_kind]}"}.merge(options)
     post '/', {action: 'create', to: 'repos#create', as: "create_#{options[:as_kind]}"}.merge(options)
-
-    # get 'upload', {action: 'new', as: "new_#{options[:controller]}"}.merge(options)
-    # get ':tree/:treebranch', {action: 'index', as: "#{options[:controller]}", defaults: {tree: 'tree', treebranch: 'master'}, constraints: { tree: 'tree', treebranch: /.*/ }}.merge(options)
-    # get ':files/:treebranch/:filename', {action: 'show', as: "edit_#{options[:controller]}", defaults: {files: 'files'}, constraints: { files: /files|content/, treebranch: /.*/, filename: /.*/ }}.merge(options)
-    # delete ':files/:treebranch/:filename', {action: 'destroy', as: "destroy_#{options[:controller]}", defaults: {files: 'files'}, constraints: { files: 'files', treebranch: /.*/, filename: /.*/ }}.merge(options)
-    # post 'upload/:treebranch', {action: 'create', as: "upload_#{options[:controller]}", defaults: {treebranch: 'master'}, constraints: { treebranch: /.*/ }}.merge(options)    
   end
 
   get ':user/profiles/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_profiles_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'profiles'}}

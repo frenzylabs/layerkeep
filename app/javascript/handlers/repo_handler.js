@@ -9,16 +9,16 @@
 
 import Request from './request_client';
 
-function path(kind, endpoint) {
-  return `/${currentUser.username}/${kind}/${endpoint || ''}`;
+function repoPath(user, kind, endpoint) {
+  return `/${user}/${kind}/${endpoint || ''}`;
 }
 
 export default {
-  list: () => {
-    return Request.get(path());
+  list: (pathParams = {}, queryParams = {}) => {
+    return Request.get(repoPath(pathParams.username, pathParams.kind));
   },
 
-  commit: (kind, repo, files, message) => {
+  commit: (user, kind, repo, files, message) => {
     var data = new FormData();
 
     files.forEach(file => {
@@ -27,7 +27,13 @@ export default {
 
     data.append('message', message);
 
-    return Request.post(path(kind, `${repo}/tree/master`), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+    return Request.post(repoPath(user, kind, `${repo}/tree/master`), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+  },
+
+  deleteFile: (pathParams = {}, file) => {
+    var filepath = `${pathParams.name}/files/${pathParams.revisionPath}/${file}`
+    var path = repoPath(pathParams.username, pathParams.kind, filepath)
+    return Request.delete(path)
   },
 
   tree: (url, params = {}) => {

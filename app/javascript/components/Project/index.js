@@ -116,7 +116,7 @@ export class Project extends React.Component {
           : "" }
         </Container>
 
-        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} kind={this.props.match.params.kind} repo_name={this.state.project.name} />
+        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} urlParams={this.props.match.params} repoName={this.state.project.name} />
       </div>
     )
   }   

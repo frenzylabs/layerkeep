@@ -104,7 +104,7 @@ export class Profile extends React.Component {
           : "" }
         </Container>
 
-        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} kind={this.props.match.params.kind} repo_name={this.state.repo.name} />
+        <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} urlParams={this.props.match.params} repoName={this.state.repo.name} />
       </div>
     )
   }   
