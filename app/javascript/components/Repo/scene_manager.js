@@ -78,6 +78,8 @@ export class SceneManager extends React.Component {
   constructor(props) {
     super(props);
 
+    var upAxis = new THREE.Vector3(0, 0, 1);
+    THREE.Object3D.DefaultUp = upAxis;
     var axes = null;
     if (this.props.showAxes) {
       axes = this.buildAxes(1000)      
@@ -123,12 +125,12 @@ export class SceneManager extends React.Component {
     this.camera.position.set(200, 100, 200);
 
     var hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-    hemiLight.position.set(0, 200, 0);
+    hemiLight.position.set(0, 200, 200);
 
     this.scene.add(hemiLight);
 
     var directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set( 0, 200, 100 );
+    directionalLight.position.set( 0, 200, 200 );
 
     directionalLight.castShadow           = true;
     directionalLight.shadow.camera.top    = 180;
@@ -143,8 +145,8 @@ export class SceneManager extends React.Component {
       new THREE.MeshPhongMaterial({ color: 0x999999, depthWrite: true }) 
     );
 
-    ground.rotation.x     = - Math.PI / 2;
-    ground.position.y = 0; //- 0.5;
+    // ground.rotation.x   = Math.PI / 2;
+    // ground.position.y  = 0; //- 0.5;
     ground.receiveShadow  = true;
 
     this.scene.add(ground);
@@ -152,6 +154,7 @@ export class SceneManager extends React.Component {
     var grid                  = new THREE.GridHelper( 4000, 20, 0x000000, 0x000000 );
     grid.material.opacity     = 0.2;
     grid.material.transparent = true;
+    grid.geometry.rotateX( Math.PI / 2 );
 
     this.scene.add( grid );
 
