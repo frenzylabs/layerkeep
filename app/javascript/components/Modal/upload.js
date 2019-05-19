@@ -85,7 +85,7 @@ export default class UploadModal extends React.Component {
   }
 
   submitAction() {
-    RepoHandler.commit(this.props.kind, this.props.repo_name, this.state.files, this.state.message)
+    RepoHandler.commit(this.props.urlParams.username, this.props.urlParams.kind, this.props.repoName, this.state.files, this.state.message)
     .then((response) => {
       window.location.href = window.location.href;
     })
@@ -125,7 +125,7 @@ export default class UploadModal extends React.Component {
 
         <Columns>
           <Column>
-            <p>Above files will be uploaded to {this.props.kind}.</p>
+            <p>Above files will be uploaded to {this.props.repoName}.</p>
           </Column>
 
           <Column>

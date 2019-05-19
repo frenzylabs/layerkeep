@@ -36,7 +36,7 @@ export class Nav extends React.Component {
           <Link to="/user" className="navbar-logo navbar-item">LayerKeep</Link>
           <Link to={`/${currentUser.username}/profiles/`} className="navbar-item is-hidden-desktop">Profiles</Link>
           <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
-          <Link to={`/${currentUser.username}/slices/new/`} className="navbar-item is-hidden-desktop">Slices <sup>Alpha</sup></Link>
+          <Link to={`/${currentUser.username}/slices/new/`} className="navbar-item is-hidden-desktop">Slicer <sup>Alpha</sup></Link>
           <NavbarBurger isActive={this.state.isActive} onClick={this.onClickNav} />
 
           </NavbarBrand>
@@ -47,7 +47,7 @@ export class Nav extends React.Component {
           <NavbarStart className="is-hidden-touch is-flex-desktop">
             <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
             <Link to={`/${currentUser.username}/projects/`} className="navbar-item">Projects</Link>
-            <Link to={`/${currentUser.username}/slices/new/`} className="navbar-item">Slices <sup>Alpha</sup></Link>
+            <Link to={`/${currentUser.username}/slices/new/`} className="navbar-item">Slicer <sup>Alpha</sup></Link>
           </NavbarStart>
           <NavbarEnd>
             <UserNavMenu />            
