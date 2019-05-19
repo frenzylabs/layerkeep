@@ -45,22 +45,24 @@ class SlicesController < AuthController
         slice.profile_files.build(profiles)
         if slice.valid?
           slice.save!
-
-          slice_params = {
-            slice_id: slice.id,
-            name: slice_name,
-            path: slices_path,
-            status: "waiting",
-            projects: projects,
-            profiles: profiles
-          }
-          res = Publisher.publish_header(slice_params.to_json, "slice.new", {"service": "slicer", "slicer": "slic3r", "slicer-version": "1.3.0"})
-          puts "Publish Res = #{res.inspect}"
-          render json: slice
-        else
-          Rails.logger.info("Slice Invalid: #{slice.errors}")
-          render json: slice.errors
         end
+      end
+
+      if slice.valid?
+        slice_params = {
+          slice_id: slice.id,
+          name: slice_name,
+          path: slices_path,
+          status: "waiting",
+          projects: projects,
+          profiles: profiles
+        }
+        res = Publisher.publish_header(slice_params.to_json, "slice.new", {"service": "slicer", "slicer": "slic3r", "slicer-version": "1.3.0"})
+        puts "Publish Slice Res = #{res.inspect}"
+        render json: slice
+      else
+        Rails.logger.info("Slice Invalid: #{slice.errors}")
+        render json: slice.errors
       end
     rescue 
 

@@ -49,16 +49,17 @@ class StatusHandler
 
           status = meta[:routing_key].split(".").last
 
-          unless ["complete", "failed"].include?(slice.status)
+          unless ["complete", "failed", "success"].include?(slice.status)
             slice.filepath = content["filepath"] if content["filepath"] 
             slice.status = status
             slice.save!
           end
         end
-
-        status_channel.acknowledge(meta.delivery_tag)
+        puts "ABOUT TO ACKNOWLEDGE"
+        self.status_channel.acknowledge(meta.delivery_tag)
       rescue => e
         puts "Slice Status Processing Error #{e.inspect}"
+        self.status_channel.reject(meta.delivery_tag, !meta.redelivered?)
       end
     end
   end
