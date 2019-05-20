@@ -6,9 +6,8 @@
  *  Copyright 2018 WessCope
  */
 
-import {combineReducers} from 'redux';
 import {ProjectReducer} from './project';
 
-export default combineReducers({
+export default {
   project: ProjectReducer
-});
+};

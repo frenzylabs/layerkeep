@@ -7,7 +7,9 @@
  */
 
 import React              from 'react';
+import { connect }        from 'react-redux';
 import { Link }           from 'react-router-dom';
+import { toast }          from 'react-toastify';
 import { ProfileHandler } from '../../handlers';
 
 import { 
@@ -19,7 +21,7 @@ import {
   PanelIcon
 } from 'bloomer';
 
-export class ProfilesPanel extends React.Component {
+class _ProfilesPanel extends React.Component {
   constructor(props) {
     super(props);
     
@@ -34,6 +36,8 @@ export class ProfilesPanel extends React.Component {
     .catch((error) => {
       console.log(error);
     });
+
+    this.blahClick = this.blahClick.bind(this);
   }
 
   profileItems() {
@@ -47,6 +51,9 @@ export class ProfilesPanel extends React.Component {
     });
   }
 
+  blahClick() {
+    toast("Wow that's easy");
+  }
 
   render() {
     return (
@@ -64,7 +71,11 @@ export class ProfilesPanel extends React.Component {
         </PanelHeading>
 
         {this.profileItems()}
+
+        <button onClick={this.blahClick}>blah</button>
       </Panel>
     );
   }
 }
+
+export const ProfilesPanel = connect()(_ProfilesPanel);
