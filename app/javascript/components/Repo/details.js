@@ -187,8 +187,7 @@ class Details extends React.Component {
 
 
 const mapStateToProps = (state) => {
-  return {
-  }
+  return state
 }
 
 export const RepoDetails = connect(mapStateToProps)(Details);

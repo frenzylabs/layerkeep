@@ -6,11 +6,13 @@
  *  Copyright 2018 WessCope
  */
 
-import {createStore}  from 'redux';
-import Reducer        from './reducers';
-import {AppState}     from './app';
+import {createStore, combineReducers} from 'redux';
+import Reducer                        from './reducers';
 
-const store   = createStore(Reducer);
-// window.store  = store;
-
+const store = createStore(
+  combineReducers({
+    ...Reducer,
+  })
+);
+  
 export default store;

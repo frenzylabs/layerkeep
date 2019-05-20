@@ -6,11 +6,11 @@
  *  Copyright 2018 WessCope
  */
 
-import React        from 'react'
-import { connect }  from 'react-redux';
+import React              from 'react'
+import { connect }        from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 
 import {
-  BrowserRouter,
   Switch,
   Route,
   withRouter
@@ -35,10 +35,11 @@ class SideLayout extends React.Component {
     const Component = this.props.component;
     return (
       <div className="has-navbar-fixed-top" style={{flex: '1'}}>
-       <Columns id="layout-column" isGapless >
+        <Columns id="layout-column" isGapless >
           <Column isSize={3} className="is-hidden-mobile" >
             <LeftColumn />
           </Column>
+          
           <Column>
             <Component {...this.props} />
           </Column>
@@ -85,9 +86,6 @@ class AppContainer extends React.Component {
        ]
       }
   }
-  // componentDidUpdate(prevProps) {
-  //   console.log("AppContainer PROPS DID CHANGE");    
-  // }
   
   renderFullLayoutRoutes() {
     return this.state.fullLayoutRoutes.map((item) => {
@@ -101,18 +99,20 @@ class AppContainer extends React.Component {
 
  renderSideBarLayoutRoutes() {
   return this.state.sidebarLayoutRoutes.map((item) => {
-    return (<Route key={item.path} exact path={item.path} 
-      render={ props => 
-        <SideLayout {...item}  {...props} /> 
-      }
-    />)
-  })  
-}
+    return (
+        <Route key={item.path} exact path={item.path}  render={ props =>
+          <SideLayout {...item}  {...props} /> 
+        }/>
+      )
+    });  
+  }
 
   render () {
     return (
       <div id="dashboard" style={{height: '100%'}}>
+        <ToastContainer />
         <Nav />
+
         <Switch>
           {this.renderFullLayoutRoutes()}
           {this.renderSideBarLayoutRoutes()}              
@@ -126,10 +126,10 @@ const mapStateToProps = (state) => {
   return state
 }
 
-function mapDispatchToProps() {
-  return {};
+const mapDispatchToProps = (dispatch) => {
+  return {
+  }
 }
-
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AppContainer));
 

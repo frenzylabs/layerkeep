@@ -31,7 +31,6 @@ class App extends React.Component {
     return (
       <BrowserRouter >
         <AppContainer />
-        
       </BrowserRouter>
     );
   }

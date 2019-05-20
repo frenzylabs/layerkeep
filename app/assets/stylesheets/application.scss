@@ -18,7 +18,7 @@
 
 @import 'vars';
 @import "navbar";
-// @import 'bulma/bulma';
+@import 'react-toastify/dist/ReactToastify';
 
 @import 'fontawesome/scss/light';
 @import 'fontawesome/scss/regular';
@@ -51,4 +51,13 @@ body {
   // padding-top: 3.25rem;
   min-height: 100vh;
   display: flex;
+}
+
+.notification {
+  z-index:        99999;
+  position:       fixed;
+  top:            0;
+  right:          0;
+  left:           0;
+  border-radius:  0 !important;
 }
