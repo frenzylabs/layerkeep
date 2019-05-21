@@ -13,7 +13,7 @@ import { BrowserRouter }  from 'react-router-dom'
 import UserHandler from './handlers/user_handler';
 import StompSocket from './StompSocket';
 
-
+import { toast }          from 'react-toastify';
 
 class Not extends React.Component {
   constructor(props) {
@@ -60,7 +60,8 @@ class Not extends React.Component {
   }
 
   onMessage(msg) {
-    console.log("INSIDE NOT MSG, ", msg);
+    console.log("INSIDE NOT MSG, ", msg);    
+    toast("MSG= " + msg.body );
   }
 
   renderConn() {
