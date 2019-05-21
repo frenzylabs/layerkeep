@@ -26,6 +26,7 @@ gem 'fast_jsonapi'
 gem "pundit"
 gem 'activeadmin'
 gem 'mailgun-ruby', '~>1.1.6'
+gem 'doorkeeper'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
