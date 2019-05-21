@@ -1,5 +1,5 @@
 defaults: &defaults
-  rabbitmq_url: <%= ENV.fetch('RABBITMQ_URL'){ "amqp://guest:guest@localhost:5672" } %>
+  rabbitmq_url: <%= ENV.fetch('RABBITMQ_URL'){ "amqp://rabbit:rabbit@localhost:5672" } %>
   rabbitmq_api_url: <%= ENV.fetch('rabbitmq_api_url') { "http://guest:guest@localhost:15672" } %>  
   slicer_script: <%= ENV.fetch('SLICER_SCRIPT_PATH') { "/Applications/Slic3r.app/Contents/MacOS/slic3r" } %> 
   openscad: <%= ENV.fetch('OPENSCAD_PATH') { "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" } %> 

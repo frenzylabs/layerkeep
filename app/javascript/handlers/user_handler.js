@@ -15,5 +15,9 @@ function path(endpoint) {
 export default {
   saveSettings: (params) => {
     return Request.post(path('settings'), {user: params});
+  },
+
+  authToken: () => {
+    return Request.post('/oauth/access_tokens'); 
   }
 }

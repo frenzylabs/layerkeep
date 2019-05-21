@@ -8,6 +8,7 @@
 
 Rails.application.routes.draw do
   
+  use_doorkeeper
   authenticated :user do
     root to: redirect {|params, request| 
       current_user = request.env["warden"].user(:user)
@@ -22,11 +23,15 @@ Rails.application.routes.draw do
 
   devise_for :users
   
-  
+  post 'oauth/access_tokens', to: 'auth#access_token'
 
   root to: 'main#index'
 
   
+  get '/auth/:kind', to: 'auth#stomp'
+  post '/auth/:kind', to: 'auth#stomp'
+  get '/auth', to: 'auth#stomp'
+  post '/auth', to: 'auth#stomp'
 
   post 'user/settings', to: 'user#settings'
 

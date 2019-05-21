@@ -22,3 +22,8 @@ Things you may want to cover:
 * Deployment instructions
 
 * ...
+
+INSTALL NGINX LOCALLY
+
+brew tap denji/nginx
+brew install nginx-full --with-auth-req
