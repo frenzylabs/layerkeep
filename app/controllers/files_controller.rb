@@ -91,7 +91,7 @@ class FilesController < RepoAuthController
     if commit_id 
       process_files = []
       names.each do |f| 
-        ext = f.split(".").last()
+        ext = f.split(".").last().downcase
         if ["stl", "obj"].include?(ext) 
           process_files << f
         end

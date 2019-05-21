@@ -30,6 +30,8 @@ import {
   Settings
 } from './components';
 
+import Not from './Not'
+
 class SideLayout extends React.Component {
   render() {
     const Component = this.props.component;
@@ -41,6 +43,7 @@ class SideLayout extends React.Component {
           </Column>
           
           <Column>
+            <Not {...this.props} />
             <Component {...this.props} />
           </Column>
       </Columns>

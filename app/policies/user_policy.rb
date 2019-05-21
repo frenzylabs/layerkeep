@@ -49,6 +49,10 @@ class UserPolicy
     update?
   end
 
+  def gcodes?
+    show?
+  end
+
   def destroy?
     (user && (other.id == user.id || user.admin))
   end

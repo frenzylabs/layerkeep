@@ -196,7 +196,7 @@ export class Slicer extends React.Component {
     ProjectHandler.raw(`/${path}`)
     .then((response) => {
       var files = response.data.data.reduce((acc, item) => {
-        if (item.type == "blob" && item.path.match(/\.(stl|obj)$/)) {
+        if (item.type == "blob" && item.path.match(/\.(stl|obj)$/i)) {
           return acc.concat({name: item.name, value: item.path})
         } else {
           return acc;
