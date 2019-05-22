@@ -6,28 +6,35 @@
  *  Copyright 2018 WessCope
  */
 
-import React from 'react';
-import { connect } from 'react-redux';
-import { Link }         from 'react-router-dom';
-import { RepoDetails } from '../Repo/details';
-import { Container } from 'bloomer';
-// import { Breadcrumb } from 'bloomer/lib/components/Breadcrumb/Breadcrumb';
-import { Breadcrumb, BreadcrumbItem } from 'bloomer';
+import React              from 'react';
+import { Link }           from 'react-router-dom';
+import { RepoDetails }    from '../Repo/details';
 import { ProjectHandler } from '../../handlers/project_handler';
-import { ProjectAction }  from '../../states/project';
-import { Columns } from 'bloomer/lib/grid/Columns';
-import { Column } from 'bloomer/lib/grid/Column';
-import { Button } from 'bloomer/lib/elements/Button';
-import Modal from '../Modal';
+import Modal              from '../Modal';
+
+import { 
+  Container,
+  Breadcrumb, 
+  BreadcrumbItem,
+  Columns,
+  Column,
+  Button
+} from 'bloomer';
 
 export class ProjectDetails extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state          = {isUploadActive: false, project: {}};
-    this.uploadAction   = this.uploadAction.bind(this);
-    this.dismissAction  = this.dismissAction.bind(this);
-    
+    this.state = {
+      isUploadActive: false, 
+      project: {},
+      hasError: 0
+    };
+
+    this.uploadAction       = this.uploadAction.bind(this);
+    this.dismissAction      = this.dismissAction.bind(this);
+    this.loadProjectDetails = this.loadProjectDetails.bind(this);
+
     this.loadProjectDetails();
   }
 
@@ -37,7 +44,7 @@ export class ProjectDetails extends React.Component {
       this.setState({project: response.data.data.attributes})
     })
     .catch((error) => {
-      console.log(error);
+      console.dir("Error");
     });
   }
 
@@ -55,7 +62,7 @@ export class ProjectDetails extends React.Component {
     });
   }
 
-  render() {
+  render() {    
     return (
       <div className="section">
         <Container className="is-fluid">

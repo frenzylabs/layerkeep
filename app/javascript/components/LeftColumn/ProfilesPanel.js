@@ -36,8 +36,6 @@ class _ProfilesPanel extends React.Component {
     .catch((error) => {
       console.log(error);
     });
-
-    this.blahClick = this.blahClick.bind(this);
   }
 
   profileItems() {
@@ -49,10 +47,6 @@ class _ProfilesPanel extends React.Component {
         </PanelBlock>  
       )
     });
-  }
-
-  blahClick() {
-    toast("Wow that's easy");
   }
 
   render() {
@@ -71,8 +65,6 @@ class _ProfilesPanel extends React.Component {
         </PanelHeading>
 
         {this.profileItems()}
-
-        <button onClick={this.blahClick}>blah</button>
       </Panel>
     );
   }

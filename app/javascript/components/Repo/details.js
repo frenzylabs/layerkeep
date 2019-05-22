@@ -8,14 +8,25 @@
 
 import React                from 'react';
 import { connect }          from 'react-redux';
-import { Table }            from 'bloomer';
-import { Columns, Column }  from 'bloomer';
+
+import { 
+  Table,
+  Columns, 
+  Column,
+  Content,
+  Icon
+} from 'bloomer';
+
 import { RepoDetailItem }   from './detail_item';
 import { RepoHandler }      from '../../handlers';
 import { RevisionPathTrail }  from './revision_path_trail'
-import { Content }          from 'bloomer/lib/elements/Content';
 import { FileViewer }       from '../FileViewer';
-import { Icon }             from 'bloomer/lib/elements/Icon';
+
+import {
+  Error404,
+  Error401
+} from '../ErrorViews';
+
 
 class Details extends React.Component {
   constructor(props) {
@@ -27,12 +38,14 @@ class Details extends React.Component {
       branches:         this.props.item.branches || [], 
       currentRevision:  "", 
       message:          '', 
-      lastUpdate:       ''
+      lastUpdate:       '',
+      hasError:         0
     };
 
-    this.updateRepoFiles  = this.updateRepoFiles.bind(this);
-    this.renderReadme     = this.renderReadme.bind(this);
-    this.deleteFile       = this.deleteFile.bind(this)
+    this.updateRepoFiles    = this.updateRepoFiles.bind(this);
+    this.renderReadme       = this.renderReadme.bind(this);
+    this.deleteFile         = this.deleteFile.bind(this);
+    this.updateRepoFileList = this.updateRepoFileList.bind(this);
 
     this.updateRepoFileList();
   }
@@ -50,7 +63,10 @@ class Details extends React.Component {
       self.updateRepoFiles(response.data)
     })
     .catch((error) => {
-      console.log(error);
+      this.setState({
+        ...this.state,
+        hasError: error.response.status
+      })
     });
   }
 
@@ -69,12 +85,16 @@ class Details extends React.Component {
     if (this.props.match.url != prevProps.match.url) {
       this.updateRepoFileList()
     } else if (this.props.item.branches != prevProps.item.branches ) {
-      this.setState({ branches: this.props.item.branches })
+      this.setState({ 
+        ...this.state,
+        branches: this.props.item.branches 
+      });
     }
   }
 
   updateRepoFiles(data) {
     this.setState({ 
+      ...this.state,
       lastUpdate: data.meta.last_committed_at,
       message: data.meta.last_commit_message || "",
       repo_files: data.data,
@@ -122,6 +142,21 @@ class Details extends React.Component {
   }
 
   render() {
+    if(this.state.hasError > 0) {
+
+      switch(this.state.hasError) {
+        case 404:
+          return (
+            <Error404/>
+          );
+
+        case 401:
+          return (
+            <Error401/>
+          )
+      }
+    }
+
     const urlparams = this.props.match.params;
     const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath || 'master'}?download=true`;
 

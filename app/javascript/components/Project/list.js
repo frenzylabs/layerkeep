@@ -91,12 +91,4 @@ export class ProjectList extends React.Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   // console.dir(state);
-//   return {
-//     list: state.project.list
-//   }
-// }
-
-// export const ProjectList = connect(mapStateToProps)(List);
 export default ProjectList
