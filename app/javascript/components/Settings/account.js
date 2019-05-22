@@ -17,6 +17,7 @@ import {
   Box,
   Label
 } from 'bloomer';
+import { toast } from 'react-toastify';
 
 export class AccountSettings extends React.Component {
   constructor(props) {
@@ -146,7 +147,7 @@ export class AccountSettings extends React.Component {
           ...this.getErrors(),
           server: error.response.data.error
         }
-      })
+      });
     });
   }
 

@@ -18,6 +18,11 @@ import { SliceDetails }     from '../Slices/details'
 import Modal                from '../Modal';
 import {RepoBreadCrumbs} from '../Repo/breadcrumbs';
 
+import {
+  Error404,
+  Error401
+} from '../ErrorViews';
+
 import { 
   Container, 
   Columns, 
@@ -29,9 +34,16 @@ export class Project extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state          = {isUploadActive: false, project: {}};
-    this.uploadAction   = this.uploadAction.bind(this);
-    this.dismissAction  = this.dismissAction.bind(this);
+    this.state          = {
+      isUploadActive: false, 
+      project:        {},
+      hasError:       0,
+      hasLoaded:      false
+    };
+
+    this.uploadAction       = this.uploadAction.bind(this);
+    this.dismissAction      = this.dismissAction.bind(this);
+    this.loadProjectDetails = this.loadProjectDetails.bind(this);
     
     this.loadProjectDetails();
   }
@@ -39,10 +51,18 @@ export class Project extends React.Component {
   loadProjectDetails() {    
     ProjectHandler.get(this.props.match.params.username, this.props.match.params.name)
     .then((response) => {
-      this.setState({project: response.data.data.attributes})
+      this.setState({
+        ...this.state,
+        project: response.data.data.attributes,
+        hasLoaded: true
+      });
     })
     .catch((error) => {
-      console.log(error);
+      this.setState({
+        ...this.state,
+        hasError: error.response.status,
+        hasLoaded: true
+      });
     });
   }
 
@@ -87,6 +107,24 @@ export class Project extends React.Component {
   }
 
   render() {
+
+    if(this.state.hasLoaded == false) {
+      return(
+        <div className="section">
+          <p>Loading this shit.</p>
+        </div>
+      )
+    }
+
+    if(this.state.hasError > 0) {
+      switch(this.state.hasError) {
+        case 404:
+          return (<Error404 style={{height: '100%'}}/>);
+        case 401:
+          return (<Error401/>);
+      }
+    }
+
     const Resource = this.renderResource();
     return (
       <div className="section" style={{height: '100%'}}>
