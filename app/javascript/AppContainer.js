@@ -57,6 +57,7 @@ class FullScreenLayout extends React.Component {
     const Component = this.props.component;
     return (
       <div id="" className="has-navbar-fixed-top" style={{height: '100vh', flex: '1'}}>
+        <Not {...this.props} />
        <Columns id="layout-column" isGapless >
           <Column isFullWidth >
             <Component {...this.props} />

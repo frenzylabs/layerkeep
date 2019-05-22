@@ -4,8 +4,13 @@ class StatusHandler
 
   def initialize(opts = {})
     puts "INIT RABBITMQ StatusHandler"
+    @status_queue_name = "svc.slice_status"
     @retries_left = @max_retries = opts['max_retries'] || -1
     @retry_timeout = opts['retry_timeout'] || DEFAULT_RETRY_TIMEOUT
+  end
+
+  def queue_name 
+    @status_queue_name
   end
 
   def start    
@@ -35,7 +40,11 @@ class StatusHandler
 
   def setup_slice_status_subscriber
     self.status_channel.prefetch(10)
-    q = self.status_channel.queue('slice_status', durable: true)
+    opts = {durable: true, arguments: {"x-dead-letter-exchange" => "DLX"}}
+    if self.connection.queue_exists?(self.queue_name)
+      opts[:passive] = true
+    end
+    q = self.status_channel.queue(self.queue_name, opts)
     q.bind(status_exchange, routing_key: 'slice.status.#').subscribe(manual_ack: true) do |meta, properties, payload|
     
       puts "Status Meta Content #{meta.inspect}"
@@ -45,14 +54,21 @@ class StatusHandler
         content = JSON.parse(payload)
         
         if content["slice_id"] 
-          slice = Slice.find(content["slice_id"])
-
+          slice = Slice.includes([:user, project_files: :repo]).find(content["slice_id"])
+          
           status = meta[:routing_key].split(".").last
 
           unless ["complete", "failed", "success"].include?(slice.status)
             slice.filepath = content["filepath"] if content["filepath"] 
             slice.status = status
             slice.save!
+            project_name = slice.project_files.first.repo.name
+            body = {
+              status: status,
+              message: "Slice for #{project_name} has #{status}",
+              path: "/#{slice.user.username}/projects/#{project_name}/slices/#{slice.id}"
+            }
+            UserPublisher.publish(body.to_json, slice.user.username)
           end
         end
         puts "ABOUT TO ACKNOWLEDGE"
@@ -73,6 +89,7 @@ class StatusHandler
   end
 
   def connection
+    AMQPConnectionManager.establish_connection unless AMQPConnectionManager.amqp_connection
     @connection ||= AMQPConnectionManager.amqp_connection
   end
 
