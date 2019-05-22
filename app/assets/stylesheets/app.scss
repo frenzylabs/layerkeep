@@ -21,6 +21,7 @@
 
   #left-column {
     // width:100% !important;
+    overflow: hidden !important;
     height:100% !important;
     background: $left_column_background_color;
     border-right: 1px solid $seperator_color;

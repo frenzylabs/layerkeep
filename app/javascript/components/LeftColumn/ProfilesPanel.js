@@ -55,7 +55,7 @@ class _ProfilesPanel extends React.Component {
         <PanelHeading tag='div'>        
           <Columns>
             <Column isSize={8}>
-              <p>Profiles</p>
+              <p style={{marginRight: '4px'}}>Profiles</p>
             </Column>
 
             <Column>

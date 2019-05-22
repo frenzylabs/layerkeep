@@ -38,7 +38,7 @@ class SideLayout extends React.Component {
     return (
       <div className="has-navbar-fixed-top" style={{flex: '1'}}>
         <Columns id="layout-column" isGapless >
-          <Column isSize={3} className="is-hidden-mobile" >
+          <Column isSize={2} className="is-hidden-mobile" >
             <LeftColumn />
           </Column>
           
