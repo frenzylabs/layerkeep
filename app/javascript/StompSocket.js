@@ -2,8 +2,8 @@
  *  App.js
  *  LayerKeep
  * 
- *  Created by Wess Cope (me@wess.io) on 04/23/19
- *  Copyright 2018 WessCope
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 05/23/19
+ *  Copyright 2019 Frenzylabs
  */
 
 import React              from 'react'
@@ -15,17 +15,13 @@ import webstomp from 'webstomp-client';
 class StompSocket extends React.Component {
   constructor(props) {
     super(props);
-    var topics = [];
-    if (currentUser && currentUser.username) {
-      topics = ["LK.#", currentUser.username]
-    }
+    
     this.state = {
-      user: '',
-      pwd: '',
+      client: null,
+      subscriptions: {},
       vhost: 'users',
       timeStamp: Date.now(),
-      maxReconnect: 4,
-      topics: topics
+      maxReconnect: 5
     };
 
     this.onOpen    = this.onOpen.bind(this);
@@ -33,55 +29,68 @@ class StompSocket extends React.Component {
     this.onError   = this.onError.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.connect   = this.connect.bind(this);
-    
 
-    console.log("INSIDE WEBSOCKET")
+  }
+
+  componentDidMount() {
     this.connect()
   }
 
-  componentDidUpdate(prevProps) {
-    console.log(prevProps);
-    this.connect()
+  componentDidUnMount() {
+    this.state.client.disconect(() => { console.log("Disconnected");})
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.user != prevProps.user || this.props.password != prevProps.password || this.state.client != prevState) {
+      this.connect()
+    }
+    
+    if (this.props.topics != prevProps.topics) {
+      this.handleSubscriptions()
+    }
   }
 
   setupWebSocket = () => {
    var protocol = document.location.protocol == "https" ? 'wss' : 'ws';
    var wspath = `${protocol}://${document.location.hostname}/ws`
-   this.client = webstomp.client(wspath, {debug: false});
-   this.client.ws.onopen = this.onOpen
+   var client = webstomp.client(wspath, {debug: false});   
+   client.ws.onopen = this.onOpen
+   this.setState( { client: client })
+  }
+
+  handleSubscriptions() {
+    var subs = this.state.subscriptions;
+    Object.keys(subs).forEach((key) => {
+      subs[key].unsubscribe()
+    })
+    subs = []
+    this.props.topics.forEach((topic, index) => {
+      subs[topic] = this.state.client.subscribe(topic, this.onMessage)
+    });
+    this.setState( {subscriptions: subs})
   }
 
   onOpen() {
-    console.log("ON OPEN");
     this.connect()    
   }
 
-  connect = () => {    
-    if (this.client && this.client.connected) {
-      console.log("INSIDE WEBSOCKET ALREADY CONNECTED")
-      return
-    }
-    else if (this.client && this.client.ws.readyState == this.client.ws.OPEN) {
-      console.log("INSIDE WEBSOCKET CONNECT IS READY")
-      this.client.connect(this.props.user, this.props.password, this.onConnect, this.onError, this.state.vhost)
-    } 
-    else {
-      this.setupWebSocket()
-      if (this.client.ws.readyState == this.client.ws.OPEN) {
-        console.log("INSIDE WEBSOCKET CONNECT IS READY 2")
-        this.client.connect(this.props.user, this.props.password, this.onConnect, this.onError, this.state.vhost)
-      } else {
-        console.log("INSIDE CONNECT NOT READY: ", this.client.ws.readyState);
+  connect() {
+    if (this.state.client) {
+      if (!this.state.client.connected) {
+        if (this.state.client.ws.readyState == this.state.client.ws.OPEN) {
+          this.state.client.connect(this.props.user, this.props.password, this.onConnect, this.onError, this.state.vhost)
+        }
+        else if (this.state.client.ws.readyState == this.state.client.ws.CLOSED) {
+          this.setupWebSocket()  
+        }
       }
+    } else {
+      this.setupWebSocket()
     }
-
   }
 
   onConnect() {
-    console.log("CONNECTED")
-    this.props.topics.forEach((topic, index) => {
-      this.client.subscribe(topic, this.onMessage)
-    });
+    this.handleSubscriptions()    
     if (this.props.onConnect) { this.props.onConnect() }
   }
 
@@ -96,7 +105,6 @@ class StompSocket extends React.Component {
   }
 
   onMessage(msg) {
-    console.log("MESSAGE: ", msg)
     if (this.props.onMessage) { this.props.onMessage(msg) }
   }
 
@@ -104,8 +112,13 @@ class StompSocket extends React.Component {
       return <span />;
   }
 }
-export default StompSocket;
-// WebSocket.defaultProps = {
-//     name: 'something',
-//     maxReconnect: 5,
-//   };
+
+const mapStateToProps = (state) => {
+  return state
+}
+
+function mapDispatchToProps() {
+  return {};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(StompSocket);

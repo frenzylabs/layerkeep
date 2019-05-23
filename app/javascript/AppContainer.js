@@ -30,7 +30,7 @@ import {
   Settings
 } from './components';
 
-import Not from './Not'
+import RemoteMessage from './RemoteMessage'
 
 class SideLayout extends React.Component {
   render() {
@@ -41,9 +41,7 @@ class SideLayout extends React.Component {
           <Column isSize={2} className="is-hidden-mobile" >
             <LeftColumn />
           </Column>
-          
           <Column>
-            <Not {...this.props} />
             <Component {...this.props} />
           </Column>
       </Columns>
@@ -57,7 +55,6 @@ class FullScreenLayout extends React.Component {
     const Component = this.props.component;
     return (
       <div id="" className="has-navbar-fixed-top" style={{height: '100vh', flex: '1'}}>
-        <Not {...this.props} />
        <Columns id="layout-column" isGapless >
           <Column isFullWidth >
             <Component {...this.props} />
@@ -114,6 +111,7 @@ class AppContainer extends React.Component {
   render () {
     return (
       <div id="dashboard" style={{height: '100%'}}>
+        <RemoteMessage {...this.props} />
         <ToastContainer />
         <Nav />
 
