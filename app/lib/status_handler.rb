@@ -64,8 +64,10 @@ class StatusHandler
             slice.save!
             project_name = slice.project_files.first.repo.name
             body = {
+              id: slice.id,
+              kind: 'slice',
               status: status,
-              message: "Slice for #{project_name} has #{status}",
+              message: "Slice for #{project_name} has status: #{status}",
               path: "/#{slice.user.username}/projects/#{project_name}/slices/#{slice.id}"
             }
             UserPublisher.publish(body.to_json, slice.user.username)

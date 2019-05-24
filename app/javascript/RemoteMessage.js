@@ -8,11 +8,33 @@
 
 import React              from 'react'
 import { connect }        from 'react-redux';
+import { Link }         from 'react-router-dom';
 
 import UserHandler from './handlers/user_handler';
 import StompSocket from './StompSocket';
 
+
 import { toast }          from 'react-toastify';
+
+function SliceMessage(msg, opts = {}) {
+  var textColor = "black";
+  if(msg.status == "success") {
+    opts['type'] = "success"
+    textColor = "white"
+  } else if (msg.status == "failed") {
+    opts['type'] = "error"
+    textColor = "white"
+  }
+
+  var SliceMsg = ({ closeToast }) => (
+      <Link to={`/${msg.path}`} style={{display: 'block', color: textColor}}>
+      {msg.message}
+      </Link>
+  )
+
+  toast(<SliceMsg />, opts);
+}
+
 
 class RemoteMessage extends React.Component {
   constructor(props) {
@@ -54,8 +76,17 @@ class RemoteMessage extends React.Component {
   }
 
   onMessage(msg) {
-    console.log("INSIDE NOT MSG, ", msg);    
-    toast("MSG= " + msg.body, { autoClose: 150000 } );
+    console.log("Received Msg: ", msg);    
+    var content = "";
+    try {
+      content = JSON.parse(msg.body)
+      if (content.kind == "slice") {
+        SliceMessage(content, { autoClose: 10000 })
+      }
+    }
+    catch(err) {
+      console.error(err);
+    }    
   }
 
 
