@@ -8,7 +8,7 @@
 
 import axios from 'axios';
 
-const instance = axios.create({
+export const Request = axios.create({
   baseURL:      '',
   responseType: 'json',
   headers: {
@@ -17,4 +17,7 @@ const instance = axios.create({
 	}
 });
 
-export default instance;
+export const isCancel = axios.isCancel;
+export const CancelToken = axios.CancelToken;
+
+export default Request;

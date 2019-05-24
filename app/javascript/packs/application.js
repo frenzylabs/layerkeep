@@ -21,17 +21,22 @@ import {Provider}   from 'react-redux'
 
 import App    from '../App';
 import store  from '../states/store';
-import Request from '../handlers/request_client';
+import { Request, isCancel } from '../handlers/request_client';
 
 Request.interceptors.response.use(function (response) {
   return response;
 }, function (error) {
   //catches if the session ended!
-  console.log(error.response)
-  if (error.response.status == 401) {
-    store.dispatch({ type: "UNAUTH_USER" });
+  console.log(error);
+  if (isCancel(error)) {
+    console.log('Request canceled', error.message);
+  } else {
+    if (error.response && error.response.status == 401) {
+      store.dispatch({ type: "UNAUTH_USER" });
+    }
   }
   return Promise.reject(error);
+  
 });
 
 

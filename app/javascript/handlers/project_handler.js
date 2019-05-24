@@ -7,7 +7,7 @@
  */
 
 
-import Request from './request_client';
+import {Request, CancelToken} from './request_client';
 
 function path(endpoint) {
   return `/${currentUser.username}/projects/${(endpoint || '')}`;
@@ -17,6 +17,9 @@ function user_project(user, endpoint) {
 }
 
 export default {
+  cancelSource: () => {
+    return CancelToken.source();
+  },
   list: (user, query_params = {}) => {
     return Request.get(user_project(user), query_params);
   },
@@ -80,7 +83,7 @@ export default {
     return Request.get(path(name + '/tree/' + revision));
   },
 
-  raw: (url) => {
-    return Request.get(url);
+  raw: (url, opts = {}) => {
+    return Request.get(url, opts);
   }
 }

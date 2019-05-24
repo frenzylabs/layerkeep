@@ -29,11 +29,14 @@ export class SliceDetails extends React.Component {
     this.props.match.params.revisionPath
     this.state = {project: this.props.item, slice: null}
 
+    this.cancelRequest = SliceHandler.cancelSource();
     this.getSlice()
-
-    window.sl = this;
   }
 
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
+  
   getSlice() {
     var url = this.props.match.url
     var params = {}
@@ -41,7 +44,7 @@ export class SliceDetails extends React.Component {
       params["repo_id"] = this.state.project.id
     }
     var id = this.props.match.params.revisionPath;
-    SliceHandler.show(this.props.match.params.username, id, {params})
+    SliceHandler.show(this.props.match.params.username, id, {params, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.updateSlice(response.data)
     })

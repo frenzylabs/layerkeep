@@ -34,7 +34,12 @@ export class SliceList extends React.Component {
     
     this.items = this.items.bind(this);
 
+    this.cancelRequest = SliceHandler.cancelSource();
     this.updateSlicesList()
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   updateSlicesList() {
@@ -43,7 +48,7 @@ export class SliceList extends React.Component {
     if (this.state.project) {
       params["repo_id"] = this.state.project.id
     }
-    SliceHandler.list(this.props.match.params.username, {params})
+    SliceHandler.list(this.props.match.params.username, {params, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.updateSlices(response.data)
     })

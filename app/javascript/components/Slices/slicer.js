@@ -58,11 +58,18 @@ export class Slicer extends React.Component {
     this.createSlice            = this.createSlice.bind(this);
     
 
+    this.cancelRequest = ProjectHandler.cancelSource();
+
     this.loadProjects();
     this.loadProfiles();
 
     window.slicer = this;
 
+  }
+
+  componentWillUnmount() {
+    console.log("Unmount h");
+    this.cancelRequest.cancel("Left Page");
   }
 
   addProfile() {
@@ -74,7 +81,7 @@ export class Slicer extends React.Component {
   }
 
   loadProjects() {    
-    ProjectHandler.list(null)
+    ProjectHandler.list(null, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       // console.log()
       var projects = response.data.data.map((item) => {
@@ -98,7 +105,7 @@ export class Slicer extends React.Component {
 
 
   loadProfiles() {    
-    ProfileHandler.list()
+    ProfileHandler.list(null, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var profiles = response.data.data.map((item) => {
         return {name: item.attributes.name, value: item.attributes.path, id: item.id}
@@ -164,7 +171,7 @@ export class Slicer extends React.Component {
     // console.log("Selected Project: ", id, item)
     var num = this.getSelection(id)
 
-    ProjectHandler.raw(`/${item.value}`)
+    ProjectHandler.raw(`/${item.value}`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var revisions = response.data.data.attributes.branches.map((item) => {
         return {name: item, value: item}
@@ -193,7 +200,7 @@ export class Slicer extends React.Component {
     var num = this.getSelection(id)
 
     var path = this.state.projectSelections[num].selectedRepo.value + "/tree/" + item.value;
-    ProjectHandler.raw(`/${path}`)
+    ProjectHandler.raw(`/${path}`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var files = response.data.data.reduce((acc, item) => {
         if (item.type == "blob" && item.path.match(/\.(stl|obj)$/i)) {
@@ -240,7 +247,7 @@ export class Slicer extends React.Component {
     // console.log("Selected Profile: ", id, item)
     var num = this.getSelection(id)
 
-    ProjectHandler.raw(`/${item.value}`)
+    ProjectHandler.raw(`/${item.value}`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var revisions = response.data.data.attributes.branches.map((item) => {
         return {name: item, value: item}
@@ -264,7 +271,7 @@ export class Slicer extends React.Component {
     var num = this.getSelection(id)
     // console.log("Selected Profile Revision: ", id, item)
     var path = this.state.profileSelections[num].selectedRepo.value + "/tree/" + item.value;
-    ProjectHandler.raw(`/${path}`)
+    ProjectHandler.raw(`/${path}`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var files = response.data.data.reduce((acc, item) => {
         if (item.type == "blob") {

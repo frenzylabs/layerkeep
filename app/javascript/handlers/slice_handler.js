@@ -7,7 +7,7 @@
  */
 
 
-import Request from './request_client';
+import {Request, CancelToken} from './request_client';
 
 function path(endpoint) {
   return '/' + currentUser.username + '/slices/' + (endpoint || '');
@@ -18,6 +18,9 @@ function user_path(username, endpoint) {
 }
 
 export default {
+  cancelSource: () => {
+    return CancelToken.source();
+  },
   list: (username, params = {}) => {
     return Request.get(user_path(username), params);
   },

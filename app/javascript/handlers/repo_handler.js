@@ -7,15 +7,18 @@
  */
 
 
-import Request from './request_client';
+import {Request, CancelToken} from './request_client';
 
 function repoPath(user, kind, endpoint) {
   return `/${user}/${kind}/${endpoint || ''}`;
 }
 
 export default {
+  cancelSource: () => {
+    return CancelToken.source();
+  },
   list: (pathParams = {}, queryParams = {}) => {
-    return Request.get(repoPath(pathParams.username, pathParams.kind));
+    return Request.get(repoPath(pathParams.username, pathParams.kind), queryParams);
   },
 
   commit: (user, kind, repo, files, message) => {
