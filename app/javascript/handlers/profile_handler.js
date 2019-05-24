@@ -7,19 +7,22 @@
  */
 
 
-import Request from './request_client';
+import {Request, CancelToken} from './request_client';
 
 function path(endpoint) {
   return `/${currentUser.username}/profiles/${(endpoint || '')}`;
 }
 
 export default {
+  cancelSource: () => {
+    return CancelToken.source();
+  },
   list: (query_params = {}) => {
     return Request.get(path(), query_params);
   },
 
-  get: (name) => {
-    return Request.get(path(name));
+  get: (name, opts = {}) => {
+    return Request.get(path(name), opts);
   },
 
   create: (profile, files = null) => {
