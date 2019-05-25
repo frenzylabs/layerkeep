@@ -16,14 +16,21 @@ export class RepoFileViewer extends React.Component {
     super(props);
 
     this.state = {contentType: null, url: null, extension: '', meta: {}}
+    
+    this.cancelRequest = RepoHandler.cancelSource();
     this.loadFile();
   }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
+
 
   loadFile() {
     var self = this;
     var url = this.props.match.url
 
-    RepoHandler.tree(url)
+    RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
       .then((response) => {
 
       var params = this.props.match.params;

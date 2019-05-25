@@ -17,13 +17,18 @@ export class Revision extends React.Component {
     super(props);
 
     this.state = { revision: {}}
+    this.cancelRequest = RepoHandler.cancelSource();
     this.getRevision()
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   getRevision() {
     var url = this.props.match.url
 
-    RepoHandler.tree(url)
+    RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.updateRevision(response.data)
     })

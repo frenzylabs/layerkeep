@@ -47,10 +47,13 @@ export class RepoDetailItem extends React.Component {
   }
 
   downloadLink(item) {    
-    var urlparams = this.props.match.params;
+    var urlParams = this.props.match.params;
+    if (!urlParams.revisionPath) {
+      urlParams.revisionPath = "master"
+    }
     return (
       <p className="control">
-          <a className="button is-small" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}/${item.name}?download=true`}>
+          <a className="button is-small" href={`/${urlParams.username}/${urlParams.kind}/${urlParams.name}/content/${urlParams.revisionPath}/${item.name}?download=true`}>
                 <span className="icon is-small">
                   <i className="far fa-download"></i>
                 </span>

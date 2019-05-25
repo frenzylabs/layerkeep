@@ -16,10 +16,10 @@ require('three/examples/js/controls/OrbitControls.js')
 
 function fitCameraToObject  ( camera, object, offset, controls ) {
 
-  offset = offset || 1.25;
+  offset = 1.75;
 
   var camera = camera;
-  const boundingBox = new THREE.Box3();
+  var boundingBox = new THREE.Box3();
 
   // get bounding box of object - this will be used to setup controls and camera
   boundingBox.setFromObject( object );
@@ -31,10 +31,15 @@ function fitCameraToObject  ( camera, object, offset, controls ) {
 
     // get the max side of the bounding box (fits to width OR height as needed )
   const maxDim = Math.max( size.x, size.y, size.z );
-  const fov = camera.fov * ( Math.PI / 180 );
-  var cameraZ = Math.abs( maxDim / 2 * Math.tan( fov * 2 ) ); //Applied fifonik correction
+
+  // Convert FOV to radiams  
+  // const fov = camera.fov * ( Math.PI / 180 );
+  var fov = THREE.Math.degToRad( camera.fov );
+  var cameraZ = Math.abs( maxDim / 2 / Math.tan( fov / 2 ) ) + maxDim; //Applied fifonik correction
+  // var cameraZ = Math.abs( maxDim / 2 * Math.tan( fov * 2 ) ); //Applied fifonik correction
   cameraZ *= offset; // zoom out a little so that objects don't fill the screen
 
+  // console.log("camera Z, ", cameraZ);
   //Method 1 to get object's world position
   // scene.updateMatrixWorld(); //Update world positions
   var objectWorldPosition = new THREE.Vector3();
@@ -43,34 +48,30 @@ function fitCameraToObject  ( camera, object, offset, controls ) {
   //Method 2 to get object's world position
   object.getWorldPosition(objectWorldPosition);
 
-  const directionVector = camera.position.sub(objectWorldPosition); 	//Get vector from camera to object
-
-  const unitDirectionVector = directionVector.normalize(); // Convert to unit vector
+  camera.position.set(size.x, size.y, size.z / 2 + 20);
   
-  var newpos = unitDirectionVector.multiplyScalar(cameraZ);  
-  camera.position.copy(newpos);
-
-  // camera.position = unitDirectionVector.multiplyScalar(cameraZ); //Multiply unit vector times cameraZ distance
-
-  camera.lookAt(objectWorldPosition); //Look at object
-  // --->
+  var camPos = camera.position.clone().normalize();
+  var newpos = camPos.multiplyScalar(cameraZ)
+  camera.position.copy(newpos)
 
 
-  const minZ = boundingBox.min.z;
-  const cameraToFarEdge = ( minZ < 0 ) ? -minZ + cameraZ : cameraZ - minZ;
+  // console.log("Camera new position = ", newpos)
+
+  camera.lookAt(center); //Look at object
+
+  const minY = boundingBox.min.y;
+  const cameraToFarEdge = ( minY < 0 ) ? -minY + cameraZ : cameraZ - minY;
 
   camera.far = cameraToFarEdge * 3;
   camera.updateProjectionMatrix();
 
-
   if ( controls ) {
-
     // set camera to rotate around center of loaded object
     controls.target = center;
     // // prevent camera from zooming out far enough to create far plane cutoff
     controls.maxDistance = cameraToFarEdge * 2;
   } else {
-      camera.lookAt( center )
+    camera.lookAt( center )
   }
 }
 
@@ -122,15 +123,15 @@ export class SceneManager extends React.Component {
 
   setupScene() {
 
-    this.camera.position.set(200, 100, 200);
+    this.camera.position.set(200, 200, 200);
 
     var hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-    hemiLight.position.set(0, 200, 200);
+    hemiLight.position.set(500, 500, 500);
 
     this.scene.add(hemiLight);
 
     var directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set( 0, 200, 200 );
+    directionalLight.position.set( 200, 200, 200 );
 
     directionalLight.castShadow           = true;
     directionalLight.shadow.camera.top    = 180;
@@ -138,7 +139,7 @@ export class SceneManager extends React.Component {
     directionalLight.shadow.camera.left   = -120;
     directionalLight.shadow.camera.right  = 120;
 
-    this.scene.add(directionalLight);
+    // this.camera.add(directionalLight);
 
     var ground = new THREE.Mesh( 
       new THREE.PlaneBufferGeometry(4000, 4000), 
@@ -184,14 +185,17 @@ export class SceneManager extends React.Component {
 
     
     this.mesh.castShadow = true;
+
+    this.mesh.position.x =  - boundingBox.min.x;
     this.mesh.position.y =  - boundingBox.min.y;
+    this.mesh.position.z =  - boundingBox.min.z;
 
     this.scene.add(this.mesh);
 
     // var container = $(this.sceneContainer.current)
-    this.handleResize();
+    
     fitCameraToObject  ( this.camera, this.mesh, 4, this.controls )
-
+    this.handleResize();
     this.animate();
   }
 

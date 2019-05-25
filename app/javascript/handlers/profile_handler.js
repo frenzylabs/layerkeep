@@ -17,8 +17,8 @@ export default {
   cancelSource: () => {
     return CancelToken.source();
   },
-  list: (query_params = {}) => {
-    return Request.get(path(), query_params);
+  list: (opts = {}) => {
+    return Request.get(path(), opts);
   },
 
   get: (name, opts = {}) => {

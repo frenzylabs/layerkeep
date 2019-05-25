@@ -18,13 +18,18 @@ export class Revisions extends React.Component {
 
     this.state = { revisions: {data: [], meta: {}}}
     this.items = this.items.bind(this);
+    this.cancelRequest = RepoHandler.cancelSource();
     this.updateRepoRevisionsList()
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   updateRepoRevisionsList() {
     var url = this.props.match.url
 
-    RepoHandler.tree(url)
+    RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.updateRepoRevisions(response.data)
     })

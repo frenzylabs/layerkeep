@@ -23,12 +23,20 @@ export class ProfileList extends React.Component {
     super(props);
 
     this.state = {page: 1, perPage: 20, list: {data: [], meta: {}}}
-    this.fetchProfiles()
     this.onChangePage = this.onChangePage.bind(this);
+
+    this.cancelRequest = ProfileHandler.cancelSource();
+    this.fetchProfiles()
+    
   }
 
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
   fetchProfiles() {
-    ProfileHandler.list({params: {per_page: this.state.perPage, page: this.state.page}})
+    var opts = {params: {per_page: this.state.perPage, page: this.state.page}, cancelToken: this.cancelRequest.token}
+    ProfileHandler.list(opts)
     .then((response) => {
       this.setState({ list: response.data})
     })

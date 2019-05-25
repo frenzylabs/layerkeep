@@ -47,7 +47,12 @@ class Details extends React.Component {
     this.deleteFile         = this.deleteFile.bind(this);
     this.updateRepoFileList = this.updateRepoFileList.bind(this);
 
+    this.cancelRequest = RepoHandler.cancelSource();
     this.updateRepoFileList();
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   updateRepoFileList() {
@@ -58,7 +63,7 @@ class Details extends React.Component {
       url = url + "/tree/master"
     }
 
-    RepoHandler.tree(url)
+    RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       self.updateRepoFiles(response.data)
     })

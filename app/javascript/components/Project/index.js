@@ -44,12 +44,18 @@ export class Project extends React.Component {
     this.uploadAction       = this.uploadAction.bind(this);
     this.dismissAction      = this.dismissAction.bind(this);
     this.loadProjectDetails = this.loadProjectDetails.bind(this);
-    
+  
+    this.cancelRequest = ProjectHandler.cancelSource();
     this.loadProjectDetails();
   }
 
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
+
   loadProjectDetails() {    
-    ProjectHandler.get(this.props.match.params.username, this.props.match.params.name)
+    var opts = {cancelToken: this.cancelRequest.token}
+    ProjectHandler.get(this.props.match.params.username, this.props.match.params.name, opts)
     .then((response) => {
       this.setState({
         ...this.state,

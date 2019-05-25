@@ -24,18 +24,21 @@ import {
 class _ProfilesPanel extends React.Component {
   constructor(props) {
     super(props);
-    
 
     this.state = {profiles: []}
 
-    var self = this
-    ProfileHandler.list({params: {page: 1, per_page: 2}})
+    this.cancelRequest = ProfileHandler.cancelSource();
+    ProfileHandler.list({params: {page: 1, per_page: 2}, cancelToken: this.cancelRequest.token})
     .then((response) => {
-      self.setState({ profiles: response.data.data})
+      this.setState({ profiles: response.data.data})
     })
     .catch((error) => {
       console.log(error);
     });
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   profileItems() {
