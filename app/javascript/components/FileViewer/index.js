@@ -31,31 +31,34 @@ export class FileViewer extends React.Component {
 
     
     this.state = {contentType: null, localUrl: null, url: this.props.url, extension: this.props.extension || ""}
+    this.cancelRequest = RepoHandler.cancelSource();
     if (this.props.url == null) {
       this.loadFile();
     }
+  }
+  
 
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   loadFile() {
-    var self = this;
     var url = this.props.match.url
 
-    RepoHandler.tree(url)
+    RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
       .then((response) => {
 
       var params = this.props.match.params;
       var url = "/" + [params.username, params.kind, params.name, "content", params.revisionPath].join("/")
       const ext = url.split(".").pop().toLowerCase();
-      self.setState({ url: url, extension: ext })
+      this.setState({ url: url, extension: ext })
     })
     .catch((error) => {
       console.log(error);
     });
   }
 
-  componentDidUpdate(prevProps) {
-    // console.log("FilePROPS DID CHANGE");    
+  componentDidUpdate(prevProps) { 
     if (this.props.url != prevProps.url) {
       this.setState( {url: this.props.url, extension: this.props.extension} )
     }

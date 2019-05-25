@@ -20,12 +20,12 @@ export default {
   cancelSource: () => {
     return CancelToken.source();
   },
-  list: (user, query_params = {}) => {
-    return Request.get(user_project(user), query_params);
+  list: (user, opts = {}) => {
+    return Request.get(user_project(user), opts);
   },
 
-  get: (user, name) => {
-    return Request.get(user_project(user, name));
+  get: (user, name, opts = {}) => {
+    return Request.get(user_project(user, name), opts);
   },
 
   create: (project, files = null) => {

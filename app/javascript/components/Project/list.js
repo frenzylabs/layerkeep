@@ -24,13 +24,19 @@ export class ProjectList extends React.Component {
     super(props);
 
     this.state = {page: 1, perPage: 20, list: {data: [], meta: {}}}
-    this.fetchProjects()
     this.onChangePage = this.onChangePage.bind(this);
 
+    this.cancelRequest = ProjectHandler.cancelSource();
+    this.fetchProjects()
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   fetchProjects() {
-    ProjectHandler.list(this.props.match.params.username, {params: {per_page: this.state.perPage, page: this.state.page}})
+    var opts = {params: {per_page: this.state.perPage, page: this.state.page}, cancelToken: this.cancelRequest.token}
+    ProjectHandler.list(this.props.match.params.username, opts)
     .then((response) => {
       this.setState({ list: response.data})
     })

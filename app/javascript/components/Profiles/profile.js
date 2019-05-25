@@ -42,11 +42,16 @@ export class Profile extends React.Component {
     this.dismissAction    = this.dismissAction.bind(this);
     this.loadRepoDetails  = this.loadRepoDetails.bind(this);
     
+    this.cancelRequest = ProfileHandler.cancelSource();
     this.loadRepoDetails();
   }
 
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
+
   loadRepoDetails() {    
-    ProfileHandler.get(this.props.match.params.name)
+    ProfileHandler.get(this.props.match.params.name, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({
         ...this.state,

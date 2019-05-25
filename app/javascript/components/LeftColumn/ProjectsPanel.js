@@ -22,14 +22,18 @@ export class ProjectsPanel extends React.Component {
     
     this.state = {projects: []}
 
-    var self = this
-    ProjectHandler.list(null, {params: {page: 1, per_page: 2}})
+    this.cancelRequest = ProjectHandler.cancelSource();
+    ProjectHandler.list(null, {params: {page: 1, per_page: 2}, cancelToken: this.cancelRequest.token})
     .then((response) => {
-      self.setState({ projects: response.data.data})
+      this.setState({ projects: response.data.data})
     })
     .catch((error) => {
       console.log(error);
     });
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
   }
 
   projectItems() {
