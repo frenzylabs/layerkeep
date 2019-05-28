@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { RepoList }       from '../Repo/list';
 import { ProjectHandler } from '../../handlers';
 import PaginatedList      from '../pagination';
+import Loader             from '../Loader';
 
 import { 
   Container, 
@@ -23,7 +24,16 @@ export class ProjectList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {page: 1, perPage: 20, list: {data: [], meta: {}}}
+    this.state = {
+      page: 1, 
+      perPage: 20, 
+      list: {
+        data: [], 
+        meta: {}
+      },
+      hasLoaded: false
+    }
+
     this.onChangePage = this.onChangePage.bind(this);
 
     this.cancelRequest = ProjectHandler.cancelSource();
@@ -38,7 +48,11 @@ export class ProjectList extends React.Component {
     var opts = {params: {per_page: this.state.perPage, page: this.state.page}, cancelToken: this.cancelRequest.token}
     ProjectHandler.list(this.props.match.params.username, opts)
     .then((response) => {
-      this.setState({ list: response.data})
+      this.setState({ 
+        ...this.state,
+        list:       response.data,
+        hasLoaded:  true
+      });
     })
     .catch((error) => {
       console.log(error);
@@ -70,6 +84,12 @@ export class ProjectList extends React.Component {
   }
 
   render() {
+    if(this.state.hasLoaded == false) {
+      return(
+        <Loader/>
+      );
+    }
+
     return (
       <div className="section">
         <Container className="is-fluid">

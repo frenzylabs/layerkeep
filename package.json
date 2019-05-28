@@ -29,6 +29,7 @@
     "redux": "^4.0.1",
     "redux-saga": "^1.0.2",
     "reselect": "^4.0.0",
+    "spinkit": "^1.2.5",
     "three": "^0.103.0",
     "use-http": "^0.1.62",
     "webstomp-client": "^1.2.6"

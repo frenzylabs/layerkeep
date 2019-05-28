@@ -16,7 +16,8 @@ import { RepoFileViewer }   from '../Repo/repo_file_viewer'
 import { SliceList }        from '../Slices/list'
 import { SliceDetails }     from '../Slices/details'
 import Modal                from '../Modal';
-import {RepoBreadCrumbs} from '../Repo/breadcrumbs';
+import {RepoBreadCrumbs}    from '../Repo/breadcrumbs';
+import Loader               from '../Loader';
 
 import {
   Error404,
@@ -116,9 +117,7 @@ export class Project extends React.Component {
 
     if(this.state.hasLoaded == false) {
       return(
-        <div className="section">
-          <p>Loading this shit.</p>
-        </div>
+        <Loader/>
       )
     }
 
