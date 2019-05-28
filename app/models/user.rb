@@ -13,6 +13,9 @@ class User < ApplicationRecord
   # has_and_belongs_to_many :organizations  
   # has_many :slices
 
+
+  validates :username, length: {minimum: 2}
+
   has_many :repos, class_name: 'Repo'
   has_many :profiles, -> { where(kind: 'profile') }, class_name: 'Repo'
   has_many :projects, -> { where(kind: 'project') }, class_name: 'Repo'
