@@ -22,6 +22,8 @@ import { RepoHandler }      from '../../handlers';
 import { RevisionPathTrail }  from './revision_path_trail'
 import { FileViewer }       from '../FileViewer';
 
+import ImageGallery from 'react-image-gallery';
+
 import {
   Error404,
   Error401
@@ -34,6 +36,7 @@ class Details extends React.Component {
 
     this.state = {
       repo_files:       [], 
+      image_paths:      [],
       meta:             {}, 
       branches:         this.props.item.branches || [], 
       currentRevision:  "", 
@@ -46,9 +49,12 @@ class Details extends React.Component {
     this.renderReadme       = this.renderReadme.bind(this);
     this.deleteFile         = this.deleteFile.bind(this);
     this.updateRepoFileList = this.updateRepoFileList.bind(this);
+    this.retreiveImagePaths = this.retreiveImagePaths.bind(this);
 
     this.cancelRequest = RepoHandler.cancelSource();
+    
     this.updateRepoFileList();
+    this.retreiveImagePaths();
   }
 
   componentWillUnmount() {
@@ -84,6 +90,34 @@ class Details extends React.Component {
     .catch((error) => {
       console.log(error);
     });
+  }
+
+  retreiveImagePaths() {
+    var url = this.props.match.url;
+    if(this.props.match.params.resource != "tree") {
+      url = url + "/tree/master/images";
+    }
+    
+    //http://layerkeep.local/wess/projects/splitrings/content/master/images/Ring-poly.stl.png
+    RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
+    .then((response) => {
+      const images = response.data.data.map((item) => {
+        const imagePath = (url + '/' + item.path.replace('images/', '')).replace('tree', 'content');
+
+        return {
+          original: imagePath,
+          thumbnail: imagePath,  
+        };
+      });
+
+      this.setState({
+        ...this.state,
+        image_paths: images
+      })
+    })
+    .catch((error) => {
+      console.error(error);
+    });    
   }
 
   componentDidUpdate(prevProps) {
@@ -146,6 +180,21 @@ class Details extends React.Component {
     );
   }
 
+  renderGallery() {
+    if(this.props.match.params.kind.toLowerCase() !== 'projects' || this.state.image_paths.length == 0) { return null; }
+
+    return(
+      <ImageGallery 
+        items={this.state.image_paths} 
+        showPlayButton={false}
+        showFullscreenButton={true}
+        useBrowserFullscreen={false}
+        showBullets={false}
+        infinite={false}
+        showThumbnails={this.state.image_paths.length > 1}
+      />
+    )
+  }
   render() {
     if(this.state.hasError > 0) {
 
@@ -164,6 +213,7 @@ class Details extends React.Component {
 
     const urlparams = this.props.match.params;
     const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath || 'master'}?download=true`;
+    const gallery   = this.renderGallery();
 
     return (
       <div className="flex-wrapper">
@@ -218,7 +268,16 @@ class Details extends React.Component {
         </Table>
 
         <div>
-          {this.renderReadme()}
+          <div className="columns">
+            {gallery && 
+              <div className="column is-4">{gallery}</div>
+            }
+
+            <div className="column">
+              {this.renderReadme()}
+            </div>
+  
+          </div>
         </div>
       </div>
     )
