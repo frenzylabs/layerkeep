@@ -54,7 +54,6 @@ class Details extends React.Component {
     this.cancelRequest = RepoHandler.cancelSource();
     
     this.updateRepoFileList();
-    this.retreiveImagePaths();
   }
 
   componentWillUnmount() {
@@ -71,7 +70,8 @@ class Details extends React.Component {
 
     RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
-      self.updateRepoFiles(response.data)
+      self.updateRepoFiles(response.data);
+      this.retreiveImagePaths();
     })
     .catch((error) => {
       this.setState({
@@ -93,16 +93,26 @@ class Details extends React.Component {
   }
 
   retreiveImagePaths() {
-    var url = this.props.match.url;
-    if(this.props.match.params.resource != "tree") {
-      url = url + "/tree/master/images";
-    }
-    
-    //http://layerkeep.local/wess/projects/splitrings/content/master/images/Ring-poly.stl.png
+    console.dir(this.state);
+
+    if(this.state.currentRevision == "") { return; }
+
+    const params = this.props.match.params;
+    const url = '/' + [
+      params.username,
+      params.kind,
+      params.name,
+      "tree",
+      this.state.currentRevision,
+      "images",
+    ].join('/');
+
     RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       const images = response.data.data.map((item) => {
-        const imagePath = (url + '/' + item.path.replace('images/', '')).replace('tree', 'content');
+        const imagePath = (url.replace('tree', 'content') + '/' + item.name);
+        
+        console.log(`url : ${imagePath}`);
 
         return {
           original: imagePath,
@@ -122,7 +132,7 @@ class Details extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (this.props.match.url != prevProps.match.url) {
-      this.updateRepoFileList()
+      this.updateRepoFileList();
     } else if (this.props.item.branches != prevProps.item.branches ) {
       this.setState({ 
         ...this.state,
