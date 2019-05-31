@@ -8,7 +8,7 @@
 
 import React from 'react';
 
-export default class Loader extends React.Component {
+export class Loader extends React.Component {
   spinner = (
     <div className="sk-three-bounce">
       <div className="sk-child sk-bounce1" style={{background: '#c0c0c0'}}></div>
@@ -33,3 +33,5 @@ export default class Loader extends React.Component {
     );
   }
 }
+
+export default Loader;
