@@ -1,6 +1,6 @@
 class CreateRepos < ActiveRecord::Migration[5.2]
-  def change
-#    execute "CREATE EXTENSION IF NOT EXISTS citext"
+  def up
+    execute "CREATE EXTENSION IF NOT EXISTS citext"
     create_table :repos do |t|
       t.citext   :name,      null: false
       t.string   :description,        null: true
@@ -13,5 +13,10 @@ class CreateRepos < ActiveRecord::Migration[5.2]
       t.timestamps
     end
     add_index :repos, [:user_id, :kind, :name]
+  end
+  
+  def down
+    remove_index :repos, [:user_id, :kind, :name]
+    drop_table :repos
   end
 end
