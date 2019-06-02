@@ -13,10 +13,11 @@ ENV APP_DIR=${RAILS_ROOT}/app
 RUN mkdir -p $RAILS_ROOT 
 RUN mkdir ${APP_DIR}
 # Set working directory
-WORKDIR $APP_DIR
+WORKDIR $RAILS_ROOT
 
 # Setting env up
-ENV RAILS_ENV=${RAILS_ENV:-production}
+ARG RAILS_ENV=${RAILS_ENV:-production}
+ENV RAILS_ENV=$RAILS_ENV
 ENV RACK_ENV=${RAILS_ENV}
 
 # Adding gems
@@ -27,13 +28,14 @@ RUN bundle install --jobs 20 --retry 5 --without test
 
 COPY . .
 
+RUN yarn install --check-files 
 RUN git config --global user.email web@layerkeep.com && git config --global user.name LayerKeep
 
 # RUN chmod +x "${APP_DIR}/services/scripts/scad.sh"
 
-VOLUME [ "${APP_DIR}/app", "${APP_DIR}/config" ]
+VOLUME [ "${APP_DIR}", "${RAILS_ROOT}/config" ]
 
-VOLUME [ "${APP_DIR}/public", "${RAILS_ROOT}/repos" ]
+VOLUME [ "${RAILS_ROOT}/public", "/var/www/repos" ]
 
 ENV SECRET_KEY_BASE=${SECRET_KEY_BASE:-c959724279db5ca746e7a88}
 
