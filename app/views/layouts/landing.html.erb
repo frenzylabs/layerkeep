@@ -11,6 +11,25 @@
 
   <body data-route="<%="#{controller_name}##{action_name}"%>">
     <%= render 'shared/nav' %>
+
+    <% flash.each do |key, value| %>
+      <% if value.include? "signed_up_but_User Has Not Been Approved" %>
+        <div class="flash-message notification is-success">
+          <h1 class="title is-5" style="text-align: center">Thank you for signing up, we will let you know as soon as you're approved.</h1>
+        </div>
+
+        <script>
+          $('.flash-message').on('click', function(){
+            $('.flash-message').hide();
+          });
+
+          setTimeout(function() {
+            $('.flash-message').hide();
+          }, 10000);
+        </script>
+      <% end %>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>
