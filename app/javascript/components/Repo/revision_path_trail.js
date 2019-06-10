@@ -75,3 +75,5 @@ export class RevisionPathTrail extends React.Component {
     )
   }
 }
+
+export default RevisionPathTrail;
