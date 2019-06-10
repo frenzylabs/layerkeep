@@ -28,7 +28,7 @@ RUN bundle install --jobs 20 --retry 5 --without test
 
 COPY . .
 
-RUN yarn install --check-files 
+# RUN yarn install --check-files --production=true
 RUN git config --global user.email web@layerkeep.com && git config --global user.name LayerKeep
 
 # RUN chmod +x "${APP_DIR}/services/scripts/scad.sh"
