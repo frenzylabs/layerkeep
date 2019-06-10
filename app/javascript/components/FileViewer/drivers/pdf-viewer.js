@@ -2,10 +2,15 @@
 
 import React from 'react';
 import VisibilitySensor from 'react-visibility-sensor/visibility-sensor';
-import { PDFJS } from 'pdfjs-dist/build/pdf.combined';
-import 'pdfjs-dist/web/compatibility';
+// import pdfjs from 'pdfjs-dist/webpack';
+// import * as PDFJS from 'pdfjs-dist/webpack';
+// import * as PDFJS from "pdfjs-dist";
+// import * as PDFJS from 'pdfjs-dist/webpack';
+// import { PDFViewer as pdfViewer } from 'pdfjs-dist/web/pdf_viewer';
+// import { PDFJS } from 'pdfjs-dist/build/pdf';
+// import 'pdfjs-dist/web/pdf_viewer.js';
 
-PDFJS.disableWorker = true;
+// PDFJS.disableWorker = true;
 const INCREASE_PERCENTAGE = 0.2;
 const DEFAULT_SCALE = 1.1;
 
@@ -91,9 +96,9 @@ export default class PDFDriver extends React.Component {
   componentDidMount() {
     const { filePath } = this.props;
     const containerWidth = this.container.offsetWidth;
-    PDFJS.getDocument(filePath, null, null, this.progressCallback.bind(this)).then((pdf) => {
-      this.setState({ pdf, containerWidth });
-    });
+    // PDFJS.getDocument(filePath, null, null, this.progressCallback.bind(this)).then((pdf) => {
+    //   this.setState({ pdf, containerWidth });
+    // });
   }
 
   setZoom(zoom) {
