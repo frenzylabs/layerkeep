@@ -8,7 +8,7 @@
 /.DS_Store
 /.dist
 /.vscode
-
+/.git 
 # Ignore bundler config.
 /.bundle
 
