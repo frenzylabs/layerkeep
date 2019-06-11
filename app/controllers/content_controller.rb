@@ -54,9 +54,9 @@ class ContentController < RepoAuthController
       response.headers['X-Content-Type'] = "application/force-download" 
       response.headers['X-Content-Disposition'] = "attachment; filename=#{repo_handler.filepath.gsub(/\//, "-")}"
     else
-      fileobject = repo_handler.repo.lookup(file[:oid])
-      mimetype = FileMagic.mime().buffer(fileobject.content)
-      response.headers['X-Content-Type'] = mimetype
+      # fileobject = repo_handler.repo.lookup(file[:oid])
+      # mimetype = FileMagic.mime().buffer(fileobject.content)
+      response.headers['X-Content-Type'] = "application/octet-stream" #mimetype
       response.headers['X-Content-Disposition'] = "inline"
     end
     file
