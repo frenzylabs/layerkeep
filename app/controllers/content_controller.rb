@@ -27,6 +27,7 @@ class ContentController < RepoAuthController
     
     response.headers['X-Repo-Commit'] = @repo_handler.current_commit.oid
     response.headers['X-Accel-Redirect'] =  "@repo" 
+    response.headers['X-Accel-Buffering'] = "no"
 
     response.headers['X-Repo-Path'] =  @repo.path
     response.headers['X-File-Path'] = @repo_handler.filepath
