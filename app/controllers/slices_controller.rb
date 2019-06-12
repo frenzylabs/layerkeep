@@ -31,7 +31,7 @@ class SlicesController < AuthController
     
     slice_name = ""
     projects.reduce(slice_name) do |name, pf| 
-      name << (pf[:filepath].gsub(/[\/\.]/, "_") + "-" + pf[:commit][0...6] + "-");
+      name << (pf[:filepath].gsub(/[\/\.]/, "_") + "-" + pf[:commit][0...6] + "-").downcase;
     end
     slice_name << "#{Time.now.utc.to_i}.gcode"
     slices_path = "#{current_user.username}/slices/#{slice_name}"
