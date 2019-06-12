@@ -15,6 +15,7 @@ class ContentController < RepoAuthController
     end
 
     if file
+      response.headers['X-File-Object-ID'] = file[:oid]
       git_command = "show"
       download_name = @repo_handler.filepath.gsub(/\//, "-")
     else
@@ -31,6 +32,7 @@ class ContentController < RepoAuthController
 
     response.headers['X-Repo-Path'] =  @repo.path
     response.headers['X-File-Path'] = @repo_handler.filepath
+    
     response.headers['X-Git-Command'] = git_command
     response.headers['X-File-Name'] = download_name
     
