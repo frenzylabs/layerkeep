@@ -23,16 +23,18 @@ import { Icon }         from 'bloomer/lib/elements/Icon';
 import { UploadField }  from '@navjobs/upload';
 
 import { ProjectHandler } from '../../handlers';
+import Modal from '../Modal';
 
 export class ProjectNew extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      canSubmit : false, 
-      name:         null,
-      description:  "",
-      files:        null
+      canSubmit :       false, 
+      name:             null,
+      description:      "",
+      files:            null,
+      creatingProject:  false
     };
     
     this.disableButton      = this.disableButton.bind(this);
@@ -88,6 +90,11 @@ export class ProjectNew extends React.Component {
   }
 
   submit(model) {
+    this.setState({
+      ...this.state,
+      creatingProject: true
+    });
+
     ProjectHandler.create(model, this.state.files)
     .then((response) => {
       this.setState({
@@ -99,7 +106,6 @@ export class ProjectNew extends React.Component {
     .catch((error) => {
       console.log(error);
     });
-
   }
 
   renderFiles() {
@@ -127,64 +133,73 @@ export class ProjectNew extends React.Component {
   render() {
     return (
       <div>
-        <Formsy onValidSubmit={this.submit} onValid={this.enableButton} onInvalid={this.disableButton}>
-          <Section>
-            <br/>
+        <div>
+          <Formsy onValidSubmit={this.submit} onValid={this.enableButton} onInvalid={this.disableButton}>
+            <Section>
+              <br/>
 
-            <Columns isCentered>
-              <Column isSize={9}>
-                <Box>
-                  <h1 className="title">Create New Project.</h1>
-                  <hr />
+              <Columns isCentered>
+                <Column isSize={9}>
+                  <Box>
+                    <h1 className="title">Create New Project.</h1>
+                    <hr />
 
-                  <InputField 
-                    label="Name"
-                    name="name"
-                    onChange={this.nameChanged}
-                    placeholder="What should we call this project?"
-                    validationError="Name is required"
-                    required
-                  />
+                    <InputField 
+                      label="Name"
+                      name="name"
+                      onChange={this.nameChanged}
+                      placeholder="What should we call this project?"
+                      validationError="Name is required"
+                      required
+                    />
 
-                  <TextField 
-                    label="Description"
-                    name="description"
-                    onChange={this.descriptionChanged}
-                    placeholder="Tell us about it"
-                  />
+                    <TextField 
+                      label="Description"
+                      name="description"
+                      onChange={this.descriptionChanged}
+                      placeholder="Tell us about it"
+                    />
 
-                  <Field isGrouped>
-                    <Control>
-                      <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
-                    </Control>
-                  </Field>
-                </Box>
-              </Column>
-            </Columns>
-          </Section>
+                    <Field isGrouped>
+                      <Control>
+                        <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
+                      </Control>
+                    </Field>
+                  </Box>
+                </Column>
+              </Columns>
+            </Section>
 
-          <Section>
-            <Columns isCentered>
-              <Column isSize={9}>
-                <Box>
-                  <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
-                      <div className="has-text-centered">Click here or drag files here to upload.</div>
-                  </UploadField>
+            <Section>
+              <Columns isCentered>
+                <Column isSize={9}>
+                  <Box>
+                    <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
+                        <div className="has-text-centered">Click here or drag files here to upload.</div>
+                    </UploadField>
 
-                  <br />
+                    <br />
 
-                  <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
-                    <tbody>
-                      {this.renderFiles() }
-                    </tbody>
-                  </Table>
+                    <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
+                      <tbody>
+                        {this.renderFiles() }
+                      </tbody>
+                    </Table>
 
-                  <br/>
-                </Box>
-              </Column>
-            </Columns>
-          </Section>
-        </Formsy>
+                    <br/>
+                  </Box>
+                </Column>
+              </Columns>
+            </Section>
+          </Formsy>
+        </div>
+
+        <Modal 
+          component={Modal.spinner} 
+          caption="Creating project..."
+          isActive={this.state.creatingProject}  
+        />  
+
       </div>
     )
   }

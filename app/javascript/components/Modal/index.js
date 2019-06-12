@@ -14,9 +14,11 @@ import { ModalClose as BulmaModalClose }            from 'bloomer/lib/components
 import { Box }                                      from 'bloomer/lib/elements/Box';
 
 import UploadModal from './upload';
+import SpinnerModal from './spinner';
 
 export default class Modal extends React.Component {
-  static upload = UploadModal;
+  static upload   = UploadModal;
+  static spinner  = SpinnerModal;
 
   render() {
     return (

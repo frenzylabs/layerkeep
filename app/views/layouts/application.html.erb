@@ -17,9 +17,20 @@
         email:    "<%= current_user.email %>"
       }
     </script>
+
+    <%= render 'shared/mixpanel' %>
   </head>
 
   <body >
     <%= yield %>
+
+    <script>
+      (function() {
+        var controller  = "<%= controller_name %>";
+        var action      =  "<%= action_name %>";
+        
+        mixpanel.track("controller : " + controller + " / action: " + action);
+      })();
+    </script>
   </body>
 </html>

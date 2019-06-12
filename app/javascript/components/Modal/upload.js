@@ -21,6 +21,7 @@ import {
   Column,
   Input
 } from 'bloomer';
+import { Loader } from 'three';
 
 export default class UploadModal extends React.Component {
   title = "Upload files";
@@ -29,7 +30,8 @@ export default class UploadModal extends React.Component {
     super(props);
 
     this.state = {
-      files: null
+      files:        null,
+      isUploading:  false
     };
 
     this.messageChanged = this.messageChanged.bind(this);
@@ -64,7 +66,10 @@ export default class UploadModal extends React.Component {
 
     files.splice(index, 1);
     
-    this.setState({...this.state, files: files});
+    this.setState({
+      ...this.state, 
+      files: files
+    });
   }
 
   renderFiles() {
@@ -85,17 +90,47 @@ export default class UploadModal extends React.Component {
   }
 
   submitAction() {
+    this.setState({
+      ...this.state,
+      isUploading: true
+    });
+
     RepoHandler.commit(this.props.urlParams.username, this.props.urlParams.kind, this.props.repoName, this.state.files, this.state.message)
     .then((response) => {
       window.location.href = window.location.href;
     })
     .catch((error) => {
+      this.setState({
+        ...this.state,
+        isUploading: true
+      });
+  
       console.log(error);
     });
 
   }
 
   render() {
+    if(this.state.isUploading) {
+      return (
+        <div>
+        <h1 className="title is-4">Upload files.</h1>
+          <Box>
+            <div className="columns is-centered">
+              <div className="column is-two-fifths">
+                <div className="sk-three-bounce">
+                  <div className="sk-child sk-bounce1" style={{background: '#c0c0c0'}}></div>
+                  <div className="sk-child sk-bounce2" style={{background: '#c0c0c0'}}></div>
+                  <div className="sk-child sk-bounce3" style={{background: '#c0c0c0'}}></div>
+                </div>
+                <p className="has-text-centered" style={{fontSize: '22px', color: "#c0c0c0"}}>Uploading...</p>
+              </div>
+            </div>
+          </Box>
+        </div>
+      );
+    }
+
     return (
       <div>
         <h1 className="title is-4">Upload files.</h1>
