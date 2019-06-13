@@ -58,6 +58,31 @@ class ReposController < AuthController
     end
   end
 
+  def update
+    repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
+    authorize repo
+
+    if repo.update(params.permit(:description))
+      render json: repo.to_json
+    else
+      render status: 400, json: @repo.errors.to_json
+    end
+  end
+
+  def destroy
+    repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
+    authorize repo
+
+    if params.require(:confirmed)
+      res = FileUtils.rm_rf("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}")
+      des = repo.destroy()
+
+      render status: 200, json: {"success": true}
+    else
+      render status: 400, json: {"error": "Please confirm you want to delete this repo"}
+    end
+  end
+
   def get_user()
     @user ||= User.find_by!(username: params["user"] || "")
   end
