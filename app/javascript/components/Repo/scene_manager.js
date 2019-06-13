@@ -100,6 +100,8 @@ export class SceneManager extends React.Component {
     this.mesh      = null;
 
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.addEventListener( 'change', this.light_update.bind(this) );
+
     window.sm = this;
 
   }
@@ -121,25 +123,29 @@ export class SceneManager extends React.Component {
     this.renderer.render(this.scene, this.camera);
   }
 
+  light_update() {
+      this.directionalLight.position.copy( this.camera.position );
+  }
+
   setupScene() {
 
     this.camera.position.set(200, 200, 200);
 
-    var hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444);
-    hemiLight.position.set(500, 500, 500);
+    this.hemiLight = new THREE.AmbientLight(0xddeeff, 0.3);
+    this.hemiLight.position.set(0, 0, 0);
 
-    this.scene.add(hemiLight);
+    this.scene.add(this.hemiLight);
 
-    var directionalLight = new THREE.DirectionalLight(0xffffff);
-    directionalLight.position.set( 200, 200, 200 );
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    this.directionalLight.position.set( 200, 200, 200 );
 
-    directionalLight.castShadow           = true;
-    directionalLight.shadow.camera.top    = 180;
-    directionalLight.shadow.camera.bottom = -100;
-    directionalLight.shadow.camera.left   = -120;
-    directionalLight.shadow.camera.right  = 120;
+    this.directionalLight.castShadow           = true;
+    // this.directionalLight.shadow.camera.top    = 180;
+    // this.directionalLight.shadow.camera.bottom = -100;
+    // this.directionalLight.shadow.camera.left   = -120;
+    // this.directionalLight.shadow.camera.right  = 120;
 
-    // this.camera.add(directionalLight);
+    this.scene.add(this.directionalLight);
 
     var ground = new THREE.Mesh( 
       new THREE.PlaneBufferGeometry(4000, 4000), 
@@ -195,6 +201,7 @@ export class SceneManager extends React.Component {
     // var container = $(this.sceneContainer.current)
     
     fitCameraToObject  ( this.camera, this.mesh, 4, this.controls )
+    this.light_update();
     this.handleResize();
     this.animate();
   }
