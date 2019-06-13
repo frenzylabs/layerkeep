@@ -77,8 +77,6 @@ class FilesController < RepoAuthController
   end
 
   def create
-    puts @repo_handler.inspect
-
     if @repo_handler.current_branch.name != @repo_handler.revision
       render status: 400, json: {'error': 'You must be on a branch to upload'} and return
     end
@@ -86,29 +84,8 @@ class FilesController < RepoAuthController
     files   = params.require(:files)
     message = params[:message]
 
-    commit_id, names = @repo_handler.insert_files(current_user, files)
-
-    if commit_id 
-      process_files = []
-      names.each do |f| 
-        ext = f.split(".").last().downcase
-        if ["stl", "obj"].include?(ext) 
-          process_files << f
-        end
-      end
-
-      if process_files.length > 0
-        generate_imgs = {
-          repo_path: @repo.path,
-          repo_name: @repo.name.downcase(),
-          commit: commit_id,
-          image_type: "png",
-          file_paths: process_files
-        }
-        res = Publisher.publish(generate_imgs.to_json, "files.new")
-        puts "Publish Res = #{res.inspect}"
-      end
-    end
+    commit_id, names = @repo_handler.insert_files(current_user, files, message)
+    @repo_handler.process_new_files(@repo, commit_id, names)
 
     if commit_id
       render json: {'commit_id': commit_id, 'names': names}

@@ -46,7 +46,9 @@ class ReposController < AuthController
       @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo_path}/.", :bare)
       files = params.fetch(:files, nil)
       if files
-        commit_id, names = RepoFilesHandler.new(@git_repo, params).insert_files(@user, files)
+        repo_handler = RepoFilesHandler.new(@git_repo, params)
+        commit_id, names = repo_handler.insert_files(@user, files)
+        repo_handler.process_new_files(@repo, commit_id, names)
       end
       @repo.save!
 
