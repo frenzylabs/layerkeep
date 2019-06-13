@@ -38,6 +38,30 @@ class RepoFilesHandler
     [commit_id, @names]
   end
 
+  def process_new_files(dbrepo, commit_id, names)
+    if commit_id 
+      process_files = []
+      names.each do |f| 
+        ext = f.split(".").last().downcase
+        if ["stl", "obj"].include?(ext) 
+          process_files << f
+        end
+      end
+
+      if process_files.length > 0
+        generate_imgs = {
+          repo_path: dbrepo.path,
+          repo_name: dbrepo.name.downcase(),
+          commit: commit_id,
+          image_type: "png",
+          file_paths: process_files
+        }
+        res = Publisher.publish(generate_imgs.to_json, "files.new")
+        puts "Publish Res = #{res.inspect}"
+      end
+    end
+  end
+
   def set_commit(branch = nil, filepath = nil)
     branch ||= 'master'    
 
@@ -56,7 +80,7 @@ class RepoFilesHandler
       @revision = branch
       @current_branch = @repo.branches[@revision] || @repo.branches.find {|b| b.target_id == @current_commit.oid }
       if !@current_branch
-        branches = `cd #{@repo.path}; git branch --contains #{@current_commit.oid} --format="%(refname:short)"`
+        branches = `cd #{@repo.path}; git for-each-ref --contains #{@current_commit.oid} --format="%(refname:short)"`
         branchlookup = (branches.lines.first || "master").chomp
         @current_branch = @repo.branches[branchlookup]
       end
