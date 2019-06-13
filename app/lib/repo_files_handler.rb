@@ -25,12 +25,16 @@ class RepoFilesHandler
       index.add(:path => prefix + name, :oid => oid, :mode => 0100644)
     end
     
+    msg = ""
+    if @names.count > 1
+      msg = "and #{@names.count - 1} more"
+    end
 
     options = {}
     options[:tree]       = index.write_tree(@repo)
     options[:author]     = { :email => current_user.email, :name => current_user.username, :time => Time.now }
     options[:committer]  = { :email => current_user.email, :name => current_user.username, :time => Time.now }
-    options[:message]    =  message || "Uploading Files #{@names.join(',')}"
+    options[:message]    =  message || "Uploading File #{@names[0]} #{msg}"
     options[:parents]    = @repo.empty? ? [] : [ @current_commit ].compact
     options[:update_ref] = 'HEAD'
 
