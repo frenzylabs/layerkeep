@@ -34,7 +34,8 @@ export class ProjectNew extends React.Component {
       name:             null,
       description:      "",
       files:            null,
-      creatingProject:  false
+      creatingProject:  false,
+      requestError:     null,
     };
     
     this.disableButton      = this.disableButton.bind(this);
@@ -45,6 +46,7 @@ export class ProjectNew extends React.Component {
     this.deleteFile         = this.deleteFile.bind(this);
     this.renderFiles        = this.renderFiles.bind(this);
     this.submit             = this.submit.bind(this);
+    this.dismissError       = this.dismissError.bind(this);
   }
 
   nameChanged(e) {
@@ -104,7 +106,19 @@ export class ProjectNew extends React.Component {
       });
     })
     .catch((error) => {
-      console.log(error);
+      this.setState({
+        ...this.state,
+        creatingProject: false,
+        requestError: error.message
+      });
+    });
+  }
+
+  dismissError() {
+    this.setState({
+      ...this.state,
+      creatingProject: false,
+      requestError: null
     });
   }
 
@@ -142,8 +156,9 @@ export class ProjectNew extends React.Component {
                 <Column isSize={9}>
                   <Box>
                     <h1 className="title">Create New Project.</h1>
-                    <hr />
 
+                    <hr />
+                  
                     <InputField 
                       label="Name"
                       name="name"
@@ -196,9 +211,16 @@ export class ProjectNew extends React.Component {
 
         <Modal 
           component={Modal.spinner} 
-          caption="Creating project..."
-          isActive={this.state.creatingProject}  
+          caption={"Creating project..."}
+          isActive={this.state.creatingProject }  
         />  
+
+        <Modal
+          component={Modal.error}
+          caption={this.state.requestError}
+          isActive={this.state.requestError !== null}
+          dismissAction={this.dismissError}
+        />
 
       </div>
     )

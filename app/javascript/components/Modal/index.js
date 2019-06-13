@@ -13,22 +13,27 @@ import { ModalContent as BulmaModalContent }        from 'bloomer/lib/components
 import { ModalClose as BulmaModalClose }            from 'bloomer/lib/components/Modal/ModalClose';
 import { Box }                                      from 'bloomer/lib/elements/Box';
 
-import UploadModal from './upload';
+import UploadModal  from './upload';
 import SpinnerModal from './spinner';
+import ErrorModal   from './error';
 
 export default class Modal extends React.Component {
   static upload   = UploadModal;
   static spinner  = SpinnerModal;
+  static error    = ErrorModal;
 
   render() {
+    const styles = this.props.component.parentStyles || {}
+
+    console.dir(styles);
+
     return (
       <BulmaModal isActive={this.props.isActive}>
         <BulmaModalBackground onClick={this.props.dismissAction}/>
         <BulmaModalContent>
-          <Box>
-            <this.props.component dismissAction={this.props.dismissAction} {...this.props} />
-          </Box>
-        </BulmaModalContent>
+        <Box style={styles}>{<this.props.component dismissAction={this.props.dismissAction} {...this.props} />}</Box>
+      </BulmaModalContent>
+
         <BulmaModalClose onClick={this.props.dismissAction}/>
       </BulmaModal>
     )

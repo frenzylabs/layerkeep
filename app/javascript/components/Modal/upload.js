@@ -31,7 +31,8 @@ export default class UploadModal extends React.Component {
 
     this.state = {
       files:        null,
-      isUploading:  false
+      isUploading:  false,
+      errors:       null,
     };
 
     this.messageChanged = this.messageChanged.bind(this);
@@ -90,6 +91,14 @@ export default class UploadModal extends React.Component {
   }
 
   submitAction() {
+    if(this.state.files === null) {
+      this.setState({
+        ...this.state,
+        errors: "No files have been added."
+      });
+      return;
+    }
+
     this.setState({
       ...this.state,
       isUploading: true
@@ -102,10 +111,11 @@ export default class UploadModal extends React.Component {
     .catch((error) => {
       this.setState({
         ...this.state,
-        isUploading: true
+        isUploading: false,
+        errors: error.message
       });
   
-      console.log(error);
+      
     });
 
   }
@@ -133,7 +143,15 @@ export default class UploadModal extends React.Component {
 
     return (
       <div>
-        <h1 className="title is-4">Upload files.</h1>
+        <h1 className="title is-4">
+          Upload files. 
+        </h1>
+
+        {this.state.errors && (
+          <p className="has-text-centered" style={{color: 'red', marginBottom: '10px'}}>{this.state.errors}</p>
+        )}
+        
+
         <Box>
           <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
             <div className="has-text-centered">Click here or drag files here to upload.</div>
@@ -160,7 +178,7 @@ export default class UploadModal extends React.Component {
 
         <Columns>
           <Column>
-            <p>Above files will be uploaded to {this.props.repoName}.</p>
+            <p>Above files will be uploaded to <strong>{this.props.repoName}.</strong></p>
           </Column>
 
           <Column>
