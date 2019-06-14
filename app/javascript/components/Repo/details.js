@@ -190,6 +190,15 @@ class Details extends React.Component {
     );
   }
 
+  renderLeftNav(onClick, disabled) {
+    return (
+      <button
+        className='image-gallery-custom-left-nav'
+        disabled={disabled}
+        onClick={onClick}/>
+    )
+  }
+
   renderGallery() {
     if(this.props.match.params.kind.toLowerCase() !== 'projects' || this.state.image_paths.length == 0) { return null; }
 
@@ -200,8 +209,10 @@ class Details extends React.Component {
         showFullscreenButton={true}
         useBrowserFullscreen={false}
         showBullets={false}
-        infinite={false}
+        infinite={true}
+        lazyLoad={true}
         showThumbnails={this.state.image_paths.length > 1}
+        renderLeftNav={this.renderLeftNav}
       />
     )
   }
@@ -223,7 +234,7 @@ class Details extends React.Component {
 
     const urlparams = this.props.match.params;
     const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath || 'master'}?download=true`;
-    const gallery   = this.renderGallery();
+    // const gallery   = this.renderGallery();
 
     return (
       <div className="flex-wrapper">
@@ -279,9 +290,9 @@ class Details extends React.Component {
 
         <div>
           <div className="columns">
-            {gallery && 
-              <div className="column is-4">{gallery}</div>
-            }
+            <div className="column">
+              {this.renderGallery()}
+            </div>
 
             <div className="column">
               {this.renderReadme()}
