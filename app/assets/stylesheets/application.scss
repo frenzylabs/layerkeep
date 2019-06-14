@@ -36,6 +36,22 @@
 @import "spinkit/scss/spinkit";
 @import "react-image-gallery/styles/scss/image-gallery";
 
+.image-gallery-image {
+  position: relative;
+}
+.image-gallery-thumbnails {
+  height: 110px;
+  position: relative;
+}
+
+.image-gallery-thumbnails-container{
+  position: absolute;
+}
+
+.column {
+  min-width: 0;
+}
+
 html {
   overflow: auto !important;
 }
