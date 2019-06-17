@@ -27,7 +27,7 @@ function SliceMessage(msg, opts = {}) {
   }
 
   var SliceMsg = ({ closeToast }) => (
-      <Link to={`/${msg.path}`} style={{display: 'block', color: textColor}}>
+    <Link to={`${msg.path}`} style={{display: 'block', color: textColor}}>
       {msg.message}
       </Link>
   )
