@@ -29,7 +29,6 @@ brew tap denji/nginx
 brew install nginx-full --with-auth-req
 
 
-minikube mount /Users/kmussel/Development/frenzylabs:/frenzylabs
 
 docker run -it -p 3000:3000 \
   -v /frenzylabs/layerkeep_services/layerkeep/public/assets:/var/www/layerkeep/app/public/assets \
