@@ -210,7 +210,7 @@ class Details extends React.Component {
         useBrowserFullscreen={false}
         showBullets={false}
         infinite={true}
-        lazyLoad={true}
+        lazyLoad={false}
         showThumbnails={this.state.image_paths.length > 1}
         renderLeftNav={this.renderLeftNav}
       />
