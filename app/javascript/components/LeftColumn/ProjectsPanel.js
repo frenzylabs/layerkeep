@@ -23,7 +23,7 @@ export class ProjectsPanel extends React.Component {
     this.state = {projects: []}
 
     this.cancelRequest = ProjectHandler.cancelSource();
-    ProjectHandler.list(null, {params: {page: 1, per_page: 2}, cancelToken: this.cancelRequest.token})
+    ProjectHandler.list(null, {params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({ projects: response.data.data})
     })

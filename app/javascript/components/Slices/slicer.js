@@ -39,6 +39,7 @@ export class Slicer extends React.Component {
     this.initialRepoSelection = { selectedRepo: {}, revisions: [], selectedRevision: {}, files: [], selectedFile: {}}
 
     this.state = { 
+      canSlice: false,
       projects: [], 
       profiles: [], 
       projectSelections: {"0": Object.assign({}, this.initialRepoSelection)}, 
@@ -123,11 +124,10 @@ export class Slicer extends React.Component {
   }
 
   createSlice() {
-    console.log("Slice IT");
-
+    // console.log("Slice IT");
     var profiles = Object.keys(this.state.profileSelections).reduce((acc, key) => {
       var item = this.state.profileSelections[key];
-      if (item.selectedFile) {
+      if (item.selectedFile && item.selectedFile.name) {
         acc.push({id: item.selectedRepo.id, revision: item.selectedRevision.name, filepath: item.selectedFile.value})
       }
       return acc;
@@ -135,7 +135,7 @@ export class Slicer extends React.Component {
 
     var projects = Object.keys(this.state.projectSelections).reduce((acc, key) => {
       var item = this.state.projectSelections[key];
-      if (item.selectedFile) {
+      if (item.selectedFile && item.selectedFile.name) {
         acc.push({id: item.selectedRepo.id, name: item.selectedRepo.name, revision: item.selectedRevision.name, filepath: item.selectedFile.value})
       }
       return acc;
@@ -143,6 +143,7 @@ export class Slicer extends React.Component {
 
     // console.log("PrOJ: ", projects);
     // console.log("PROFILES: ", profiles);
+
     this.setState({slicing: slicing})
     var params = this.props.match.params;
     
@@ -237,7 +238,7 @@ export class Slicer extends React.Component {
     
     var path = "/" + projSel.selectedRepo.value + "/content/" + projSel.selectedRevision.value + "/" + item.value;
     var ext = item.value.split(".").pop().toLowerCase();
-    this.setState( {currentProjectFile: path, extension: ext} );
+    this.setState( {currentProjectFile: path, extension: ext, canSlice: true} );
     projSel.selectedFile = item;
     this.forceUpdate()
   }
@@ -362,7 +363,7 @@ export class Slicer extends React.Component {
                   {this.renderProfileSelections()}
               </Panel>
               <Container className="is-fluid" >
-                <Button onClick={this.createSlice}>Create Slice</Button>
+                <Button onClick={this.createSlice} disabled={this.state.canSlice == false}>Create Slice</Button>
               </Container>
             </Column>
 

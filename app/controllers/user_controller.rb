@@ -19,7 +19,7 @@ class UserController < AuthController
     new_password      = user_params[:password][:new]
     
     updated = {
-      username: username,
+      # username: username,
       email:    email
     }
 

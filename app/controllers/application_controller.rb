@@ -17,8 +17,7 @@ class ApplicationController < ActionController::Base
   rescue_from ActiveRecord::RecordNotFound, :with => :handle_record_not_found
   rescue_from LayerKeepErrors::LayerKeepError, :with => :layerkeep_error
   rescue_from Pundit::NotAuthorizedError, :with => :user_not_authorized
-  
-  
+
 
   def handle_record_not_found(exception)
     respond_to do |format|

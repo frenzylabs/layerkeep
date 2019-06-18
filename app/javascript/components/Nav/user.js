@@ -30,6 +30,12 @@ export class UserNavMenu extends React.Component {
             {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
 
             <NavbarItem >
+              <p>{currentUser.username}</p>              
+            </NavbarItem>
+
+            <NavbarDivider />
+            
+            <NavbarItem >
               <Link to={`/${currentUser.username}/settings`}> Settings </Link>
             </NavbarItem>
 

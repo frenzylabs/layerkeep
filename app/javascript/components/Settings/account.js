@@ -197,7 +197,7 @@ export class AccountSettings extends React.Component {
 
             <Field>
               <Label>Username</Label>
-              <input type="text" name="username" className="input" defaultValue={currentUser.username} onChange={this.usernameChanged}/>
+              {currentUser.username}
             </Field>
 
             <Field>
