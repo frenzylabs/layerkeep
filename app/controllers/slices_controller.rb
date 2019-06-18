@@ -27,6 +27,7 @@ class SlicesController < AuthController
   def create
     project_params = params.require("projects")
     projects = slice_files(project_params, "projects")
+    throw record_not_found and return if projects.empty?
     profiles = slice_files(params["profiles"] || [], "profiles")
     
     slice_name = ""
@@ -101,6 +102,7 @@ class SlicesController < AuthController
 
   def slice_files(file_params, kind)
     file_params.reduce([]) do | acc, file_attr|
+      return acc if file_attr.empty?
       repo = @user.repos.where(kind: kind, id: file_attr.fetch("id", "")).first!
       git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
 

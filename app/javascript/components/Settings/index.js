@@ -52,7 +52,7 @@ export class Settings extends React.Component {
               </a>
             </li>
 
-            <li className="tab-handle">
+            <li className="tab-handle is-hidden">
               <a data-tab="#other" className="has-text-grey-lighter">
                 <span className="icon is-small"><i className="fas fa-user" aria-hidden="true"></i></span>
                 <span>Billing</span>

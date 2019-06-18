@@ -28,7 +28,7 @@ class _ProfilesPanel extends React.Component {
     this.state = {profiles: []}
 
     this.cancelRequest = ProfileHandler.cancelSource();
-    ProfileHandler.list({params: {page: 1, per_page: 2}, cancelToken: this.cancelRequest.token})
+    ProfileHandler.list({params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({ profiles: response.data.data})
     })
