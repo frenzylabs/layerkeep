@@ -61,7 +61,6 @@ class Details extends React.Component {
   }
 
   updateRepoFileList() {
-    var self  = this
     var url   = this.props.match.url
 
     if (this.props.match.params.resource != "tree") {
@@ -70,7 +69,7 @@ class Details extends React.Component {
 
     RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
-      self.updateRepoFiles(response.data);
+      this.updateRepoFiles(response.data);
       this.retreiveImagePaths();
     })
     .catch((error) => {
@@ -111,8 +110,6 @@ class Details extends React.Component {
     .then((response) => {
       const images = response.data.data.map((item) => {
         const imagePath = (url.replace('tree', 'content') + '/' + item.name);
-        
-        console.log(`url : ${imagePath}`);
 
         return {
           original: imagePath,
@@ -234,7 +231,6 @@ class Details extends React.Component {
 
     const urlparams = this.props.match.params;
     const url       = `/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath || 'master'}?download=true`;
-    // const gallery   = this.renderGallery();
 
     return (
       <div className="flex-wrapper">
