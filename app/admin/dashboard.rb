@@ -12,6 +12,18 @@ ActiveAdmin.register_page "Dashboard" do
 
     columns do
       column do
+        panel "Pending Users" do
+          ul do
+            User.where(approved: false).map do |user|
+              li link_to(user.username, admin_user_path(user))
+            end
+          end
+        end
+      end
+    end
+
+    columns do
+      column do
         panel "Users" do
           ul do
             User.all.map do |user|
@@ -21,6 +33,7 @@ ActiveAdmin.register_page "Dashboard" do
         end
       end
     end
+
 
     # Here is an example of a simple dashboard with columns and panels.
     #

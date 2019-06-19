@@ -38,6 +38,11 @@ ActiveAdmin.register User do
       u = User.find(params[:id])
       u.approved_on = nil
       u.update(user_params)
+
+      if user_params[:approved] == "1" 
+        ApprovedMailer.notify(u).deliver
+      end
+
       render action: :edit
     end
   end
