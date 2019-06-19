@@ -60,6 +60,7 @@ class SlicesController < AuthController
         }
         res = Publisher.publish_header(slice_params.to_json, "slice.new", {"service": "slicer", "slicer": "slic3r", "slicer-version": "1.3.0"})
         puts "Publish Slice Res = #{res.inspect}"
+        $tracker.track(current_user.id, "Slice Created")
         render json: slice
       else
         Rails.logger.info("Slice Invalid: #{slice.errors}")
@@ -97,6 +98,7 @@ class SlicesController < AuthController
   def gcodes 
     authorize(@user)
     @slice = Slice.find(params[:id])
+    $tracker.track(current_user.id, "Download Gcodes")
     send_file("#{Rails.application.config.settings["repo_mount_path"]}/" + @slice.path.downcase, filename: @slice.path.split("/").last, disposition: :inline)
   end
 
