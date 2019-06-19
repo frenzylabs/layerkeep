@@ -29,7 +29,7 @@ export class RepoListItem extends React.Component {
           </MediaContent>
 
           <MediaRight>
-            <p>Last updated: {dayjs(this.props.item.attributes.updated_at).format('DD.MM.YYYY')}</p>
+            <p>Last Updated: {dayjs(this.props.item.attributes.updated_at).format('MM.DD.YYYY')}</p>
           </MediaRight>
         </Media>
       </Link>

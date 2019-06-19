@@ -99,7 +99,7 @@ export class RepoDetailItem extends React.Component {
         </td>
         
         <td className="has-text-right">
-          <p>{dayjs(this.props.item.date).format('DD.MM.YYYY')}</p>
+          <p>{dayjs(this.props.item.date).format('MM.DD.YYYY')}</p>
         </td>
 
         <td className="has-text-right cell-option-buttons"  width={66}>
