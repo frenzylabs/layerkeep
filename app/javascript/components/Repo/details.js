@@ -92,8 +92,6 @@ class Details extends React.Component {
   }
 
   retreiveImagePaths() {
-    console.dir(this.state);
-
     if(this.state.currentRevision == "") { return; }
 
     const params = this.props.match.params;
