@@ -36,6 +36,9 @@ class ContentController < RepoAuthController
     response.headers['X-Git-Command'] = git_command
     response.headers['X-File-Name'] = download_name
     
+    if params[:download]
+      $tracker.track(current_user.id, "Download Files", {command: git_command, filepath: @repo_handler.filepath})
+    end
     head :ok and return
   end
 

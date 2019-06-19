@@ -13,7 +13,8 @@ import { ToastContainer } from 'react-toastify';
 import {
   Switch,
   Route,
-  withRouter
+  withRouter,
+  matchPath
 } from 'react-router-dom'
 
 import { Columns, Column }  from 'bloomer';
@@ -86,6 +87,31 @@ class AppContainer extends React.Component {
         {path: '/:username/:kind(profiles)/:name?', component: Profile}
        ]
       }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.location.pathname != this.props.location.pathname) {
+      try {
+        var matchLocationParams = this.getPathParams(this.props.location.pathname);
+        matchLocationParams["pathname"] = this.props.location.pathname
+        mixpanel.track("Page Change", matchLocationParams);
+      } catch (err) {
+        mixpanel.track("Page Change", {"pathname": this.props.location.pathname})
+      }
+    }
+  }
+
+  getPathParams(pathname) {
+    var matchLocation = (this.state.fullLayoutRoutes.concat(this.state.sidebarLayoutRoutes)).reduce((acc, item) =>  {
+      var mpath = matchPath(pathname, item.path); 
+      if (mpath) { 
+        acc = mpath; 
+        return acc; 
+      }
+      return acc;
+    }
+    )
+    return (matchLocation && matchLocation.params) || {};
   }
   
   renderFullLayoutRoutes() {

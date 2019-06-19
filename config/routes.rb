@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   devise_for :admin_users, {class_name: 'User'}.merge(ActiveAdmin::Devise.config)
   ActiveAdmin.routes(self)
 
-  devise_for :users
+  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
   
   post 'oauth/access_tokens', to: 'auth#access_token'
 
