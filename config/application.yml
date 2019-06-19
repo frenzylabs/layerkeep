@@ -6,6 +6,8 @@ defaults: &defaults
   openscad_script: <%= ENV.fetch('OPENSCAD_SCRIPT_PATH') { Rails.root.to_s + "/services/scripts/scad.sh" } %> 
   repo_mount_path: <%= ENV.fetch('REPO_MOUNT_PATH') { "../repos"} %>
   mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN') { "514c0bd2f3d0d61f7aff166a9ac4a95a" } %>
+  smtp_username: <%= ENV.fetch('SMTP_USERNAME') { "noreply@mg.layerkeep.com" } %>
+  smtp_password: <%= ENV.fetch('SMTP_PASSWORD') { "1a2d3bf61049a0d4ae97043cc4da065d-29b7488f-73824278" } %>
 
 development:
   <<: *defaults

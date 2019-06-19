@@ -31,18 +31,7 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Don't care if the mailer can't send.
-  config.action_mailer.default_url_options    = {:host => 'layerkeep.local'}
-  config.action_mailer.raise_delivery_errors  = true
-  config.action_mailer.perform_caching        = false
-  config.action_mailer.delivery_method        = :smtp
-  config.action_mailer.smtp_settings = {
-    :authentication => :plain,
-    :address => 'smtp.mailgun.org',
-    :port => 587,
-    :domain => 'mg.layerkeep.com',
-    :user_name => 'noreply@mg.layerkeep.com',
-    :password => '1a2d3bf61049a0d4ae97043cc4da065d-29b7488f-73824278'
-  }
+  config.action_mailer.default_url_options    = {:host => 'localhost'}
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

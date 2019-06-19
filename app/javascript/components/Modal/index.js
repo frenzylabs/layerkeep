@@ -25,8 +25,6 @@ export default class Modal extends React.Component {
   render() {
     const styles = this.props.component.parentStyles || {}
 
-    console.dir(styles);
-
     return (
       <BulmaModal isActive={this.props.isActive}>
         <BulmaModalBackground onClick={this.props.dismissAction}/>
