@@ -5,8 +5,7 @@ defaults: &defaults
   openscad: <%= ENV.fetch('OPENSCAD_PATH') { "/Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD" } %> 
   openscad_script: <%= ENV.fetch('OPENSCAD_SCRIPT_PATH') { Rails.root.to_s + "/services/scripts/scad.sh" } %> 
   repo_mount_path: <%= ENV.fetch('REPO_MOUNT_PATH') { "../repos"} %>
-  mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN') { "2424f09396a8104a463a4a7b3dca2786" } %>
-
+  mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN') { "514c0bd2f3d0d61f7aff166a9ac4a95a" } %>
 
 development:
   <<: *defaults
@@ -24,3 +23,4 @@ test:
 production:
   <<: *defaults
   rabbitmq_vhost: '/'  
+  mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN') { "2424f09396a8104a463a4a7b3dca2786" } %>
