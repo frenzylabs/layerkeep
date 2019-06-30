@@ -55,6 +55,7 @@ class ReposController < AuthController
       $tracker.track(current_user.id, "Repo Created", {kind: @repo.kind, name: @repo.name})
       render json: @repo.to_json
     else
+      $tracker.track(current_user.id, "Repo Creation Failed", {kind: @repo.kind, name: @repo.name, errors: @repo.errors})
       render status: 400, json: @repo.errors.to_json
     end
   end

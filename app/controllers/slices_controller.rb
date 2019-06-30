@@ -25,6 +25,8 @@ class SlicesController < AuthController
   end
 
   def create
+    slicer_engine = SlicerEngine.find(params["engine_id"])
+    
     project_params = params.require("projects")
     projects = slice_files(project_params, "projects")
     throw record_not_found and return if projects.empty?
@@ -36,7 +38,6 @@ class SlicesController < AuthController
     end
     slice_name << "#{Time.now.utc.to_i}.gcode"
     slices_path = "#{current_user.username}/slices/#{slice_name}"
-
 
     slice = Slice.new({name: slice_name, path: slices_path, user_id: current_user.id}) 
     begin
@@ -58,7 +59,8 @@ class SlicesController < AuthController
           projects: projects,
           profiles: profiles
         }
-        res = Publisher.publish_header(slice_params.to_json, "slice.new", {"service": "slicer", "slicer": "slic3r", "slicer-version": "1.3.0"})
+
+        res = Publisher.publish_header(slice_params.to_json, "slice.new", {"service": "slicer", "slicer": slicer_engine.name.downcase, "slicer-version": slicer_engine.version})
         puts "Publish Slice Res = #{res.inspect}"
         $tracker.track(current_user.id, "Slice Created")
         render json: slice
@@ -66,7 +68,8 @@ class SlicesController < AuthController
         Rails.logger.info("Slice Invalid: #{slice.errors}")
         render json: slice.errors
       end
-    rescue 
+    rescue => e
+      Rails.logger.info("ERror with slicing #{e}")
 
     end
   end

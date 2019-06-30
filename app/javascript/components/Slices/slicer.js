@@ -42,6 +42,8 @@ export class Slicer extends React.Component {
       canSlice: false,
       projects: [], 
       profiles: [], 
+      engines: [],
+      selectedEngine: null,
       projectSelections: {"0": Object.assign({}, this.initialRepoSelection)}, 
       profileSelections: {"0": Object.assign({}, this.initialRepoSelection)} 
     }
@@ -56,6 +58,8 @@ export class Slicer extends React.Component {
 
     this.getSelection           = this.getSelection.bind(this);
 
+    this.loadEngines            = this.loadEngines.bind(this);
+    this.selectEngine           = this.selectEngine.bind(this);
     this.createSlice            = this.createSlice.bind(this);
     
 
@@ -63,6 +67,7 @@ export class Slicer extends React.Component {
 
     this.loadProjects();
     this.loadProfiles();
+    this.loadEngines();
 
     window.slicer = this;
 
@@ -73,8 +78,25 @@ export class Slicer extends React.Component {
     this.cancelRequest.cancel("Left Page");
   }
 
+  loadEngines() {    
+    ProjectHandler.raw("/slicer_engines", {cancelToken: this.cancelRequest.token})
+    .then((response) => {
+      var engines = response.data.data.map((item) => {
+        return {name: item.attributes.name + ": " + item.attributes.version, value: item.id, id: item.id}
+      })
+      // console.log("profiles: ", profiles)
+      this.setState({ engines: engines})
+
+      // if (engines.length == 1) {
+      this.selectEngine(engines[0], "engines0")
+      // }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
   addProfile() {
-    
     var newNum = Object.keys(this.state.profileSelections).length;
     var pj = {...this.state.profileSelections}
     pj[newNum] = Object.assign({}, this.initialRepoSelection)
@@ -140,7 +162,7 @@ export class Slicer extends React.Component {
       }
       return acc;
     }, [])
-
+    
     // console.log("PrOJ: ", projects);
     // console.log("PROFILES: ", profiles);
 
@@ -149,7 +171,7 @@ export class Slicer extends React.Component {
     
     var sliceParams = [params.username, "projects", projects[0].name, "slices"]
     // {username: "kmussel", kind: "projects", name: "first-project", resouce: "slices"}
-    var slicing = SliceHandler.slice(projects, profiles).then((response) => {     
+    var slicing = SliceHandler.slice(this.state.selectedEngine.id, projects, profiles).then((response) => {     
       var slicePath = sliceParams.concat(response.data.id).join("/")
       this.setState( { redirect: slicePath})
 
@@ -238,7 +260,7 @@ export class Slicer extends React.Component {
     
     var path = "/" + projSel.selectedRepo.value + "/content/" + projSel.selectedRevision.value + "/" + item.value;
     var ext = item.value.split(".").pop().toLowerCase();
-    this.setState( {currentProjectFile: path, extension: ext, canSlice: true} );
+    this.setState( {currentProjectFile: path, extension: ext} );
     projSel.selectedFile = item;
     this.forceUpdate()
   }
@@ -298,15 +320,18 @@ export class Slicer extends React.Component {
   selectProfileFile(item, id) {
     var num = this.getSelection(id)
 
-    // var file = item
-    // if (typeof(item) != "string") {
-    //   file = item.value
-    // }
-
     var pj = {...this.state.profileSelections};
     
     pj[num]["selectedFile"] = item
     this.setState({ profileSelections: pj})
+  }
+
+  selectEngine(item, id) {
+    this.setState({ selectedEngine: item})
+  }
+
+  canSlice() {
+    return !!(this.state.selectedEngine && this.state.selectedEngine.id && this.state.currentProjectFile);
   }
 
   renderProjectSelections() {
@@ -345,6 +370,18 @@ export class Slicer extends React.Component {
     }
   }
 
+  renderEngineSelections() {
+    if (this.state.engines.length > 0) {
+      return (
+        <PanelBlock >
+          <Container className="is-fluid" >
+            <div><SearchDropdown id={"engine"} options={this.state.engines} selected={this.state.selectedEngine} onSelected={this.selectEngine} promptText="Select an Engine" placeholder="Engine Name" /></div>
+          </Container>
+        </PanelBlock>
+        )
+    }
+  }
+
   render() {
     if(this.state.redirect) {       
       return (<Redirect to={`/${this.state.redirect}`}/>);
@@ -354,16 +391,20 @@ export class Slicer extends React.Component {
         <Columns style={{height: '100%'}}>
             <Column isSize={3} style={{overflow: "scroll", paddingTop: "0"}}>
               <Panel className="is-fluid panel" >
+                <PanelHeading> Select Slicer Engine </PanelHeading>
+                {this.renderEngineSelections()}
+              </Panel>
+              <Panel className="is-fluid panel" >
                   <PanelHeading>Select Project File</PanelHeading>
                   {this.renderProjectSelections()}
-                </Panel>
-                <Panel className="is-fluid panel" >
+              </Panel>
+              <Panel className="is-fluid panel" >
                   <PanelHeading>
                   Select Printer Profile <button onClick={this.addProfile.bind(this)}>+</button></PanelHeading>
                   {this.renderProfileSelections()}
               </Panel>
               <Container className="is-fluid" >
-                <Button onClick={this.createSlice} disabled={this.state.canSlice == false}>Create Slice</Button>
+                <Button onClick={this.createSlice} disabled={this.canSlice() == false}>Create Slice</Button>
               </Container>
             </Column>
 

@@ -33,7 +33,7 @@ export class Nav extends React.Component {
         
           <NavbarBrand >
           
-          <Link to="/user" className="navbar-logo navbar-item">LayerKeep</Link>
+          <Link to={`/${currentUser.username}/projects/`} className="navbar-logo navbar-item">LayerKeep</Link>
           <Link to={`/${currentUser.username}/profiles/`} className="navbar-item is-hidden-desktop">Profiles</Link>
           <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
           <Link to={`/${currentUser.username}/slices/new/`} className="navbar-item is-hidden-desktop">Slicer <sup>Alpha</sup></Link>

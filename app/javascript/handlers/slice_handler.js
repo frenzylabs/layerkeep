@@ -29,8 +29,8 @@ export default {
     return Request.get(user_path(username, sliceID), params);
   },
 
-  slice: (projects, profiles) => {
-    var params = {'projects' : projects, 'profiles': profiles};
+  slice: (engine_id, projects, profiles) => {
+    var params = {'engine_id': engine_id, 'projects' : projects, 'profiles': profiles};
     return Request.post(path(), params);
   },
 }
