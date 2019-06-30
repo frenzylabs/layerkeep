@@ -301,11 +301,11 @@ end
 
 
 Warden::Manager.after_authentication do |user,auth,opts|
-  auth.cookies.encrypted[:user_id] = user.id
+  auth.cookies.encrypted[:user_id] = { value: user.id, domain: :all }
 end
 
 Warden::Manager.before_logout do |user,auth,opts|
   user.forget_me! if user
-  auth.cookies.delete(:user_id)
-  auth.cookies.delete(:remember_token)
+  auth.cookies.delete(:user_id, domain: :all)
+  auth.cookies.delete(:remember_token, domain: :all)
 end
