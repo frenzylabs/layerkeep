@@ -35,6 +35,8 @@ Rails.application.routes.draw do
 
   post 'user/settings', to: 'user#settings'
 
+  get '/slicer_engines', to: 'slicer_engines#index'
+
   concern :repo_files do |options|
     options ||= {}
     get ':repo_name/revisions', {action: 'index', to: 'revisions#index', as: "default_#{options[:as_kind]}_revisions", defaults: {revision: 'master'}}.merge(options)

@@ -47,6 +47,7 @@ module Publisher
   end
 
   def self.connection
+    AMQPConnectionManager.establish_connection unless AMQPConnectionManager.amqp_connection
     @connection ||= AMQPConnectionManager.amqp_connection
   end
 

@@ -51,7 +51,7 @@ class StompSocket extends React.Component {
   }
 
   setupWebSocket = () => {
-   var protocol = document.location.protocol == "https" ? 'wss' : 'ws';
+   var protocol = document.location.protocol == "https:" ? 'wss' : 'ws';
    var wspath = `${protocol}://${document.location.hostname}/ws`
    var client = webstomp.client(wspath, {debug: false});   
    client.ws.onopen = this.onOpen

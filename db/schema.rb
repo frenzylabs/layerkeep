@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_20_204217) do
+ActiveRecord::Schema.define(version: 2019_06_27_165426) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -98,6 +98,15 @@ ActiveRecord::Schema.define(version: 2019_05_20_204217) do
     t.datetime "updated_at", null: false
     t.index ["repo_id"], name: "index_slice_files_on_repo_id"
     t.index ["slice_id", "kind"], name: "index_slice_files_on_slice_id_and_kind"
+  end
+
+  create_table "slicer_engines", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "version", null: false
+    t.jsonb "options", default: "{}"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "slices", force: :cascade do |t|

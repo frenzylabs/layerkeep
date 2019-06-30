@@ -25,6 +25,8 @@ export class RepoEmptyList extends React.Component {
 
           <MediaContent>
             {"You have no " + this.props.kind + " created."}
+            <br/>
+            <Link className="button" to={`/${this.props.params.username}/${this.props.kind}/new`}>New {this.props.kind} </Link>
           </MediaContent>
 
           <MediaRight>

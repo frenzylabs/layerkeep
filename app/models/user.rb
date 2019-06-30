@@ -15,6 +15,7 @@ class User < ApplicationRecord
 
 
   validates :username, length: {minimum: 2}
+  validates_format_of :username, :with => /\A[0-9a-zA-Z][a-zA-Z0-9-_]*[a-zA-Z0-9]\Z/i, :on => :create
 
   has_many :repos, class_name: 'Repo'
   has_many :profiles, -> { where(kind: 'profile') }, class_name: 'Repo'
