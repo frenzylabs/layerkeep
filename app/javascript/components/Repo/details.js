@@ -188,7 +188,7 @@ class Details extends React.Component {
   renderLeftNav(onClick, disabled) {
     return (
       <button
-        className='image-gallery-custom-left-nav'
+        className='image-gallery-left-nav'
         disabled={disabled}
         onClick={onClick}/>
     )

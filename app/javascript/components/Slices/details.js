@@ -69,7 +69,7 @@ export class SliceDetails extends React.Component {
 
   empty() {
     return (
-      <RepoEmptyList kind={this.props.match.params.kind} />
+      <RepoEmptyList kind={this.props.match.params.kind} params={this.props.match.params} />
     );
   }
 

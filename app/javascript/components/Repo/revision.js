@@ -48,7 +48,7 @@ export class Revision extends React.Component {
 
   empty() {
     return (
-      <RepoEmptyList kind={this.props.kind} />
+      <RepoEmptyList kind={this.props.kind} params={this.props.match.params} />
     );
   }
 
