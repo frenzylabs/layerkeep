@@ -28,6 +28,8 @@
 
 @import 'noty/src/noty';
 @import 'noty/src/themes/sunset'; 
+@import 'owl.carousel/dist/assets/owl.carousel.min.css';
+@import 'owl.carousel/dist/assets/owl.theme.default.min.css';
 
 
 @import "diff2html/dist/diff2html";
@@ -53,9 +55,10 @@
 }
 
 html {
-  overflow: auto !important;
+  overflow: none auto !important;
 }
 html, body {
+  min-width: 940px;
   min-height:100% !important;
   background: $background_color;
 }

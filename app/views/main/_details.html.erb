@@ -1,0 +1,42 @@
+<div class="container is-fluid" id="details-section">
+  <section class="section"> 
+    <h1 class="title is-2">Take a peek inside.</h1>
+  </section>
+  
+  <section class="section"> 
+    <div class="columns">
+      <%= render 'detail_card', :image_name => "create_project.png", :caption => "Create a new project.", :id => 'ss_1'%>
+      <%= render 'detail_card', :image_name => "project_list.png", :caption => "Select a project.", :id => 'ss_2'%>
+      <%= render 'detail_card', :image_name => "project_view.png", :caption => "See project files and previews.", :id => 'ss_2'%>
+      <%= render 'detail_card', :image_name => "profile_view.png", :caption => "Upload all your slicer profiles", :id => 'ss_2'%>
+      <%= render 'detail_card', :image_name => "slicer_view.png", :caption => "Slice models with your profiles.", :id => 'ss_2'%>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="screen-shot-modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <p class="image is-4by3">
+      <img id="screen-shot-modal-image"/>
+    </p>
+  </div>
+  <button class="modal-close is-large" aria-label="close"></button>
+</div>
+
+<script>
+
+$('.ss_card').click(function(){
+  var element = $(this),
+      id      = element.attr('id').split('_')[1],
+      img     = $('#img_ss_' + id),
+      src     = img.attr('src');
+
+  $('#screen-shot-modal-image').attr('src', src);
+  $('#screen-shot-modal').addClass('is-active');
+});
+
+$('.modal-background, .modal-close, .modal-content').click(function() {
+  $('#screen-shot-modal').removeClass('is-active');
+});
+</script>

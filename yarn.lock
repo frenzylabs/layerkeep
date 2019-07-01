@@ -4092,7 +4092,7 @@ jets@^0.14.1:
   resolved "https://registry.yarnpkg.com/jets/-/jets-0.14.1.tgz#7b0ab29d4297d005766ceaf8af6c00f57ed0f04f"
   integrity sha512-h4wbT0eCiRTTsDfSntmU8OdS9Fs5vd62IqVbmDeHcofcL+9CxobulTIdQPydkiMq5V7RiTwDwGzHvrZKHiWj7Q==
 
-jquery@^3.4.0:
+jquery@^3.4.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.4.1.tgz#714f1f8d9dde4bdfa55764ba37ef214630d80ef2"
   integrity sha512-36+AdBzCL+y6qjw5Tx7HgzeGCzC81MDDgaUP8ld2zhx58HdqXGoBd+tHdrBMiyjGQs0Hxs/MLZTu/eHNJJuWPw==
