@@ -11,7 +11,7 @@ import { Redirect }       from 'react-router-dom';
 import InputField         from '../Form/InputField';
 import Formsy             from 'formsy-react';
 import TextField          from '../Form/TextField';
-import { UploadField }    from '@navjobs/upload';
+import UploadField        from '../Form/UploadField';
 import { ProfileHandler } from '../../handlers';
 
 import { 

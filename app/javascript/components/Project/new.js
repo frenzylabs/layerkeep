@@ -20,7 +20,8 @@ import Formsy           from 'formsy-react';
 import TextField        from '../Form/TextField';
 import { Table }        from 'bloomer/lib/elements/Table';
 import { Icon }         from 'bloomer/lib/elements/Icon';
-import { UploadField }  from '@navjobs/upload';
+
+import UploadField from '../Form/UploadField';
 
 import { ProjectHandler } from '../../handlers';
 import Modal from '../Modal';
@@ -35,6 +36,7 @@ export class ProjectNew extends React.Component {
       name:             null,
       description:      "",
       files:            [],
+      fileList:         null,
       creatingProject:  false,
       requestError:     null,
     };
@@ -74,7 +76,8 @@ export class ProjectNew extends React.Component {
 
   filesChanged(files) {
     this.setState({
-      files: Array.from(files).concat((this.state.files || []))
+      files: Array.from(files).concat((this.state.files || [])),
+      fileList: this.uploadFieldRef.fileList()
     });
   }
 
@@ -88,7 +91,8 @@ export class ProjectNew extends React.Component {
     files.splice(index, 1);
     
     this.setState({...this.state, files: files});
-    console.log(this.state.files);
+
+    this.uploadFieldRef.clearFiles();
   }
 
   disableButton() {
@@ -215,7 +219,7 @@ export class ProjectNew extends React.Component {
               <Columns isCentered>
                 <Column isSize={9}>
                   <Box style={{margin:0, padding:0}}>
-                  <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
+                  <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" id="project-file-upload" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
                       <Section>
                         <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
                       </Section>

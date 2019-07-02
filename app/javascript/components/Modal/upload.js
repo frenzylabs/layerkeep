@@ -7,7 +7,7 @@
  */
 
 import React            from 'react';
-import { UploadField }  from '@navjobs/upload';
+import UploadField      from '../Form/UploadField';
 import { RepoHandler }  from '../../handlers';
 
 import { 
@@ -22,6 +22,7 @@ import {
   Input
 } from 'bloomer';
 import { Loader } from 'three';
+import { Section } from 'bloomer/lib/layout/Section';
 
 export default class UploadModal extends React.Component {
   title = "Upload files";
@@ -71,6 +72,8 @@ export default class UploadModal extends React.Component {
       ...this.state, 
       files: files
     });
+
+    this.uploadFieldRef.fileInputRef.value = "";
   }
 
   renderFiles() {
@@ -150,14 +153,14 @@ export default class UploadModal extends React.Component {
         {this.state.errors && (
           <p className="has-text-centered" style={{color: 'red', marginBottom: '10px'}}>{this.state.errors}</p>
         )}
-        
 
-        <Box>
-          <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
-            <div className="has-text-centered">Click here or drag files here to upload.</div>
+        <Box style={{margin:0, padding:0}}>
+          <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
+            <Section>
+              <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
+            </Section>
           </UploadField>
 
-            <br />
 
           <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
             <tbody>
@@ -165,10 +168,9 @@ export default class UploadModal extends React.Component {
             </tbody>
           </Table>
 
-          <br/>
         </Box>
 
-        <Field>
+        <Field style={{marginTop: '2em'}}>
           <Control>
             <Input type="text" placeholder="Description of uploads." onChange={this.messageChanged} />
           </Control>
