@@ -178,7 +178,7 @@ export default class UploadModal extends React.Component {
 
         <Columns>
           <Column>
-            <p>Above files will be uploaded to <strong>{this.props.repoName}.</strong></p>
+            <p>Uploading to <strong>{this.props.repoName}.</strong></p>
           </Column>
 
           <Column>

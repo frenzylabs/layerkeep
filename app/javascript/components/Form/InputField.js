@@ -22,17 +22,20 @@ import { Input }                  from 'bloomer/lib/elements/Form/Input';
 
   changeValue(e) {
     this.props.setValue(e.currentTarget.value);
+
+    if(this.props.onChange) {
+      this.props.onChange(e);
+    }
   }
 
   render() {
     const error         = this.props.getErrorMessage();
-    const label         = this.props.label || "";
     const placeholder   = this.props.placeholder || label || "";
     const className     = this.props.required ? 'required' : this.error ? 'is-danger' : null;
 
     return (
       <Field>
-        <Label>{label}</Label>
+        <Label>{this.props.label}</Label>
         <Control>
           <Input 
             type="text" 

@@ -30,10 +30,11 @@ export class ProjectNew extends React.Component {
     super(props);
 
     this.state = {
+      nameLabel:        {title: "Name", caption: ""},
       canSubmit :       false, 
       name:             null,
       description:      "",
-      files:            null,
+      files:            [],
       creatingProject:  false,
       requestError:     null,
     };
@@ -47,12 +48,20 @@ export class ProjectNew extends React.Component {
     this.renderFiles        = this.renderFiles.bind(this);
     this.submit             = this.submit.bind(this);
     this.dismissError       = this.dismissError.bind(this);
+    this.renderNameLabel    = this.renderNameLabel.bind(this);
   }
 
   nameChanged(e) {
+    const val = e.currentTarget.value;
+    var name  = val.trim().replace(/[^a-zA-Z0-9\-_]/g, " ").split(/\s+/).join('-');
+
     this.setState({
       ...this.state,
-      name: e.currentTarget.value
+      name: name,
+      nameLabel: {
+        title: "Name",
+        caption: (val != name ? name : '')
+      }
     });
   }
 
@@ -70,9 +79,7 @@ export class ProjectNew extends React.Component {
   }
 
   deleteFile(e) {
-    e.preventDefault();
-
-    if(this.state.files == null || this.state.files.count < 1) { return }
+    if(this.state.files.length == 0) { return }
 
     var files = this.state.files,
         index = parseInt($(e.currentTarget).attr('id').replace('upload-file-', ''));
@@ -81,6 +88,7 @@ export class ProjectNew extends React.Component {
     files.splice(index, 1);
     
     this.setState({...this.state, files: files});
+    console.log(this.state.files);
   }
 
   disableButton() {
@@ -91,13 +99,13 @@ export class ProjectNew extends React.Component {
     this.setState({...this.state, canSubmit: true});
   }
 
-  submit(model) {
+  submit() {
     this.setState({
       ...this.state,
       creatingProject: true
     });
 
-    ProjectHandler.create(model, this.state.files)
+    ProjectHandler.create({name: this.state.name, description: this.state.description}, this.state.files)
     .then((response) => {
       this.setState({
         ...this.state,
@@ -144,6 +152,24 @@ export class ProjectNew extends React.Component {
     });
   }
 
+  renderNameLabel() {
+    return (
+      <React.Fragment>
+        <span>{this.state.nameLabel.title}</span>
+        {this.state.nameLabel.caption.length > 0 && (
+          <React.Fragment>
+            <span className="is-italic has-text-weight-normal has-text-grey-light">
+              &nbsp; &nbsp; &nbsp; Will be created as: 
+            </span>
+            <span className="is-italic has-text-grey-dar has-text-weight-bold">
+              &nbsp; &nbsp; {this.state.nameLabel.caption}
+            </span>
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    )
+  }
+
   render() {
     return (
       <div>
@@ -160,14 +186,14 @@ export class ProjectNew extends React.Component {
                     <hr />
                   
                     <InputField 
-                      label="Name"
+                      label={this.renderNameLabel()}
                       name="name"
                       onChange={this.nameChanged}
                       placeholder="What should we call this project?"
                       validationError="Name is required"
                       required
                     />
-
+                    
                     <TextField 
                       label="Description"
                       name="description"
@@ -188,21 +214,19 @@ export class ProjectNew extends React.Component {
             <Section>
               <Columns isCentered>
                 <Column isSize={9}>
-                  <Box>
-                    <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
-                        <div className="has-text-centered">Click here or drag files here to upload.</div>
+                  <Box style={{margin:0, padding:0}}>
+                  <UploadField name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
+                      <Section>
+                        <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
+                      </Section>
                     </UploadField>
-
-                    <br />
 
                     <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
                       <tbody>
                         {this.renderFiles() }
                       </tbody>
                     </Table>
-
-                    <br/>
-                  </Box>
+                    </Box>
                 </Column>
               </Columns>
             </Section>
