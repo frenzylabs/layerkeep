@@ -230,7 +230,7 @@ export class ProjectNew extends React.Component {
                         {this.renderFiles() }
                       </tbody>
                     </Table>
-                    </Box>
+                  </Box>
                 </Column>
               </Columns>
             </Section>
