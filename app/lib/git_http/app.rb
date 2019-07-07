@@ -77,7 +77,7 @@ module GitHttp
 
       ROUTES.each do |path_matcher, verb, handler|
         path_info.match(path_matcher) do |match|
-          @repository_uri = match[1]
+          @repository_uri = match[1].downcase
           @request_verb = verb
 
           return method_not_allowed unless verb == request.request_method
