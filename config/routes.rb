@@ -6,8 +6,9 @@
 # Copyright 2018 WessCope
 #
 
+
 Rails.application.routes.draw do
-  
+
   use_doorkeeper
   authenticated :user do
     root to: redirect {|params, request| 
@@ -16,8 +17,6 @@ Rails.application.routes.draw do
     }
   end
 
-  
-  
   devise_for :admin_users, {class_name: 'User'}.merge(ActiveAdmin::Devise.config)
   ActiveAdmin.routes(self)
 
@@ -58,10 +57,13 @@ Rails.application.routes.draw do
   get ':user/projects/:repo_name/content/:revision', {action: 'show', to: 'content#show', as: "download_projects_files", constraints: { view: 'files', revision: /.*/ }, defaults: {kind: 'projects'}}
 
   
+  scope '/', constraints: GitHttp::Constraint.new do
+    mount GitHttp::Engine => '/'
+  end
+
   scope ':user' do
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
     resources :slices, constraints: lambda { |req| req.format == :json }
-    
 
     scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'
