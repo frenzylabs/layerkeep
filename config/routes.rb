@@ -10,6 +10,30 @@
 Rails.application.routes.draw do
 
   use_doorkeeper
+  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
+
+  ## Admin subdomain routes
+  scope path: '/', constraints: { subdomain: 'admin' } do
+    authenticated :user, lambda { |u| u.admin? } do
+      ActiveAdmin.routes(self)
+      root to: redirect {|params, request| 
+        current_user = request.env["warden"].user(:user)
+        "/admin/"
+      }
+    end
+    # Redirect Non Admin User back to regular subdomain
+    authenticated :user, lambda { |u| !u.admin? } do
+      root to: redirect {|params, request| 
+        current_user = request.env["warden"].user(:user)
+        "#{request.scheme}://#{request.domain}/"
+      }
+    end
+    authenticate :user, lambda { |u| u.admin? } do
+      root to: 'active_admin/devise/sessions#new' 
+    end
+    match '*path', to: redirect('/'), via: :all
+  end
+
   authenticated :user do
     root to: redirect {|params, request| 
       current_user = request.env["warden"].user(:user)
@@ -17,11 +41,6 @@ Rails.application.routes.draw do
     }
   end
 
-  devise_for :admin_users, {class_name: 'User'}.merge(ActiveAdmin::Devise.config)
-  ActiveAdmin.routes(self)
-
-  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
-  
   post 'oauth/access_tokens', to: 'auth#access_token'
 
   root to: 'main#index'
