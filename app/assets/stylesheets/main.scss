@@ -8,7 +8,6 @@
 
  @import "colors";
  
-
 #main-hero {
   h1 {
     font-family: 'Nunito Sans', sans-serif !important;
@@ -226,4 +225,88 @@ a[id="hero-concepts"]:target ~ #main-sections div.hero {
   background: #f5f5f5;
   margin: 0 !important;
   overflow:hidden;
+}
+
+html, body {
+  background: #f6f6f6 !important;
+}
+
+.navbar {
+  background: #f6f6f6 !important;
+}
+
+.landing-section {
+  overflow: hidden !important;
+  
+  .title {
+    font-family: 'Nunito Sans', sans-serif !important;
+    color: #22539e !important;
+    margin-bottom: 40px !important;
+    line-height: 130% !important;
+  }
+  .subtitle {
+    p {
+      font-family: 'Nunito Sans', sans-serif !important;
+      line-height: 140% !important;
+
+      &:first-child {
+        color: #16386f !important;
+        font-weight: bold !important;
+        font-size: 22px !important;
+      }
+
+      &:last-child {
+        color: #22539e !important;
+        font-size: 18px !important;
+      }
+    }
+  }
+}
+
+#top-section {
+  .button {
+    background: #8cc356 !important;
+    color: #fff !important;
+  }
+}
+#beta-section {
+  background: #fff !important;
+
+  h2.subtitle {
+    p {
+      font-size: 28px !important;
+      font-weight: bold !important;
+    }
+  }
+  .sub-hero-link {
+    color: #8cc356 !important;
+  }
+}
+
+#profiles-section {
+  background: #fff !important;
+}
+
+#contact-section {
+  background: #fff !important;
+
+  .contact-button {
+    color: #3c3c3c !important;
+    text-align: left !important;
+    span {
+      text-align: left !important;
+    }
+  }
+}
+
+#footer-section {
+  background: #fff !important;
+
+  .contact-button {
+    color: #3c3c3c !important;
+    text-align: left !important;
+    span {
+      text-align: left !important;
+    }
+  }
 }

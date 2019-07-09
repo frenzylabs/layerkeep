@@ -10,7 +10,6 @@
  @import 'utility';
 
  .navbar {
-  border-bottom: 1px solid $seperator_color;
   height: 44px !important;
   flex-direction: row;   
 
@@ -52,7 +51,7 @@
   font-family: 'Nunito Sans', sans-serif !important;
   font-size: 20px !important;
   font-weight: 500 !important;
-  // color: #d6d6d6 !important;
+  color: #d4d4d4 !important;
 
   &:hover {
     background: none !important;
