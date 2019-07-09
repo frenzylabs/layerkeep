@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="has-navbar-fixed-top">
+<html>
   <head>
     <title>LayerKeep</title>
     <%= csrf_meta_tags %>
@@ -11,7 +11,7 @@
   </head>
 
   <body data-route="<%="#{controller_name}##{action_name}"%>">
-    <%= render 'shared/nav' %>
+    <%= render 'landing_nav' %>
 
     <% flash.each do |key, value| %>
       <% if value.include? "signed_up_but_User Has Not Been Approved" %>

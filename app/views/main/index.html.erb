@@ -1,11 +1,363 @@
-<%= render 'hero' %>
+<!-- HERO -->
+<div id="top-section" class="section landing-section">
+  <div class="columns is-centered">
+    <div class="column is-11">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-vcentered is-mobile">
+              <div class="column">
+                <h1 class="title">
+                  3D PRINTING
+                  <br> 
+                  MANAGEMENT
+                </h1>
 
-<div class="hero is-fullheight">
-  <br/><br/>
-  <%= render 'details' %>
-    <footer class="footer">
-  <%= render 'about' %>
-  </footer>
+                <h2 class="subtitle">
+                  <p>Projects, profiles, slicing managed.</p>
+                  <p>
+                  Layerkeep is a platform for managing 3D projects 
+                  with version control backed by git for project files
+                  and slicer profiles, as well as a slicer powered by CuraEngine 
+                  and Slic3r.
+                  </p>
+                </h2>
 
+                <br><br>
+
+                <p class="buttons">
+                  <%= link_to "Get Started", new_user_registration_path, :class => 'button is-small is-fullwidth' %>
+                </p>
+              </div>
+
+              <div class="column is-hidden-mobile" style="text-align:right">
+                <%= image_tag '3dprinthero.svg', :width => '80%'%>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 </div>
 
+<div id="beta-section" class="section landing-section">
+  <div class="columns is-centered">
+    <div class="column is-11">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-vcentered is-mobile">
+              <div class="column">
+                <h1 class="title">
+                  <%= link_to "JOIN THE BETA", new_user_registration_path, :class => 'hero-link' %>
+                </h1>
+
+                <h2 class="subtitle">
+                  <p>
+                    <%= link_to "Sign up", new_user_registration_path, :class => 'sub-hero-link' %> for the LayerKeep 
+                    <%= link_to "beta", new_user_registration_path, :class => 'sub-hero-link' %>, and once activated, 
+                    <%= link_to "dive in", new_user_registration_path, :class => 'sub-hero-link' %> to create projects, manage profiles and slice
+                    models.
+                  </p>
+                </h2>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="projects-section" class="section landing-section">
+  <div class="columns is-centered">
+    <div class="column is-11">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-vcentered is-mobile">
+              <div class="column is-4">
+                <div class="box">
+                  <%= image_tag 'project_view.png' %>
+                </div>
+              </div>
+
+              <div class="column is-6 is-offset-1">
+                <div class="container">
+                  <h1 class="title">
+                  MANAGE PROJECTS.
+                  </h1>
+
+                  <h2 class="subtitle">
+                    <p>
+                    Straight forward, easy to use and version controlled.
+                    </p>
+                    <p>
+                    LayerKeep provides simple project management
+                    with a focus on the 3D printing world. Create, upload, download or slice
+                    right from your project. All backed by git.
+                    </p>
+                  </h2>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="profiles-section" class="section landing-section">
+  <div class="columns is-centered">
+    <div class="column is-11">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-vcentered is-mobile">
+              <div class="column is-6">
+                <div class="container">
+                  <h1 class="title">
+                  ORGANIZE PROFILES.
+                  </h1>
+
+                  <h2 class="subtitle">
+                    <p>
+                    All your slicer profiles and settings.
+                    </p>
+                    <p>
+                    Proflies are versioned and stored for downloading 
+                    or using with the LayerKeep slicer.
+                    </p>
+                  </h2>
+                </div>
+              </div>
+
+              <div class="column is-4 is-offset-1">
+                <div class="box">
+                  <%= image_tag 'profiles_list.png' %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div id="slicer-section" class="section landing-section">
+  <div class="columns is-centered">
+    <div class="column is-11">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-vcentered is-mobile">
+              <div class="column is-4">
+                <div class="box">
+                  <%= image_tag 'slicer_view.png' %>
+                </div>
+              </div>
+
+              <div class="column is-6 is-offset-1">
+                <div class="container">
+                  <h1 class="title">
+                  HELLO GCODES.
+                  </h1>
+
+                  <h2 class="subtitle">
+                    <p>
+                    Slice your model with your profiles.
+                    </p>
+                    <p>
+                    Select your slicer engine, your profile and your model file, then slice.
+                    LayerKeep creates gcodes for you to download and print.
+                    </p>
+                  </h2>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<%
+# <div id="contact-section" class="section landing-section">
+#   <div class="columns is-centered">
+#     <div class="column is-11">
+#       <section class="hero">
+#         <div class="hero-body">
+#           <div class="container">
+#             <div class="columns is-mobile">
+
+#               <div class="column is-5">
+#                 <div class="container">
+#                   <h1 class="title">MAKE CONTACT</h1>
+
+#                   <form>
+#                     <div class="field">
+#                       <div class="control">
+#                         <input name="name" class="input" type="text" placeholder="Name">
+#                       </div>
+#                     </div>
+
+#                     <div class="field">
+#                       <div class="control">
+#                         <input name="email" class="input" type="email" placeholder="Email Address">
+#                       </div>
+#                     </div>
+
+#                     <div class="field">
+#                       <div class="control">
+#                         <textarea name="message" class="textarea" placeholder="Message"></textarea>
+#                       </div>
+#                     </div>
+
+#                     <div class="field">
+#                       <div class="control">
+#                         <button class="button is-fullwidth is-primary" type="submit">Send</button>
+#                       </div>
+#                     </div>
+#                   </form>
+#                 </div>
+#               </div>
+
+#               <div class="column is-5 is-offset-2">
+#                 <div class="container">
+#                   <h1 class="title">GET SOCIAL</h1>
+
+#                   <p>
+#                     <a class="button is-white is-small contact-button" href="https://layerkeep.slack.com/" target="_blank">
+#                       <span class="icon">
+#                         <i class="fab fa-slack"></i>
+#                       </span>
+#                       <span>Chat on Slack</span>
+#                     </a>
+#                   </p>
+
+#                   <p>
+#                     <a class="button is-white is-small contact-button" href="irc://chat.freenode.net/layerkeep" target="_blank">
+#                       <span class="icon">
+#                         <i class="fas fa-server"></i>
+#                       </span>
+#                       <span>#LayerKeep on Freenode</span>
+#                     </a>
+#                   </p>
+
+#                   <p>
+#                     <a class="button is-white is-small contact-button" href="https://github.com/layerkeep" target="_blank">
+#                       <span class="icon">
+#                         <i class="fab fa-github"></i>
+#                       </span>
+#                       <span>See us on Github</span>
+#                     </a>
+#                   </p>
+
+#                   <p>
+#                     <a class="button is-white is-small contact-button" href="mailto:info@layerkeep.com">
+#                       <span class="icon">
+#                         <i class="fas fa-envelope"></i>
+#                       </span>
+#                       <span>info@layerkeep.com</span>
+#                     </a>
+#                   </p>
+
+
+#                 </div>
+#               </div>
+
+#             </div>
+#           </div>
+#         </div>
+#       </section>
+#     </div>
+#   </div>
+# </div>
+%>
+<div id="footer-section" class="section landing-section">
+  <div class="columns is-centered">
+    <div class="column is-11">
+      <section class="hero">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-mobile">
+
+              <div class="column">
+                <div class="container">
+                  <h4 class="subtitle">REACH OUT</h4>
+
+
+                  <p>
+                    <a class="button is-white is-small contact-button" href="https://layerkeep.slack.com/" target="_blank">
+                      <span class="icon">
+                        <i class="fab fa-slack"></i>
+                      </span>
+                      <span>Chat on Slack</span>
+                    </a>
+                  </p>
+
+                  <p>
+                    <a class="button is-white is-small contact-button" href="irc://chat.freenode.net/layerkeep" target="_blank">
+                      <span class="icon">
+                        <i class="fas fa-server"></i>
+                      </span>
+                      <span>#LayerKeep on Freenode</span>
+                    </a>
+                  </p>
+
+                  <p>
+                    <a class="button is-white is-small contact-button" href="mailto:layerkeep@frenzylabs.com">
+                      <span class="icon">
+                        <i class="fas fa-envelope"></i>
+                      </span>
+                      <span>layerkeep@frenzylabs.com</span>
+                    </a>
+                  </p>
+
+
+                </div>
+              </div>
+
+              <div class="column">
+                <div class="container">
+                  <h4 class="subtitle">
+                    Get started.
+                  </h4>
+                  <p>
+                    <%= link_to "Sign up", new_user_registration_path, :class => 'sub-hero-link' %> for the private beta.
+                    We will be approving users during the development process to ensure features are headed in the direction
+                    of our users feedback. 
+                  </p>
+
+                  <p>
+                    Please remember that we are in beta. During this time there will be changes and updates made more
+                    frequently than in a full release.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      <strong>LayerKeep</strong> by <a href="https://frenzylabs.com">FrenzyLabs, llc.</a>
+    </p>
+    <p>
+      &copy; 2019 FrenzyLabs, LLC
+    </p>
+  </div>
+</footer>
