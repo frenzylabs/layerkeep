@@ -28,6 +28,7 @@ gem 'activeadmin'
 gem 'mailgun-ruby', '~>1.1.6'
 gem 'doorkeeper'
 gem 'mixpanel-ruby'
+gem 'grack'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
