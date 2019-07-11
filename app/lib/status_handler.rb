@@ -55,7 +55,6 @@ class StatusHandler
 
         if content["slice_id"] 
           slice = Slice.includes([:user, project_files: :repo]).find(content["slice_id"])
-          binding.pry
           status = meta[:routing_key].split(".").last
 
           unless ["complete", "failed", "success"].include?(slice.status)
