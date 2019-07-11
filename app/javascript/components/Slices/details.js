@@ -94,13 +94,31 @@ export class SliceDetails extends React.Component {
       const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes`;
       return (
         <LevelItem>
-        <a className="button is-small" href={url} target="_blank">
-                    <span className="icon is-small">
-                      <i className="fas fa-download"></i>
-                    </span>
-                    <span>Download</span>
-                  </a>
-                  </LevelItem>
+          <a className="button is-small" href={url} target="_blank">
+            <span className="icon is-small">
+              <i className="fas fa-download"></i>
+            </span>
+            <span>Download</span>
+          </a>
+        </LevelItem>
+      )
+    }
+  }
+
+  renderLogfileLink() {
+    var log_path = this.state.slice.data.attributes.log_path;
+    if (log_path && log_path.length > 0) {
+      const urlparams = this.props.match.params;
+      const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes?logpath=true`;
+      return (
+        <LevelItem>
+          <a className="button is-small" href={url} target="_blank">
+            <span className="icon is-small">
+              <i className="fas fa-download"></i>
+            </span>
+            <span>Logfile</span>
+          </a>
+        </LevelItem>
       )
     }
   }
@@ -121,6 +139,7 @@ export class SliceDetails extends React.Component {
             <LevelRight>
               
                 { this.renderDownloadLink()}
+                { this.renderLogfileLink() }
               <LevelItem>
                 {this.renderStatus()}
               </LevelItem>

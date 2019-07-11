@@ -101,8 +101,16 @@ class SlicesController < AuthController
   def gcodes 
     authorize(@user)
     @slice = Slice.find(params[:id])
-    $tracker.track(current_user.id, "Download Gcodes")
-    send_file("#{Rails.application.config.settings["repo_mount_path"]}/" + @slice.path.downcase, filename: @slice.path.split("/").last, disposition: :inline)
+
+    if params[:logpath]
+      filepath = @slice.log_path
+      $tracker.track(current_user.id, "Download Gcodes Logfile")
+    else
+      filepath = @slice.path
+      $tracker.track(current_user.id, "Download Gcodes")
+    end
+
+    send_file("#{Rails.application.config.settings["repo_mount_path"]}/" + filepath.downcase, filename: filepath.split("/").last, disposition: :inline)
   end
 
   def slice_files(file_params, kind)
