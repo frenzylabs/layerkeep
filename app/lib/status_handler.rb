@@ -52,14 +52,14 @@ class StatusHandler
 
       begin
         content = JSON.parse(payload)
-        
+
         if content["slice_id"] 
           slice = Slice.includes([:user, project_files: :repo]).find(content["slice_id"])
-          
+          binding.pry
           status = meta[:routing_key].split(".").last
 
           unless ["complete", "failed", "success"].include?(slice.status)
-            slice.filepath = content["filepath"] if content["filepath"] 
+            slice.log_path = content["log_path"] if content["log_path"]
             slice.status = status
             slice.save!
             project_name = slice.project_files.first.repo.name
