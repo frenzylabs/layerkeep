@@ -13,7 +13,8 @@ export const Request = axios.create({
   responseType: 'json',
   headers: {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json',
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest'
 	}
 });
 

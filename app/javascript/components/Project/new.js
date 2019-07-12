@@ -37,7 +37,7 @@ export class ProjectNew extends React.Component {
       description:      "",
       files:            [],
       fileList:         null,
-      creatingProject:  false,
+      creatingRepo:  false,
       requestError:     null,
     };
     
@@ -106,7 +106,7 @@ export class ProjectNew extends React.Component {
   submit() {
     this.setState({
       ...this.state,
-      creatingProject: true
+      creatingRepo: true
     });
 
     ProjectHandler.create({name: this.state.name, description: this.state.description}, this.state.files)
@@ -120,7 +120,7 @@ export class ProjectNew extends React.Component {
     .catch((error) => {
       this.setState({
         ...this.state,
-        creatingProject: false,
+        creatingRepo: false,
         requestError: error.message
       });
     });
@@ -129,7 +129,7 @@ export class ProjectNew extends React.Component {
   dismissError() {
     this.setState({
       ...this.state,
-      creatingProject: false,
+      creatingRepo: false,
       requestError: null
     });
   }
@@ -219,7 +219,7 @@ export class ProjectNew extends React.Component {
               <Columns isCentered>
                 <Column isSize={9}>
                   <Box style={{margin:0, padding:0}}>
-                  <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" id="project-file-upload" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
+                  <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" id="repo-file-upload" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
                       <Section>
                         <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
                       </Section>
@@ -240,7 +240,7 @@ export class ProjectNew extends React.Component {
         <Modal 
           component={Modal.spinner} 
           caption={"Creating project..."}
-          isActive={this.state.creatingProject }  
+          isActive={this.state.creatingRepo }  
         />  
 
         <Modal
