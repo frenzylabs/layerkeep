@@ -28,6 +28,7 @@ import {
   Error404,
   Error401
 } from '../ErrorViews';
+import RepoClone from './repo_clone';
 
 
 class Details extends React.Component {
@@ -259,6 +260,16 @@ class Details extends React.Component {
                     <span>Download</span>
                   </a>
                 </p>
+                <div className="control">
+                  <RepoClone cloneURL={
+                    [
+                      'https://layerkeep.com',
+                      this.props.match.params.username,
+                      this.props.match.params.kind,
+                      this.props.match.params.name + '.git'
+                    ].join('/')
+                  } />
+                </div>
               </div>
             </Column>
           </Columns>

@@ -29,7 +29,7 @@ export class Nav extends React.Component {
 
   render() {
     return(
-      <Navbar className="is-fixed-top is-light is-flex" style={{justifyContent: "space-between"}}>
+      <Navbar className="is-fixed-top is-light is-flex" style={{justifyContent: "space-between", borderBottom: '1px solid #d3d3d3'}}>
         
           <NavbarBrand >
           
