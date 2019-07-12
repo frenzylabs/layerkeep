@@ -39,7 +39,7 @@ class SlicesController < AuthController
     slice_name << "#{Time.now.utc.to_i}.gcode"
     slices_path = "#{current_user.username}/slices/#{slice_name}"
 
-    slice = Slice.new({name: slice_name, path: slices_path, user_id: current_user.id}) 
+    slice = Slice.new({name: slice_name, path: slices_path, user_id: current_user.id, slicer_engine_id: slicer_engine.id}) 
     begin
       Slice.transaction do
         slice.save!
