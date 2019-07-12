@@ -32,7 +32,7 @@ class TextViewer extends React.Component {
   render() {
 
     return (
-      <pre className="" style={{height: '100%'}}>
+      <pre className="" style={{height: '100%', 'whiteSpace': 'pre-wrap', 'overflowX': 'scroll'}}>
           {this.state.text}
       </pre>
     );

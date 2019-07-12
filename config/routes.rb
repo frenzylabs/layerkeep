@@ -84,11 +84,11 @@ Rails.application.routes.draw do
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
     resources :slices, constraints: lambda { |req| req.format == :json }
 
-    scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.format == :json } do
+    scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'
     end
 
-    scope 'projects', defaults: {kind: 'projects'}, constraints: lambda { |req| req.format == :json } do
+    scope 'projects', defaults: {kind: 'projects'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
       concerns :repo_files, as_kind: 'projects'
       
     end

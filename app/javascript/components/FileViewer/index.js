@@ -75,6 +75,7 @@ export class FileViewer extends React.Component {
         return MarkdownViewer;
       }
       case 'txt':
+      case 'json':
       case 'ini': {
         return TextViewer;
       }
