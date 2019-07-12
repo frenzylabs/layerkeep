@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_11_165525) do
+ActiveRecord::Schema.define(version: 2019_07_12_130400) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -118,6 +118,8 @@ ActiveRecord::Schema.define(version: 2019_07_11_165525) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "log_path"
+    t.bigint "slicer_engine_id"
+    t.index ["slicer_engine_id"], name: "index_slices_on_slicer_engine_id"
     t.index ["user_id"], name: "index_slices_on_user_id"
   end
 
@@ -146,5 +148,6 @@ ActiveRecord::Schema.define(version: 2019_07_11_165525) do
   add_foreign_key "repos", "users"
   add_foreign_key "slice_files", "repos"
   add_foreign_key "slice_files", "slices"
+  add_foreign_key "slices", "slicer_engines"
   add_foreign_key "slices", "users"
 end

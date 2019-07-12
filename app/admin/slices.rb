@@ -12,6 +12,7 @@ ActiveAdmin.register Slice do
 #   permitted
 # end
 includes :project_files
+includes :slicer_engine
 # sidebar "Slice Details", only: [:show, :edit] do
 #   ul do
 #     li link_to "Tickets",    admin_slice_slice_files_path(resource)
