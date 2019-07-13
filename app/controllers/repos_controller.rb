@@ -32,7 +32,59 @@ class ReposController < AuthController
 
   def create
     post_params = params[:repo]
-    
+    if params[:src]
+      conn = Faraday.new(:url => "https://api.thingiverse.com") do |con|
+        # conn.response :xml,  :content_type => /\bxml$/
+        con.response :json, :content_type => /\bjson$/
+        # faraday.request  :url_encoded             # form-encode POST params
+        
+        # faraday.response :logger                  # log requests to $stdout
+        con.adapter  Faraday.default_adapter  # make requests with Net::HTTP
+      end
+      
+      # conn.req.headers['Authorization'] = 'Bearer 13dd7dc6887cf4c5244cc81cd727bf8b'
+      resp = conn.get do |req|
+        req.url "/things/#{params[:thing_id]}/packageURL"
+        # req.headers['Content-Type'] = 'application/json'
+        req.headers['Authorization'] = 'Bearer 13dd7dc6887cf4c5244cc81cd727bf8b'
+      end
+      
+      # resp = conn.get "/things/#{params[:thing_id]}/packageURL"
+      
+      if resp.body["public_url"]
+        uri = URI(resp.body["public_url"])
+
+        Net::HTTP.start(uri.host, uri.port, :use_ssl => true) do |http|
+          request = Net::HTTP::Get.new(uri)
+          
+          http.request request do |response|
+            binding.pry
+            open 'large_file.zip', 'w:UTF-8' do |io|
+              response.read_body do |chunk|
+                io.write chunk
+              end
+            end
+          end
+        end
+
+        # response = Faraday.get resp.body["public_url"]
+        # binding.pry
+        # open 'large_file', 'w' do |io|
+        #   response.body.read do |chunk|
+        #     io.write chunk
+        #   end
+        # end
+        # resp = conn.get do |req|
+        #   req.url "/things/#{params[:thing_id]}/packageURL"
+        #   # req.headers['Content-Type'] = 'application/json'
+        #   req.headers['Authorization'] = 'Bearer 13dd7dc6887cf4c5244cc81cd727bf8b'
+        # end
+      end
+
+      logger.info(resp.body)
+      binding.pry
+    end
+    return;
     @repo        = Repo.new(post_params.permit(:name, :description))
     @repo.kind   = params[:kind]
     @repo.user   = @user
