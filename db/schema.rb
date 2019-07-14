@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_12_130400) do
+ActiveRecord::Schema.define(version: 2019_07_13_205529) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -72,6 +72,15 @@ ActiveRecord::Schema.define(version: 2019_07_12_130400) do
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
+  create_table "remote_sources", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "display_name", null: false
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_remote_sources_on_name", unique: true
+  end
+
   create_table "repos", force: :cascade do |t|
     t.citext "name", null: false
     t.string "description"
@@ -83,6 +92,9 @@ ActiveRecord::Schema.define(version: 2019_07_12_130400) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "remote_source_id"
+    t.string "remote_src_url"
+    t.index ["remote_source_id"], name: "index_repos_on_remote_source_id"
     t.index ["user_id", "kind", "name"], name: "index_repos_on_user_id_and_kind_and_name"
     t.index ["user_id"], name: "index_repos_on_user_id"
   end

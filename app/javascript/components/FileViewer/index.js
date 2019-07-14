@@ -86,6 +86,7 @@ export class FileViewer extends React.Component {
         // const newProps = Object.assign({}, this.props, { responseType: 'arraybuffer' });
         return XlsxViewer //, newProps);
       }
+      case 'svg':
       case 'jpg':
       case 'jpeg':
       case 'gif':

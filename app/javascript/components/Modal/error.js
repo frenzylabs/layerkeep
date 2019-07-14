@@ -10,14 +10,41 @@ import React from 'react';
 
 export default class ErrorModal extends React.Component {
   static parentStyles = {background: '#fe3b61'};
-  
-  render() {
-    const caption = this.props.caption || "Unknown error has occured.";
 
+  renderMessage() {
+    var caption = this.props.caption; //"Unknown error has occured.";
+    var subtext = this.props.subtext;
+    
+    if(!caption && this.props.requestError) {
+       caption = this.props.requestError.message
+       if (!subtext) {
+        const data = this.props.requestError.response.data;
+        subtext = Object.keys(data).map((key, index) => {
+          var item = data[key]
+          if (Array.isArray(item)) {
+            item = item.join(", ")
+          } 
+          return (
+            <div key={key} >
+              {key}: {item}
+            </div>
+          )
+        })
+       }
+    }
+
+    return (<div>
+          <p className="" style={{fontSize: '22px'}}>{caption || "Unknown error has occured."}</p>
+          <div className="" style={{fontSize: '14px'}}>{subtext || ""}</div>
+        </div>
+    )
+  }
+
+  render() {
     return (
       <div className="message is-danger">
         <div className="message-header">
-          <p className="" style={{fontSize: '22px'}}>{caption}</p>
+          {this.renderMessage()}
           <button className="delete" onClick={this.props.dismissAction}></button>
         </div>
       </div>

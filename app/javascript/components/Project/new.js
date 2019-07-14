@@ -6,25 +6,30 @@
  *  Copyright 2018 WessCope
  */
 
-import React            from 'react';
-import { Redirect }     from 'react-router-dom';
-import { Section }      from 'bloomer/lib/layout/Section';
-import { Columns }      from 'bloomer/lib/grid/Columns';
-import { Column }       from 'bloomer/lib/grid/Column';
-import { Box }          from 'bloomer/lib/elements/Box';
-import { Control }      from 'bloomer/lib/elements/Form/Control';
-import { Field }        from 'bloomer/lib/elements/Form/Field/Field';
-import { Button }       from 'bloomer/lib/elements/Button';
-import InputField       from '../Form/InputField';
-import Formsy           from 'formsy-react';
-import TextField        from '../Form/TextField';
-import { Table }        from 'bloomer/lib/elements/Table';
-import { Icon }         from 'bloomer/lib/elements/Icon';
+import React              from 'react';
+import { Redirect }       from 'react-router-dom';
+import Formsy             from 'formsy-react';
+import { 
+  Section,
+  Container, 
+  Columns, 
+  Column, 
+  Button, 
+  Box,
+  Control,
+  Label,
+  Field, 
+  Table, 
+  Icon
+} from 'bloomer';
 
-import UploadField from '../Form/UploadField';
 
+import InputField         from '../Form/InputField';
+import TextField          from '../Form/TextField';
+import UploadField        from '../Form/UploadField';
+import { SearchDropdown } from '../Form/SearchDropdown'
 import { ProjectHandler } from '../../handlers';
-import Modal from '../Modal';
+import Modal              from '../Modal';
 
 export class ProjectNew extends React.Component {
   constructor(props) {
@@ -37,8 +42,9 @@ export class ProjectNew extends React.Component {
       description:      "",
       files:            [],
       fileList:         null,
-      creatingRepo:  false,
+      creatingRepo:     false,
       requestError:     null,
+      fileSources:      []
     };
     
     this.disableButton      = this.disableButton.bind(this);
@@ -51,6 +57,36 @@ export class ProjectNew extends React.Component {
     this.submit             = this.submit.bind(this);
     this.dismissError       = this.dismissError.bind(this);
     this.renderNameLabel    = this.renderNameLabel.bind(this);
+    this.selectFileSource   = this.selectFileSource.bind(this);
+    this.cancelRequest      = ProjectHandler.cancelSource();
+    this.loadRemoteSources()
+
+    window.np = this;
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
+
+  loadRemoteSources() {    
+    ProjectHandler.raw("/remote_sources", {cancelToken: this.cancelRequest.token})
+    .then((response) => {
+      var remoteSources = response.data.data.map((item) => {
+        return {name: item.attributes.display_name, value: item.id, id: item.id}
+      })
+      
+      let sources = [{name: "Local", value: "0", id: "0"}].concat(remoteSources)
+
+      this.setState({ fileSources: sources})
+      this.selectFileSource(sources[0], "sources0")
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  selectFileSource(item, id) {
+    this.setState({ selectedFileSource: item})
   }
 
   nameChanged(e) {
@@ -87,11 +123,8 @@ export class ProjectNew extends React.Component {
     var files = this.state.files,
         index = parseInt($(e.currentTarget).attr('id').replace('upload-file-', ''));
 
-
-    files.splice(index, 1);
-    
+    files.splice(index, 1);    
     this.setState({...this.state, files: files});
-
     this.uploadFieldRef.clearFiles();
   }
 
@@ -103,17 +136,23 @@ export class ProjectNew extends React.Component {
     this.setState({...this.state, canSubmit: true});
   }
 
-  submit() {
+  submit(formData) {
+    var repoData = Object.assign(formData, {name: this.state.name, description: this.state.description})
+    if (this.state.selectedFileSource && this.state.selectedFileSource.id != "0") {
+      repoData["remote_source_id"] = this.state.selectedFileSource.id
+    }
+
     this.setState({
       ...this.state,
       creatingRepo: true
     });
 
-    ProjectHandler.create({name: this.state.name, description: this.state.description}, this.state.files)
+    ProjectHandler.create(repoData, this.state.files)
     .then((response) => {
       this.setState({
         ...this.state,
         redirect:     true,
+        creatingRepo: false,
         projectName:  response.data.name
       });
     })
@@ -121,7 +160,7 @@ export class ProjectNew extends React.Component {
       this.setState({
         ...this.state,
         creatingRepo: false,
-        requestError: error.message
+        requestError: error
       });
     });
   }
@@ -134,16 +173,54 @@ export class ProjectNew extends React.Component {
     });
   }
 
-  renderFiles() {
-    if(this.state.redirect) { 
-      return (<Redirect to={`/${currentUser.username}/projects/${this.state.projectName}/`}/>);
+  renderFileSourceSelections() {
+    if (this.state.fileSources.length > 0) {
+      return (
+        <div>
+          <SearchDropdown id={"source"} hideSearch="true" options={this.state.fileSources} selected={this.state.selectedFileSource} onSelected={this.selectFileSource} promptText="Select a Source" placeholder="Remote Source" />
+        </div>
+      )
     }
+  }
 
+  renderFileOption() {
+    if (!this.state.selectedFileSource) return;
+    if (this.state.selectedFileSource.id == "0") {
+      return (
+        <Control>
+          <Box style={{margin:0, padding:0}}>
+          <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" id="repo-file-upload" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
+              <Section>
+                <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
+              </Section>
+            </UploadField>
+
+            <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
+              <tbody>
+                {this.renderFiles() }
+              </tbody>
+            </Table>
+          </Box>
+        </Control>
+      )
+    } else if(this.state.selectedFileSource.name.toLowerCase() == "thingiverse") {
+        return (
+          <Control>
+            <InputField 
+              label="Thingiverse ThingID"
+              name="thing_id"
+              placeholder="Ex. https://www.thingiverse.com/thing:3746963  would be 3746963"
+            />
+          </Control>
+        )
+    }
+  }
+
+  renderFiles() {
     if(this.state.files == null) { return }
 
     return this.state.files.map((entry, index) => {
       return (
-        
         <tr key={index}>
           <td>{entry.name}</td>
           <td className="has-text-right" width={2}>
@@ -175,7 +252,11 @@ export class ProjectNew extends React.Component {
   }
 
   render() {
+    if(this.state.redirect) { 
+      return (<Redirect to={`/${currentUser.username}/projects/${this.state.projectName}/`}/>);
+    }
     return (
+      
       <div>
         <div>
           <Formsy onValidSubmit={this.submit} onValid={this.enableButton} onInvalid={this.disableButton}>
@@ -205,31 +286,22 @@ export class ProjectNew extends React.Component {
                       placeholder="Tell us about it"
                     />
 
+                    <Field>
+                      <Label>File Source</Label>
+                      <Control>
+                        {this.renderFileSourceSelections()}
+                      </Control>
+                    </Field>
+
+                    <Field>
+                      {this.renderFileOption()}
+                    </Field>
+
                     <Field isGrouped>
                       <Control>
                         <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
                       </Control>
                     </Field>
-                  </Box>
-                </Column>
-              </Columns>
-            </Section>
-
-            <Section>
-              <Columns isCentered>
-                <Column isSize={9}>
-                  <Box style={{margin:0, padding:0}}>
-                  <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" id="repo-file-upload" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
-                      <Section>
-                        <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
-                      </Section>
-                    </UploadField>
-
-                    <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
-                      <tbody>
-                        {this.renderFiles() }
-                      </tbody>
-                    </Table>
                   </Box>
                 </Column>
               </Columns>
@@ -245,7 +317,7 @@ export class ProjectNew extends React.Component {
 
         <Modal
           component={Modal.error}
-          caption={this.state.requestError}
+          requestError={this.state.requestError}
           isActive={this.state.requestError !== null}
           dismissAction={this.dismissError}
         />

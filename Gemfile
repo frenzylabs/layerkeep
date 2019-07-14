@@ -31,6 +31,7 @@ gem 'mixpanel-ruby'
 gem 'grack'
 gem 'faraday'
 gem 'faraday_middleware'
+gem 'rubyzip'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'

@@ -55,6 +55,7 @@ class Details extends React.Component {
     this.cancelRequest = RepoHandler.cancelSource();
     
     this.updateRepoFileList();
+    window.t = this;
   }
 
   componentWillUnmount() {
@@ -159,21 +160,21 @@ class Details extends React.Component {
   }
 
   renderReadme() {
-    const urlparams = this.props.match.params;
-    const readme    = this.state.repo_files.filter((item) => { return item.name.toLowerCase() == 'readme.md'; })[0];
-
+    const urlparams = this.props.match.params;    
+    const readme    = this.state.repo_files.filter((item) => { return item.name.toLowerCase().match(/readme\.(md|txt)$/); })[0];
+    
     if(readme == null) {
       return null;
     }
 
-    const url = `/${urlparams.username}/projects/${urlparams.name}/content/master/README.md`;
+    const url = `/${urlparams.username}/projects/${urlparams.name}/content/${urlparams.revisionPath || 'master'}/${readme.name}`;
 
     return (
       <article className="message is-small" style={{border: '1px solid #d1d5da'}}>
         <div className="message-header" style={{background: '#f6f8fa', borderBottom: '1px solid #d1d5da', color: '#24292e'}}>
           <p>
             <Icon className="fal fa-poll-h"/>
-            README.md
+            {readme.name}
           </p>
         </div>
 
