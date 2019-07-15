@@ -62,8 +62,9 @@ class ReposController < AuthController
       
       if files
         repo_handler = RepoFilesHandler.new(@git_repo, params)
+        logger.info(files)
         commit_id, names = repo_handler.insert_files(@user, files, commit_message)
-        if params[:src]
+        if post_params[:remote_source_id]
           begin
             File.delete(files.name) if files.instance_of?(Zip::File) && File.exist?(files.name)
           rescue Exception => e
@@ -160,7 +161,9 @@ class ReposController < AuthController
           return response.code, "Forbidden"
         when Net::HTTPOK
           ext = ".zip"
-          tmp_path = Tempfile.new([ 'repo', ext ]).path
+          tmp = Tempfile.create([ 'repo', ext ])
+          tmp_path = tmp.path
+          tmp.close
           File.open tmp_path, 'wb' do |io|
             response.read_body do |chunk|
               io.write chunk
