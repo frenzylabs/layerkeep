@@ -52,6 +52,8 @@ class ReposController < AuthController
           files, commit_message = create_from_thingiverse(post_params)
           @repo.remote_src_url = "https://www.thingiverse.com/thing:#{post_params[:thing_id]}"
           @repo.remote_source_id = remote_source.id
+
+          @repo.description = "Created From: #{@repo.remote_src_url} \n" + @repo.description
         end
       else
         files = params.fetch(:files, nil)

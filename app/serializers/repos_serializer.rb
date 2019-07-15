@@ -3,7 +3,7 @@ class ReposSerializer
   set_type :repo  # optional
   set_id :id # optional  
   
-  attribute :id, :name, :description, :path, :kind, :is_private, :user_id, :created_at, :updated_at
+  attribute :id, :name, :description, :path, :kind, :is_private, :remote_src_url, :user_id, :created_at, :updated_at
   
   attribute :branches do |repo, params|
     params[:branches] || []

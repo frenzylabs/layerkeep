@@ -23,7 +23,6 @@ class TextViewer extends React.Component {
 
     var loader = new FileLoader();
     var req = loader.load(this.props.filePath, function(resp) {
-      console.log(req);
       var contentType = req.getResponseHeader("content-type").split(";")[0];
       self.setState({ contentType: contentType, text: resp }) //, extension: ext })
     })

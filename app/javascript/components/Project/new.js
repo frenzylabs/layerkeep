@@ -137,7 +137,7 @@ export class ProjectNew extends React.Component {
   }
 
   submit(formData) {
-    var repoData = Object.assign(formData, {name: this.state.name, description: this.state.description})
+    var repoData = Object.assign(formData, {name: this.state.name})
     if (this.state.selectedFileSource && this.state.selectedFileSource.id != "0") {
       repoData["remote_source_id"] = this.state.selectedFileSource.id
     }

@@ -89,7 +89,7 @@ class Details extends React.Component {
       this.updateRepoFileList()
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
   }
 
@@ -164,7 +164,28 @@ class Details extends React.Component {
     const readme    = this.state.repo_files.filter((item) => { return item.name.toLowerCase().match(/readme\.(md|txt)$/); })[0];
     
     if(readme == null) {
-      return null;
+      if (currentUser.username == urlparams.username) {
+        return (
+          <article className="message is-info" style={{border: '1px solid #d1d5da'}}>
+            <div className="level" style={{padding: '15px'}}>
+              <div className="level-left">
+                <p className="control">
+                  <a className="button is-small" onClick={this.props.uploadAction}>
+                    <span className="icon is-small">
+                      <i className="fas fa-upload"></i>
+                    </span>
+                    <span>Upload README.md File</span>
+                  </a>
+                </p>
+              </div>
+              <div className="level-right">
+                <p>Add a README with any instructions or information to help others this project. </p>
+              </div>
+            </div>
+          </article>
+        );
+      }
+      return null
     }
 
     const url = `/${urlparams.username}/projects/${urlparams.name}/content/${urlparams.revisionPath || 'master'}/${readme.name}`;
@@ -200,19 +221,22 @@ class Details extends React.Component {
     if(this.props.match.params.kind.toLowerCase() !== 'projects' || this.state.image_paths.length == 0) { return null; }
 
     return(
-      <ImageGallery 
-        items={this.state.image_paths} 
-        showPlayButton={false}
-        showFullscreenButton={true}
-        useBrowserFullscreen={false}
-        showBullets={false}
-        infinite={true}
-        lazyLoad={false}
-        showThumbnails={this.state.image_paths.length > 1}
-        renderLeftNav={this.renderLeftNav}
-      />
+      <div className="column">
+        <ImageGallery
+          items={this.state.image_paths}
+          showPlayButton={false}
+          showFullscreenButton={true}
+          useBrowserFullscreen={false}
+          showBullets={false}
+          infinite={true}
+          lazyLoad={false}
+          showThumbnails={this.state.image_paths.length > 1}
+          renderLeftNav={this.renderLeftNav}
+        />
+      </div>
     )
   }
+
   render() {
     if(this.state.hasError > 0) {
 
@@ -296,14 +320,11 @@ class Details extends React.Component {
 
         <div>
           <div className="columns">
-            <div className="column">
-              {this.renderGallery()}
-            </div>
+            {this.renderGallery()}
 
             <div className="column">
               {this.renderReadme()}
             </div>
-  
           </div>
         </div>
       </div>
