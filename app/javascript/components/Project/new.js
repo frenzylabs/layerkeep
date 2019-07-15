@@ -61,7 +61,6 @@ export class ProjectNew extends React.Component {
     this.cancelRequest      = ProjectHandler.cancelSource();
     this.loadRemoteSources()
 
-    window.np = this;
   }
 
   componentWillUnmount() {

@@ -55,7 +55,6 @@ class Details extends React.Component {
     this.cancelRequest = RepoHandler.cancelSource();
     
     this.updateRepoFileList();
-    window.t = this;
   }
 
   componentWillUnmount() {

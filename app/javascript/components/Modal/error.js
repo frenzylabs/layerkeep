@@ -12,7 +12,7 @@ export default class ErrorModal extends React.Component {
   static parentStyles = {background: '#fe3b61'};
 
   renderMessage() {
-    var caption = this.props.caption; //"Unknown error has occured.";
+    var caption = this.props.caption; 
     var subtext = this.props.subtext;
     
     if(!caption && this.props.requestError) {
