@@ -1,0 +1,2 @@
+class RemoteSource < ApplicationRecord
+end

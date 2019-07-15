@@ -17,14 +17,13 @@ class App extends React.Component {
      super(props)
   }
   componentDidUpdate(prevProps) {
-    console.log("App PROPS DID CHANGE");
-    
-    console.log(prevProps);
-    console.log(this.props);
+    // console.log("App PROPS DID CHANGE");
+    // console.log(prevProps);
+    // console.log(this.props);
   }
   
   routeChanged(previousRoute, nextRoute) {
-    console.log("route changed ", previousRoute, nextRoute);
+    // console.log("route changed ", previousRoute, nextRoute);
   }
 
   render () {

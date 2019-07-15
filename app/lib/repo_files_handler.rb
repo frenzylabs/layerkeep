@@ -1,3 +1,5 @@
+require 'zip'
+
 class RepoFilesHandler
   attr_accessor :repo, :current_branch, :current_commit, :revision, :filepath
 
@@ -9,19 +11,39 @@ class RepoFilesHandler
   end
 
   def insert_files(current_user, files, message = nil)
-    return nil if files.nil? or files.length < 1
+
+        
+    return nil if files.nil? or files.count < 1
 
     index = @repo.index
     index.read_tree(@current_branch.target.tree)
     @names = []
-    files.each do |f| 
-      name = f.original_filename
-      @names << name
+
+    removeTopDir = false
+    if files.instance_of?(Zip::File)
+      res = files.inject([]){ |paths, n| dir = n.name.split("/").first; paths <<  dir }
+      if (res.to_set.length == 1 && !files.get_entry(res[0]).file?)
+        removeTopDir = true
+      end
+    end
+        
+
+    files.each do |f|
+      name = ""
       prefix = ""
-      if  (f.content_type =~ /image\//) != nil
-        prefix = "images/"      
-      end      
-      oid = @repo.write(f.read(), :blob)
+      case f
+      when Zip::Entry
+        next unless f.file?
+        name = removeTopDir ? f.name.split("/")[1..-1].join("/") : f.name
+        oid = @repo.write(f.get_input_stream.read(), :blob)
+      else
+        name = f.original_filename
+        if  (f.content_type =~ /image\//) != nil
+          prefix = "images/"
+        end
+        oid = @repo.write(f.read(), :blob)
+      end
+      @names << name
       index.add(:path => prefix + name, :oid => oid, :mode => 0100644)
     end
     

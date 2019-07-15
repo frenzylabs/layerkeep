@@ -29,7 +29,9 @@ export default {
       data.append(`files[]`, file);
     });
 
-    data.append('message', message);
+    if (message) {
+      data.append('message', message);
+    }
 
     return Request.post(repoPath(user, kind, `${repo}/tree/master`), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },

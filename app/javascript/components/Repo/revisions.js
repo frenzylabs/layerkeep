@@ -34,7 +34,7 @@ export class Revisions extends React.Component {
       this.updateRepoRevisions(response.data)
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
     });
   }
 

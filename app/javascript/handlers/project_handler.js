@@ -31,6 +31,7 @@ export default {
   create: (project, files = null) => {
     var params = {'repo' : project};
 
+
     if(files == null) {
       return Request.post(path(), params);
     }
@@ -41,8 +42,9 @@ export default {
       data.append(`files[]`, file);
     });
 
-    data.append('repo[name]', project.name);
-    data.append('repo[description]', project.description);
+    for ( var key in project ) {
+      data.append(`repo[${key}]`, project[key]);
+    }
 
     return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },

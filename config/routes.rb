@@ -54,6 +54,7 @@ Rails.application.routes.draw do
   post 'user/settings', to: 'user#settings'
 
   get '/slicer_engines', to: 'slicer_engines#index'
+  get '/remote_sources', to: 'remote_sources#index'
 
   concern :repo_files do |options|
     options ||= {}
