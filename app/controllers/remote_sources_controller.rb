@@ -1,4 +1,4 @@
-class SlicerEnginesController < AuthController
+class RemoteSourcesController < AuthController
   respond_to :json
 
   def new
@@ -8,11 +8,11 @@ class SlicerEnginesController < AuthController
     if !request.format.json?
       request.format = :json
     end
-    engines = SlicerEngine.where(active: true)
+    remote_sources = RemoteSource.where(active: true)
               .order("name desc")
               .page(params["page"]).per(params["per_page"])
     
-    serializer = paginate(engines)
+    serializer = paginate(remote_sources)
     respond_with(serializer)
   end
 end

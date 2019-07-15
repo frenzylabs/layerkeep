@@ -103,7 +103,6 @@ export class SceneManager extends React.Component {
     this.controls.addEventListener( 'change', this.light_update.bind(this) );
 
     window.sm = this;
-
   }
 
   componentDidMount() {

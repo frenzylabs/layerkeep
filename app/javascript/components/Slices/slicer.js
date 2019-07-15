@@ -70,7 +70,6 @@ export class Slicer extends React.Component {
     this.loadEngines();
 
     window.slicer = this;
-
   }
 
   componentWillUnmount() {

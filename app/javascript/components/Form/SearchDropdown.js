@@ -139,6 +139,16 @@ export class SearchDropdown extends React.Component {
     }
   }
 
+  renderSearchField() {
+    if (!this.props.hideSearch) {
+      return (
+        <DropdownItem>
+                  <input ref={this.searchInput} onKeyDown={this.handleKeyEvent} type="text" placeholder={this.props.placeholder || "Revision"} className="input is-transparent" />
+        </DropdownItem>
+      );
+    }
+  }
+
   render() {
     return (
       <Dropdown key={this.id} onChange={this.onChange} onBlur={this.onBlur} isActive={this.state.isActive}>
@@ -150,11 +160,9 @@ export class SearchDropdown extends React.Component {
         </DropdownTrigger>
         <DropdownMenu >
           <DropdownContent>
-            <DropdownItem>
-                <input ref={this.searchInput} onKeyDown={this.handleKeyEvent} type="text" placeholder={this.props.placeholder || "Revision"} className="input is-transparent" />
-            </DropdownItem>
+            {this.renderSearchField()}
             <DropdownDivider />
-            {this.renderOptions()}            
+            {this.renderOptions()}
           </DropdownContent>          
         </DropdownMenu>
       </Dropdown>

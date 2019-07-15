@@ -5,13 +5,14 @@
 # Created by Kevin Musselman (kmussel@gmail.io) on 04/27/19
 # Copyright 2018 LayerKeep
 #
+require 'zip'
 
 class ReposController < AuthController
   before_action :get_user
   respond_to :json
 
   def index
-    repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).
+    repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).order("updated_at desc").
                         page(params["page"]).per(params["per_page"])
     
     serializer = paginate(repos)
@@ -32,7 +33,8 @@ class ReposController < AuthController
 
   def create
     post_params = params[:repo]
-    
+    commit_message = nil
+
     @repo        = Repo.new(post_params.permit(:name, :description))
     @repo.kind   = params[:kind]
     @repo.user   = @user
@@ -43,12 +45,33 @@ class ReposController < AuthController
     @repo.path = repo_path
 
     if @repo.valid?
+      
+      if post_params[:remote_source_id]
+        remote_source = RemoteSource.find(post_params[:remote_source_id])
+        if remote_source.name == "thingiverse"
+          files, commit_message = create_from_thingiverse(post_params)
+          @repo.remote_src_url = "https://www.thingiverse.com/thing:#{post_params[:thing_id]}"
+          @repo.remote_source_id = remote_source.id
+
+          @repo.description = "Created From: #{@repo.remote_src_url} \n" + @repo.description
+        end
+      else
+        files = params.fetch(:files, nil)
+      end
       @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo_path}/.", :bare)
-      files = params.fetch(:files, nil)
+      
       if files
         repo_handler = RepoFilesHandler.new(@git_repo, params)
-        commit_id, names = repo_handler.insert_files(@user, files)
-        repo_handler.process_new_files(@repo, commit_id, names)
+        commit_id, names = repo_handler.insert_files(@user, files, commit_message)
+        if params[:src]
+          begin
+            File.delete(files.name) if files.instance_of?(Zip::File) && File.exist?(files.name)
+          rescue Exception => e
+            logger.error("Could not delete tmp file: #{e.inspect}")
+          end
+        else
+          repo_handler.process_new_files(@repo, commit_id, names)
+        end
       end
       @repo.save!
 
@@ -88,4 +111,69 @@ class ReposController < AuthController
   def get_user()
     @user ||= User.find_by!(username: params["user"] || "")
   end
+
+
+  def create_from_thingiverse(params) 
+    conn = Faraday.new(:url => "https://api.thingiverse.com") do |con|
+      con.response :json, :content_type => /\bjson$/
+      con.adapter  Faraday.default_adapter  # make requests with Net::HTTP
+    end
+    
+    resp = conn.get do |req|
+      req.url "/things/#{params[:thing_id]}/packageURL"
+      req.headers['Authorization'] = "Bearer #{Rails.application.config.settings["thingiverse_api_token"]}"
+    end
+
+    logger.info(resp.body)
+
+    error_msg = "Error Retrieving From Thingiverse"
+    error_msg += ": #{resp.body['error']}" if resp.body["error"]
+    if resp.body["public_url"]
+      uri = URI(resp.body["public_url"])
+      code, tmpfilepath = download_to_tmp_path(uri)        
+      logger.info(tmpfilepath)
+
+      if code != 200 
+        raise LayerKeepErrors::LayerKeepError.new(error_msg, code) and return 
+      end
+
+      files = Zip::File.open(tmpfilepath)
+      commit_message = "Created From Thingiverse #{params[:thing_id]}"
+      return files, commit_message
+    end
+
+    raise LayerKeepErrors::LayerKeepError.new(error_msg, resp.status) and return 
+    
+  end
+
+  def download_to_tmp_path(url, query = nil)
+    uri = URI(url)
+    if query
+      uri.query = URI.encode_www_form query
+    end
+
+    Net::HTTP.start(uri.host, uri.port, :use_ssl => (uri.scheme == 'https')) do |http|
+      request = Net::HTTP::Get.new uri.request_uri
+      http.request request do |response|
+        case response
+        when Net::HTTPForbidden 
+          return response.code, "Forbidden"
+        when Net::HTTPOK
+          ext = ".zip"
+          tmp_path = Tempfile.new([ 'repo', ext ]).path
+          File.open tmp_path, 'wb' do |io|
+            response.read_body do |chunk|
+              io.write chunk
+            end
+          end
+          return 200, tmp_path
+        else
+          return 400, "Error"
+        end
+      end
+    end
+    return 400, "Error"
+  end
+
+
 end

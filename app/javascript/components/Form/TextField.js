@@ -23,6 +23,10 @@ import { TextArea } from 'bloomer/lib/elements/Form/TextArea';
 
   changeValue(e) {
     this.props.setValue(e.currentTarget.value);
+
+    if(this.props.onChange) {
+      this.props.onChange(e);
+    }
   }
 
   render() {
