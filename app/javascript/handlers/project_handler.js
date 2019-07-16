@@ -43,7 +43,9 @@ export default {
     });
 
     for ( var key in project ) {
-      data.append(`repo[${key}]`, project[key]);
+      if (project[key]) {
+        data.append(`repo[${key}]`, project[key]);
+      }
     }
 
     return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
