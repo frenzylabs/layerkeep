@@ -34,6 +34,7 @@ class ReposController < AuthController
   def create
     post_params = params[:repo]
     commit_message = nil
+    post_params[:description] ||= ""
 
     @repo        = Repo.new(post_params.permit(:name, :description))
     @repo.kind   = params[:kind]
