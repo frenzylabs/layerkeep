@@ -76,7 +76,7 @@ class AppContainer extends React.Component {
        ],
 
        sidebarLayoutRoutes: [
-        {path: '/:username/:kind(settings)', component: Settings},
+        {path: '/:username/:kind(settings)', exact: false, component: Settings},
         {path: '/:username/:kind(projects)/new', component: ProjectNew},
         {path: '/:username/:kind(projects)', component: ProjectList},
         {path: '/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?', component: Project},
@@ -116,7 +116,7 @@ class AppContainer extends React.Component {
   
   renderFullLayoutRoutes() {
     return this.state.fullLayoutRoutes.map((item) => {
-      return (<Route key={item.path} exact path={item.path} 
+      return (<Route key={item.path} exact={item.exact || true} path={item.path} 
         render={ props => 
           <FullScreenLayout component={item.component} {...props} /> 
         }
@@ -127,7 +127,7 @@ class AppContainer extends React.Component {
  renderSideBarLayoutRoutes() {
   return this.state.sidebarLayoutRoutes.map((item) => {
     return (
-        <Route key={item.path} exact path={item.path}  render={ props =>
+        <Route key={item.path}  path={item.path}  render={ props =>
           <SideLayout {...item}  {...props} /> 
         }/>
       )

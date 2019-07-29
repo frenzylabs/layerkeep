@@ -1,5 +1,5 @@
 ActiveAdmin.register User do
-  permit_params :email, :username, :password, :password_confirmation, :approved, :active
+  permit_params :email, :username, :password, :password_confirmation, :approved, :stripe_id, :active
 
   index do
     selectable_column
@@ -10,6 +10,7 @@ ActiveAdmin.register User do
     column :approved_on
     column :current_sign_in_at
     column :sign_in_count
+    column :stripe_id
     column :created_at
     actions
   end
@@ -36,10 +37,11 @@ ActiveAdmin.register User do
       end
 
       u = User.find(params[:id])
+      is_approved = u.approved
       u.approved_on = nil
       u.update(user_params)
 
-      if user_params[:approved] == "1" 
+      if !is_approved && user_params[:approved] == "1" 
         ApprovedMailer.notify(u).deliver
       end
 
@@ -56,6 +58,7 @@ ActiveAdmin.register User do
       f.input :password_confirmation
       f.input :approved
       f.input :active
+      f.input :stripe_id
     end
     f.actions
   end

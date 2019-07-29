@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_19_180551) do
+ActiveRecord::Schema.define(version: 2019_07_21_170525) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -70,6 +70,32 @@ ActiveRecord::Schema.define(version: 2019_08_19_180551) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "plans", force: :cascade do |t|
+    t.string "stripe_id"
+    t.bigint "product_id"
+    t.string "nickname"
+    t.string "name"
+    t.integer "amount", default: 0
+    t.string "interval", default: "month"
+    t.integer "trial_period", default: 0
+    t.string "description", default: ""
+    t.jsonb "metadata", default: {}
+    t.boolean "active", default: true
+    t.boolean "is_private", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_plans_on_product_id"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string "stripe_id"
+    t.string "name"
+    t.string "status"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "remote_sources", force: :cascade do |t|
@@ -138,6 +164,51 @@ ActiveRecord::Schema.define(version: 2019_08_19_180551) do
     t.index ["user_id"], name: "index_slices_on_user_id"
   end
 
+  create_table "subscription_items", force: :cascade do |t|
+    t.string "stripe_id"
+    t.bigint "user_id"
+    t.bigint "plan_id"
+    t.bigint "subscription_id"
+    t.jsonb "metadata", default: {}
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["plan_id"], name: "index_subscription_items_on_plan_id"
+    t.index ["subscription_id"], name: "index_subscription_items_on_subscription_id"
+    t.index ["user_id"], name: "index_subscription_items_on_user_id"
+  end
+
+  create_table "subscriptions", force: :cascade do |t|
+    t.string "stripe_id"
+    t.bigint "user_id"
+    t.bigint "plan_id"
+    t.integer "current_period_end"
+    t.string "status"
+    t.boolean "is_trial", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["plan_id"], name: "index_subscriptions_on_plan_id"
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
+  create_table "user_cards", force: :cascade do |t|
+    t.string "stripe_id"
+    t.bigint "user_id"
+    t.string "name"
+    t.string "last4"
+    t.integer "exp_month"
+    t.integer "exp_year"
+    t.string "brand"
+    t.string "status"
+    t.string "country"
+    t.string "address_zip"
+    t.string "address_zip_check"
+    t.string "cvc_check"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_cards_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -151,6 +222,7 @@ ActiveRecord::Schema.define(version: 2019_08_19_180551) do
     t.boolean "approved", default: false
     t.datetime "approved_on"
     t.boolean "active", default: false
+    t.string "stripe_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
@@ -160,9 +232,16 @@ ActiveRecord::Schema.define(version: 2019_08_19_180551) do
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "users", column: "resource_owner_id"
+  add_foreign_key "plans", "products"
   add_foreign_key "repos", "users"
   add_foreign_key "slice_files", "repos"
   add_foreign_key "slice_files", "slices"
   add_foreign_key "slices", "slicer_engines"
   add_foreign_key "slices", "users"
+  add_foreign_key "subscription_items", "plans"
+  add_foreign_key "subscription_items", "subscriptions", on_delete: :cascade
+  add_foreign_key "subscription_items", "users"
+  add_foreign_key "subscriptions", "plans"
+  add_foreign_key "subscriptions", "users"
+  add_foreign_key "user_cards", "users", on_delete: :cascade
 end

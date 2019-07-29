@@ -8,8 +8,9 @@
 
 
 Rails.application.routes.draw do
-
+  mount StripeEvent::Engine, at: '/stripe' # provide a custom path
   use_doorkeeper
+  
   devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
 
   ## Admin subdomain routes
@@ -56,6 +57,10 @@ Rails.application.routes.draw do
   get '/slicer_engines', to: 'slicer_engines#index'
   get '/remote_sources', to: 'remote_sources#index'
 
+  get '/plans', to: 'plans#index'
+  get '/products', to: 'products#index'
+  
+
   concern :repo_files do |options|
     options ||= {}
     get ':repo_name/revisions', {action: 'index', to: 'revisions#index', as: "default_#{options[:as_kind]}_revisions", defaults: {revision: 'master'}}.merge(options)
@@ -82,18 +87,11 @@ Rails.application.routes.draw do
   end
 
   scope ':user' do
-    
-    # get 'features', to: 'users#features'
-    # scope 'billing' do
-    #   resources :subscriptions
-    #   patch 'subscription_items/:item_id', to: 'subscription_items#update'
-    #   resources :cards, controller: 'user_cards'
-    # end
-    post "/prints/:id/assets/presign", to: "print_assets#presign"
-    resources :prints, constraints: lambda { |req| req.format == :json } do
-      resources :assets, controller: "print_assets"
+    scope 'billing' do
+      resources :subscriptions
+      patch 'subscription_items/:item_id', to: 'subscription_items#update'
+      resources :cards, controller: 'user_cards'
     end
-
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
     post 'slices/generate', to: 'slices#generate'
     resources :slices, constraints: lambda { |req| req.format == :json }

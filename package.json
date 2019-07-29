@@ -31,6 +31,7 @@
     "react-markdown": "^4.0.8",
     "react-redux": "^7.0.3",
     "react-router-dom": "^5.0.0",
+    "react-stripe-elements": "^4.0.0",
     "react-toastify": "^5.1.0",
     "react-visibility-sensor": "^5.0.2",
     "redux": "^4.0.1",

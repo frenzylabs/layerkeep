@@ -1,5 +1,5 @@
-class RepoPolicy
-  attr_reader :user, :repo
+class UserSubscriptionPolicy
+  attr_reader :user, :other
 
   class Scope
     attr_reader :user, :scope
@@ -22,19 +22,19 @@ class RepoPolicy
 
   def initialize(user, record)
     @user = user
-    @repo = record
+    @other = record
   end
 
   def index?
-    !repo.is_private || (user && repo.user_id == user.id)
+    (user && (other.id == user.id || user.admin))
   end
 
   def show?
-    !repo.is_private || (user && repo.user_id == user.id)
+    (user && (other.id == user.id || user.admin))
   end
 
   def create?
-    user && repo.user_id == user.id
+    (user && (other.id == user.id))
   end
 
   def new?
@@ -49,16 +49,11 @@ class RepoPolicy
     update?
   end
 
-  def destroy?
-    user && repo.user_id == user.id
+  def gcodes?
+    show?
   end
 
-
-  def permitted_attributes
-    if user.admin? || repo.user_id == user.id
-      [:name, :description, :is_private]
-    else
-      [:name, :description]
-    end
+  def destroy?
+    (user && (other.id == user.id || user.admin))
   end
 end
