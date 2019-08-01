@@ -14,6 +14,7 @@ ActiveAdmin.register Plan do
   # end
   
   # belongs_to :product
+  includes package_plans: :package
   
   # create_table "plans", force: :cascade do |t|
   #   t.string "stripe_id"

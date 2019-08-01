@@ -17,6 +17,20 @@ ActiveAdmin.register UserCard do
     def permitted_params
       params.permit!
     end
+
+    def destroy      
+      card = UserCard.find(params[:id])
+      card.destroy
+      if card.user.stripe_id
+        Stripe::Customer.delete_source(
+          card.user.stripe_id,
+          card.stripe_id
+        )
+      end
+      
+      Rails.logger.info(card)
+      redirect_to action: :index
+    end
   end
 
 end

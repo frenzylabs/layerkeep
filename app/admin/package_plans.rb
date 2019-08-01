@@ -1,4 +1,4 @@
-ActiveAdmin.register Subscription do
+ActiveAdmin.register PackagePlan do
   menu parent: 'Billing'
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
@@ -12,20 +12,7 @@ ActiveAdmin.register Subscription do
 #   permitted << :other if params[:action] == 'create' && current_user.admin?
 #   permitted
 # end
-  includes :items
 
-  controller do
-    def permitted_params
-      params.permit!
-    end
-
-    def destroy
-      subscription = Subscription.find(params["id"])
-      subscription.destroy
-      if subscription.stripe_id.length > 0
-        Stripe::Subscription.delete(subscription.stripe_id)
-      end
-      redirect_to action: "index"      
-    end
-  end
+  belongs_to :package
+  belongs_to :plan
 end

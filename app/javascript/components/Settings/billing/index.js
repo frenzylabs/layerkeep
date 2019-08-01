@@ -28,24 +28,24 @@ import {
   Section
 } from 'bloomer';
 
+import { StripeForm } from './stripe_form'
+import { InjectedSubscriptionForm } from './subscription_form'
 import { InjectedCardSection } from './card'
-import { CreateSubscription } from './create_subscription'
 import Modal              from '../../Modal';
 
 export class Billing extends Component {
   constructor(props) {
     super(props);
-    this.state = {loadProducts: true, loadPlans: true, loadSubscriptions: true, loadCards: true, stripe: null, modalIsActive: false, modal: {}, products: [], plans: [], product_subscriptions:{}, subscriptions: [], cards: []};
-    // this.handleSubmit = this.handleSubmit.bind(this);
-    this.getPlans         = this.getPlans.bind(this);
+    this.state = {loadPackages: true, loadSubscriptions: true, loadCards: true, stripe: null, modalIsActive: false, modal: {}, packages: [], subscription: null, card: {}};
+
+    this.getPackages      = this.getPackages.bind(this);
     this.getSubscriptions = this.getSubscriptions.bind(this);
     this.dismissAction    = this.dismissAction.bind(this);
     this.cancelRequest    = UserHandler.cancelSource();
 
-    this.getProducts()
-    // this.getPlans()
+    this.getPackages()
     this.getSubscriptions()
-    this.getCards()
+    this.getActiveCard()
     window.b = this;
   }
 
@@ -64,37 +64,25 @@ export class Billing extends Component {
     this.cancelRequest.cancel("Left Page");
   }
 
-  getPlans() {    
-    UserHandler.raw("/plans", {cancelToken: this.cancelRequest.token})
+  getPackages() {    
+    UserHandler.raw("/packages", {cancelToken: this.cancelRequest.token})
     .then((response) => {
-      this.setState({plans: response.data.data})
+      this.setState({packages: response.data.data})
     })
     .catch((error) => {
       console.log(error);
     }).finally(() => {
-      this.setState({loadPlans: false})
-    });
-  }
-
-  getProducts() {    
-    UserHandler.raw("/products", {cancelToken: this.cancelRequest.token})
-    .then((response) => {
-      let plans = response.data.included.filter(x => x.type == "plan").sort((a, b) => a.attributes.amount - b.attributes.amount)
-      this.setState({products: response.data.data, plans: plans})
-    })
-    .catch((error) => {
-      console.log(error);
-    }).finally(() => {
-      this.setState({loadProducts: false})
+      this.setState({loadPackages: false})
     });
   }
 
   getSubscriptions() {
     let user = this.props.match.params.username;
     UserHandler.raw(`/${user}/billing/subscriptions`, {cancelToken: this.cancelRequest.token})
-    .then((response) => {
-      this.setSubItems(response.data.data)
-      // this.setState({subscriptions: response.data})
+    .then((response) => {      
+      // this.setState({subscriptions: response.data.data})
+      if (response.data.data && response.data.data.length > 0)
+        this.setState({subscription: response.data.data[0]})
     })
     .catch((error) => {
       console.log(error);
@@ -103,37 +91,12 @@ export class Billing extends Component {
     });
   }
 
-  setSubItems(subscriptions) {
-    var subprods = {}
-    for (var i in subscriptions) {
-      let sub = subscriptions[i]
-      for (var j in sub.attributes.items) {
-        let item = sub.attributes.items[j]
-        var subitem = subprods[item.attributes.plan.attributes.product_id] 
-        
-        if (!subitem) {
-          subitem = {is_trial: sub.attributes.is_trial, trialed: sub.attributes.is_trial, current_period_end: sub.attributes.current_period_end, item: item}
-        } else {
-          if (sub.attributes.is_trial) {
-            subitem["trialed"] = true
-          } else {
-            subitem["is_trial"] = false
-            subitem["current_period_end"] = sub.attributes.current_period_end
-            subitem["item"] = item
-          }
-        }
-        subprods[item.attributes.plan.attributes.product_id] = subitem
-      }
-    }
-    this.setState({product_subscriptions: subprods})
-  }
 
-
-  getCards() {
+  getActiveCard() {
     let user = this.props.match.params.username;
     UserHandler.raw(`/${user}/billing/cards`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
-      this.setState({cards: response.data.data})
+      this.setState({card: response.data.data})
     })
     .catch((error) => {
       console.log(error);
@@ -147,6 +110,12 @@ export class Billing extends Component {
     this.setState({"cardToken": token})
   }
 
+  subscribeToPackage(pkg) {
+    console.log(pkg);
+    var modal = {package: pkg, subscription: this.state.subscription, card: this.state.card, component: StripeForm, formComponent: InjectedSubscriptionForm}
+    this.setState({modal: modal, modalIsActive: true})
+  }
+
   renderStripeForm() {
     return (
       <StripeProvider stripe={this.state.stripe}>          
@@ -157,71 +126,62 @@ export class Billing extends Component {
     )
   }
 
-  
-  renderProducts() {
-    if (this.state.products.length > 0) {
-
-      return this.state.products.map((prod, index) => {
-        var plans = this.state.plans.filter(x => x.attributes.product_id == prod.id)
-        return this.renderProductSubscription(prod, plans)
+  renderPackages() {
+    if (this.state.packages.length > 0) {
+      return this.state.packages.map((pkg, index) => {
+        // var total = 0        
+        var pkg_amount = pkg.attributes.plans.reduce((total, x) => x.attributes.amount + total, 0)
+        return (
+          <div className="card" key={'pack'+ pkg.id} >
+            <div className="card-content">
+              <p className="title">
+                {pkg.attributes.name}
+              </p>
+              <p className="subtitle">
+                {pkg.attributes.description}
+              </p>
+            </div>
+            <footer className="card-footer">
+              <p>
+                {pkg_amount}
+              </p>
+              <p className="card-footer-item">
+                <span>
+                  <button onClick={() => this.subscribeToPackage(pkg)}>Subscribe</button>
+                </span>
+              </p>
+            </footer>
+          </div>
+        )
         
       });
     } 
   }
 
-
-
-  renderProductSubscription(prod, plans) {
-    var prodSub = this.state.product_subscriptions[prod.id]
-    console.log(prodSub)
-    var name = prod.attributes.name
-    var description = ""
-    var amount_interval = (<span />)
-    var sub_action = "Manage"
-    var selectedPlan = {}
-    if (prodSub) {
-      var customPlan = false
-      var canUpgrade = false
-      var subAction = "Manage"
-      var curPlan = prodSub.item.attributes.plan
-
-      var existingPlanIndex = plans.findIndex(x => x.id == curPlan.id)
-      if (existingPlanIndex >= 0) {
-        if (plans.length -1 > existingPlanIndex ) {
-          selectedPlan = plans[existingPlanIndex+1]
-          canUpgrade = true
-        }
-      } else {
-        customPlan = true
-      }
-      
-      name = prodSub.item.attributes.plan.attributes.name
-
-      if (prodSub.is_trial) {
-        canUpgrade = true
-        if (Date.now() / 1000 > prodSub.current_period_end) {
-          // trial expired
-          amount_interval = "Trial Expired"
-        } else {
-          var diff = dayjs.unix(prodSub.current_period_end).diff(dayjs(Date.now()), 'day')
-          amount_interval = (<span>{diff} Day{diff > 1 ? 's' : ''} Left in Free Trial</span>)
-        }
-      } else {
-        amount_interval = (<span>{curPlan.attributes.amount} / {curPlan.attributes.interval}</span>);
-      }
-      
-      
-      if (customPlan) subAction = "Manage"
-      else if (canUpgrade) subAction = "Upgrade"
-
+  renderPackageName(sub) {
+    var pkg = this.state.packages.find(x => x.id == sub.attributes.package_id)
+    if (pkg) {
       return (
-        <Level key={'prod-' + prod.id}>
+        <p>
+          {pkg.attributes.name}
+        </p>
+      )
+    }
+  }
+
+  renderSubscription() {
+    if (this.state.subscription) {
+      var sub = this.state.subscription      
+      var amount_interval = sub.attributes.items.reduce((total, x) => x.attributes.plan.attributes.amount + total, 0)
+      return (
+        <Level>
           <LevelLeft>
-            <LevelItem>
-              {curPlan.attributes.name}
+            <LevelItem>              
+              {this.renderPackageName(sub)}
+              {sub.attributes.name}
             </LevelItem>
             <LevelItem>
-              {curPlan.attributes.description}
+              {sub.attributes.items.length > 0 ? sub.attributes.items[0].description : ''}
             </LevelItem>
             
           </LevelLeft>
@@ -229,61 +189,34 @@ export class Billing extends Component {
             <LevelItem>
               {amount_interval}
             </LevelItem>
-            <Button onClick={() => this.activateModal(prod, prodSub, selectedPlan)}>{subAction}</Button>
 
           </LevelRight>              
         </Level>
-      )    
-      
-    } else {
-      // console.log(plans)
-      if (plans.length > 0) {
-        var curPlan = plans[0]
+      )
+      // for (var j in sub.attributes.items) {
+      //   let item = sub.attributes.items[j]
+        // var subitem = subprods[item.attributes.plan.attributes.product_id] 
         
-        if (curPlan.attributes.amount == 0) {
-          if (plans.length > 1) {
-            sub_action = "Upgrade "
-            selectedPlan = plans[1]
-          }
-          amount_interval = (<span>{curPlan.attributes.amount} / {curPlan.attributes.interval}</span>);
-        } else {
-          selectedPlan = curPlan
-          sub_action = "Subscribe"
-          if (curPlan.attributes.trial_period > 0) {
-            amount_interval = (<span>{curPlan.attributes.trial_period} Day Free Trial</span>)
-          } else {
-            amount_interval = (<span>{curPlan.attributes.amount} / {curPlan.attributes.interval}</span>);
-          }
-        }
+        // if (!subitem) {
+        //   subitem = {is_trial: sub.attributes.is_trial, trialed: sub.attributes.is_trial, current_period_end: sub.attributes.current_period_end, item: item}
+        // } else {
+        //   if (sub.attributes.is_trial) {
+        //     subitem["trialed"] = true
+        //   } else {
+        //     subitem["is_trial"] = false
+        //     subitem["current_period_end"] = sub.attributes.current_period_end
+        //     subitem["item"] = item
+        //   }
+        // }        
+      // }
+    } else {
 
-        return (
-          <Level key={'prod-' + prod.id}>
-            <LevelLeft>
-              <LevelItem>
-                {prod.attributes.name}
-              </LevelItem>
-              <LevelItem>
-                {curPlan.attributes.description}
-              </LevelItem>
-              
-            </LevelLeft>
-            <LevelRight>
-              <LevelItem>
-                {amount_interval}
-              </LevelItem>
-              <Button onClick={() => this.activateModal(prod, null, selectedPlan)}>{sub_action}</Button>
-
-            </LevelRight>              
-          </Level>
-        )
-      }
     }
-    return null
   }
+  
 
-  activateModal(prod, currentSubItem, selectedPlan) {
-    var plans = this.state.plans.filter(x => x.attributes.product_id == prod.id)
-    var modal = {product: prod, plans: plans, subItem: currentSubItem, selectedPlan: selectedPlan}
+  activateModal(pkg) {
+    var modal = {package: pkg, subscription: this.state.subscription, card: this.state.card, component: StripeForm, formComponent: InjectedSubscriptionForm}
     this.setState({modal: modal, modalIsActive: true})
   }
 
@@ -294,38 +227,80 @@ export class Billing extends Component {
   renderSubModal() {
     if (this.state.modalIsActive) {
       let modal = this.state.modal
-      let cards = this.state.cards
-      return (<Modal {...this.props}  component={CreateSubscription} isActive={this.state.modalIsActive} dismissAction={this.dismissAction} stripe={this.state.stripe} cards={cards} {...modal} />)
+      let card = this.state.card
+      return (<Modal {...this.props}  isActive={this.state.modalIsActive} dismissAction={this.dismissAction} stripe={this.state.stripe} card={card} {...modal} />)
     }
   }
 
-  renderCards() {
-    if (this.state.cards.length > 0) {
-      return this.state.cards.map((card, index) => {
-        return (
-          <PanelBlock key={'card-' + card.id}>
-            {card.attributes.brand}
-            <p>{card.attributes.last4}</p>
-            {card.attributes.exp_month}/{card.attributes.exp_year}
-          </PanelBlock>  
-        )
-      });
+  activateCreditCard(card) {
+    var modal = { card: card, component: StripeForm, formComponent: InjectedCardSection  }
+    this.setState({ modal: modal, modalIsActive: true })
+  }
+
+  renderCard() {
+    if (this.state.card && this.state.card.attributes) {
+      let card = this.state.card
+      return (
+        <article className="media" key={'card-' + card.id}>
+          <figure className="media-left">
+            <strong>{card.attributes.brand}</strong>
+            <small>{card.attributes.last4}</small>
+            <p>Exp: {card.attributes.exp_month} / {card.attributes.exp_year}</p>
+            <a onClick={() => this.activateCreditCard(card)}>Edit</a>
+          </figure>
+        </article>
+      )
+    } else {
+      return (
+        <Level >
+          <LevelLeft>
+            <LevelItem>
+              Add Card
+            </LevelItem>
+            <LevelItem>
+            </LevelItem>
+            
+          </LevelLeft>
+          <LevelRight>
+            <LevelItem>
+              <a onClick={() => this.activateCreditCard()}>Add</a>
+            </LevelItem>
+
+          </LevelRight>              
+        </Level>
+      )
     }
   }
 
   render() {
     return (
         <div>
-          <div>{this.renderProducts()}</div>
-          <div></div>
           <Section>
-          <Card>
-            <CardHeader>Payment Method</CardHeader>
-            <CardContent>
-              {this.renderCards()}
-            </CardContent>
-          </Card>  
-          </Section>  
+            <Card>
+              <CardHeader>Payment Method</CardHeader>
+              <CardContent>
+                {this.renderCard()}
+              </CardContent>
+            </Card>  
+          </Section>
+          <Section>
+            <Card>
+              <CardHeader>Subscription</CardHeader>
+              <CardContent>
+                {this.renderSubscription()}
+              </CardContent>
+            </Card>  
+          </Section>
+          <Section>
+            <Card>
+              <CardHeader>Packages</CardHeader>
+              <CardContent>
+                {this.renderPackages()}
+              </CardContent>
+            </Card>  
+          </Section>
+          
+          
           <div>{this.renderSubModal()}</div>
         </div>
     );

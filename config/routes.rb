@@ -57,6 +57,7 @@ Rails.application.routes.draw do
   get '/slicer_engines', to: 'slicer_engines#index'
   get '/remote_sources', to: 'remote_sources#index'
 
+  get '/packages', to: 'packages#index'
   get '/plans', to: 'plans#index'
   get '/products', to: 'products#index'
   

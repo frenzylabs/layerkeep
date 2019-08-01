@@ -20,53 +20,7 @@ class SubscriptionItemsController < AuthController
   end
 
 
-  def create
-    plan = Plan.find(params[:plan_id])
-    customer = if @user.stripe_id?
-                 Stripe::Customer.retrieve(@user.stripe_id)
-               else
-                 Stripe::Customer.create(email: @user.email, metadata: {user_id: @user.id})
-               end
-
-    trial_end = (Time.now  + 7.days).to_i
-    subscription = customer.subscriptions.create(
-      # source: params[:stripeToken],      
-      items: [{plan: plan.stripe_id}],
-      trial_end: trial_end,
-    )
-
-    Rails.logger.info(subscription)
-    # subscription = Stripe::Subscription.create({
-    #   customer: 'cus_4fdAW5ftNQow1a',
-    #   items: [{plan: 'plan_CBb6IXqvTLXp3f'}],
-    #   trial_end: 1564419151,
-    # })
-
-    binding.pry
-    
-    usersuboptions = {
-      stripe_id: subscription.id, 
-      user_id: @user.id, 
-      plan_id: plan.id, 
-      current_period_end: subscription.current_period_end,
-      status: subscription.status
-    }
-    usersub = @user.user_subscriptions.create(usersuboptions)
-
-    binding.pry
-
-    # Only update the card on file if we're adding a new one
-    # options.merge!(
-    #   card_last4: params[:card_last4],
-    #   card_exp_month: params[:card_exp_month],
-    #   card_exp_year: params[:card_exp_year],
-    #   card_type: params[:card_brand]
-    # ) if params[:card_last4]
-
-    @user.update({stripe_id: customer.id})
-
-    render json: usersub
-    # redirect_to :index
+  def create    
   end
 
   def update
@@ -93,6 +47,11 @@ class SubscriptionItemsController < AuthController
                   customer_options[:source] = params[:source_token][:id] if params[:source_token]
                   Stripe::Customer.create(customer_options)
                 end
+
+    if params[:source_token]
+      card = params[:source_token][:card]
+      StripeHandler::Customer.new().add_card(@user, card)
+    end
 
     item = @user.subscription_items.where(id: params[:item_id]).first
     if item.subscription.is_trial
@@ -163,13 +122,14 @@ class SubscriptionItemsController < AuthController
           plan_id: plan.id,
           subscription_id: subscription.id
         })
+        subscription.reload
       end
     else
       stripe_subscription = customer.subscriptions.create(
         items: [{plan: plan.stripe_id}]
       )
       items = stripe_subscription.items.data.collect do |item| 
-        {stripe_id: item.id, plan_id: plan.id, user_id: user.id, metadata: item.metadata.to_hash}
+        {stripe_id: item.id, plan_id: plan.id, user_id: @user.id, metadata: item.metadata.to_hash}
       end
       usersuboptions = {
         stripe_id: stripe_subscription.id, 
@@ -182,6 +142,7 @@ class SubscriptionItemsController < AuthController
       Subscription.transaction do
         usersub = @user.subscriptions.create(usersuboptions)
         usersub.items.create(items)
+        usersub
       end
     end    
   end

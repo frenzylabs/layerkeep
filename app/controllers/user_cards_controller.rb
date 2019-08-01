@@ -10,7 +10,7 @@ class UserCardsController < AuthController
   before_action :authorize_user
 
   def index
-    cardsserializer = UserCardsSerializer.new(@user.user_cards)  
+    cardsserializer = UserCardsSerializer.new(@user.user_cards.where(status: 'active').order("updated_at DESC").first)
     render json: cardsserializer
   end
 
@@ -26,52 +26,31 @@ class UserCardsController < AuthController
 
 
   def create
-    # customer = if current_user.stripe_id?
-    #              Stripe::Customer.retrieve(current_user.stripe_id)
-    #            else
-    #              Stripe::Customer.create(email: current_user.email, metadata: {user_id: current_user.id})
-    #            end
-
-    # subscription = customer.subscriptions.create(
-    #   source: params[:stripeToken],
-    #   plan: "monthly"
-    # )
-
-    # options = {
-    #   stripe_id: customer.id,
-    #   stripe_subscription_id: subscription.id,
-    # }
-
-    # # Only update the card on file if we're adding a new one
-    # options.merge!(
-    #   card_last4: params[:card_last4],
-    #   card_exp_month: params[:card_exp_month],
-    #   card_exp_year: params[:card_exp_year],
-    #   card_type: params[:card_brand]
-    # ) if params[:card_last4]
-
-    # current_user.update(options)
-
+    customer = stripe_customer(@user, params)
+    if params[:source_token]
+      card = params[:source_token][:card]
+      card = StripeHandler::Customer.new().add_card(@user, card)
+      render json: UserCardsSerializer.new(card) and return
+    end
+    
     redirect_to root_path
   end
 
-  def update
-
-  end
-
   def destroy
-    customer = Stripe::Customer.retrieve(current_user.stripe_id)
-    customer.subscriptions.retrieve(current_user.stripe_subscription_id).delete
-    current_user.update(stripe_subscription_id: nil)
-
     redirect_to root_path, notice: "Your subscription has been canceled."
   end
 
-  def stripe_customer
-    @customer ||= if current_user.stripe_id?
-                    Stripe::Customer.retrieve(current_user.stripe_id)
+  def stripe_customer(user, params)
+    @customer ||= if user.stripe_id?
+                    cus = Stripe::Customer.retrieve(user.stripe_id)
+                    if params[:source_token]
+                    cus = Stripe::Customer.update(cus.id, {source: params[:source_token][:id]})
+                    end
+                    cus
                   else
-                    Stripe::Customer.create(email: current_user.email)
+                    customer_options = {email: user.email, metadata: {user_id: user.id}}
+                    customer_options[:source] = params[:source_token][:id] if params[:source_token]
+                    Stripe::Customer.create(customer_options)
                   end
   end
 

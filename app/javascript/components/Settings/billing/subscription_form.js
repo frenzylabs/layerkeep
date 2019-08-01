@@ -46,62 +46,51 @@ class SubscriptionForm extends React.Component {
     // User clicked submit
     ev.preventDefault();
     console.log("submitted", ev);
-    console.log(this.props.plans);
-    var selectedPlan = this.state.selectedPlan
-    // var plan_id = $("input[name='plan']:checked").val();
-    // console.log(plan_id);
-    if (!selectedPlan.id) {
 
-    } else {
+    var amount = this.props.package.attributes.plans.reduce((total, x) => total + x.attributes.amount, 0)
       
-      var params = {plan_id: selectedPlan.id}
-      console.log(selectedPlan);
-      let card = this.props.cards.find(x => x.attributes.status == "active")
-      if (card) {
-        if (this.props.subItem) {
-          console.log("has subitem", this.props.subItem)
-          this.updateSubscription(params)
-        } else {
-          this.createSubscription(params)
-        }
-      }
-      else if (selectedPlan.attributes.amount > 0 && selectedPlan.attributes.trial_period == 0) {
-        var card_required = true
-        if (this.props.stripe) {
-          this.props.stripe.createToken({type: 'card', name: window.currentUser.username})
-            .then((payload) => {
-              console.log('[token]', payload)
-              if (payload.error) {
+    var params = { package_id: this.props.package.id }
 
-              } else {
-                params['source_token'] = payload.token;
-                this.createSubscription(params)
-              }
-              // if (this.props.tokenCreated) {
-              //   this.props.tokenCreated(payload.token)
-              // }
-            });
-        } else {
-          console.log("Stripe.js hasn't loaded yet.");
-        }
+    let card = this.props.card
+    if (card) {
+      if (this.props.subscription) {
+        this.updateSubscription(params)
       } else {
         this.createSubscription(params)
       }
     }
-    
-    
-      if (this.state.cardToken) {
-        params['source_token'] = this.state.cardToken;
+    else if (amount > 0) {
+      if (this.props.stripe) {
+        this.props.stripe.createToken({type: 'card', name: window.currentUser.username})
+          .then((payload) => {
+            console.log('[token]', payload)
+            if (payload.error) {
+
+            } else {
+              params['source_token'] = payload.token;
+              // this.createSubscription(params)
+              if (this.props.subscription) {
+                this.updateSubscription(params)
+              } else {
+                this.createSubscription(params)
+              }
+            }
+          });
+      } else {
+        console.log("Stripe.js hasn't loaded yet.");
       }
-
+    } else {
+      if (this.props.subscription) {
+        this.updateSubscription(params)
+      } else {
+        this.createSubscription(params)
+      }
+    }
   }
 
-  getCardToken() {
-
-  }
 
   updateSubscription(params) {
-    UserHandler.updateSubscriptionItem(this.props.match.params.username, this.props.subItem.item.id, params)
+    UserHandler.updateSubscription(this.props.match.params.username, this.props.subscription.id, params)
     .then((response) => {
       console.log("Update SUB")
       console.log(response)
@@ -132,47 +121,27 @@ class SubscriptionForm extends React.Component {
     });
   }
 
-  tokenCreated(token) {
-    console.log("token created")
-    console.log(token)
-    this.setState({"cardToken": token})
-  }
-
-  selectPlan(plan) {
-    console.log(plan);
-    this.setState({selectedPlan: plan})
-  }
-
-  renderPlans() {
-    const selectedPlanID = this.state.selectedPlan.id || 0
-    if (this.props.plans.length > 0) {
-      return this.props.plans.map((plan, index) => {
-        var checked = selectedPlanID == plan.id ? true : false
-        var amountInterval = `${plan.attributes.amount} / ${plan.attributes.interval}`
-        console.log("trial period", plan.attributes.trial_period);
-        if (plan.attributes.trial_period > 0 && !this.props.subItem) {
-          amountInterval = (<div><p>{plan.attributes.trial_period} Day Free Trial.</p><p>Then {amountInterval}</p></div>)
-          
-        }
-        return (
-          <Card key={'plan-' + plan.id} onClick={() => this.selectPlan(plan)}>
-            <CardContent>
-                <Content>
-                  <p className="title">{plan.attributes.name}</p>
-                    {plan.attributes.description}
-                    <br/>
-                    <small>{amountInterval}</small>
-                </Content>
-                <input type="radio" name="plan" value={plan.id} checked={checked} onChange={() => this.selectPlan(plan)} />  
-            </CardContent>
-        </Card>
-        )
-      });
+  renderPackage() {
+    if (this.props.package) {
+      const pkg = this.props.package
+      var amount = pkg.attributes.plans.reduce((total, x) => total + x.attributes.amount, 0)      
+      return (
+        <Card >
+          <CardContent>
+              <Content>
+                <p className="title">{pkg.attributes.name}</p>
+                  {pkg.attributes.description}
+                  <br/>
+                  <small>{amount}</small>
+              </Content>
+          </CardContent>
+      </Card>
+      )
     }
   }
 
   renderPaymentMethod() {
-    let card = this.props.cards.find(x => x.attributes.status == "active")
+    let card = this.props.card
     if (card) {
       return (
         <Box>
@@ -183,8 +152,8 @@ class SubscriptionForm extends React.Component {
       )
     } else if (!card) {
       console.log("NO CARD")
-      console.log(this.state.selectedPlan)
-      if (this.state.selectedPlan.attributes && this.state.selectedPlan.attributes.amount > 0) {
+      var amount = this.props.package.attributes.plans.reduce((total, x) => total + x.attributes.amount, 0)      
+      if (amount > 0) {
         return (
           <div className="example">
             <h1>Add Payment Method</h1>
@@ -201,7 +170,7 @@ class SubscriptionForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        {this.renderPlans()}
+        {this.renderPackage()}
         {this.renderPaymentMethod()}
         <button onClick={this.handleSubmit}>Send</button>
     </form>

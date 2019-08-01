@@ -2,7 +2,7 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
   def change
     change_table :users do |t|
       t.string :stripe_id
-    end    
+    end
 
     create_table :products do |t|
       t.string    :stripe_id
@@ -27,10 +27,27 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.timestamps
     end
 
+    create_table :packages do |t|
+      t.citext      :name, null: false
+      t.citext      :lookup_name, null: false
+      t.string      :description, default: ''
+      t.boolean     :active,       default: true
+      t.boolean     :is_private,   default: false
+      t.timestamps
+    end
+    add_index :packages, :name, unique: true
+
+    create_table :package_plans do |t|
+      t.references  :package, index: true, foreign_key: {on_delete: :cascade}
+      t.references  :plan, index: true, foreign_key: {on_delete: :cascade}
+      t.timestamps
+    end
+
     create_table :subscriptions do |t|
       t.string      :stripe_id
+      t.string      :name, null: false
       t.references  :user, index: true, foreign_key: true
-      t.references  :plan, index: true, foreign_key: true
+      t.references  :package, index: true, foreign_key: true
       t.integer     :current_period_end
       t.string      :status
       t.boolean     :is_trial, default: false
@@ -57,11 +74,19 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.string     :brand
       t.string     :status
       t.string     :country
+      t.string     :address_city
+      t.string     :address_country
+      t.string     :address_line1
+      t.string     :address_line1_check
+      t.string     :address_line2
+      t.string     :address_state
       t.string     :address_zip
       t.string     :address_zip_check
       t.string     :cvc_check
       t.timestamps
     end
+
+
 
   end
 end

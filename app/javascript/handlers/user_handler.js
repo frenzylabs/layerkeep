@@ -33,8 +33,16 @@ export default {
     return Request.post(`/${user}/billing/subscriptions`, queryParams);
   },
 
-  updateSubscriptionItem: (user, item, queryParams = {}) => {
-    return Request.patch(`/${user}/billing/subscription_items/${item}`, queryParams);
+  updateSubscription: (user, item, queryParams = {}) => {
+    return Request.patch(`/${user}/billing/subscriptions/${item}`, queryParams);
+  },
+
+  createCard: (user, queryParams = {}) => {
+    return Request.post(`/${user}/billing/cards`, queryParams);
+  },
+
+  updateCard: (user, item, queryParams = {}) => {
+    return Request.patch(`/${user}/billing/cards/${item}`, queryParams);
   },
 
 }
