@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {StripeProvider, Elements, CardElement, injectStripe} from 'react-stripe-elements';
 import {UserHandler}  from '../../../handlers';
 
-import { 
+import {
   Box,
   Container, 
   Columns, 
@@ -111,7 +111,6 @@ export class Billing extends Component {
   }
 
   subscribeToPackage(pkg) {
-    console.log(pkg);
     var modal = {package: pkg, subscription: this.state.subscription, card: this.state.card, component: StripeForm, formComponent: InjectedSubscriptionForm}
     this.setState({modal: modal, modalIsActive: true})
   }
@@ -129,33 +128,32 @@ export class Billing extends Component {
   renderPackages() {
     if (this.state.packages.length > 0) {
       return this.state.packages.map((pkg, index) => {
-        // var total = 0        
         var pkg_amount = pkg.attributes.plans.reduce((total, x) => x.attributes.amount + total, 0)
         return (
-          <div className="card" key={'pack'+ pkg.id} >
-            <div className="card-content">
-              <p className="title">
-                {pkg.attributes.name}
-              </p>
-              <p className="subtitle">
+          <div className="tile box is-child" key={'pack'+ pkg.id}>
+            <article className="message is-success">
+              <p className="message-header">{pkg.attributes.name}</p>
+              <div className="message-body">
                 {pkg.attributes.description}
-              </p>
-            </div>
-            <footer className="card-footer">
-              <p>
-                {pkg_amount}
-              </p>
-              <p className="card-footer-item">
-                <span>
-                  <button onClick={() => this.subscribeToPackage(pkg)}>Subscribe</button>
-                </span>
-              </p>
-            </footer>
+                {pkg.attributes.description}
+                {pkg.attributes.description}
+                {pkg.attributes.description}
+              </div>
+              <footer className="card-footer">
+                <p>
+                  {pkg_amount}
+                </p>
+                <p className="card-footer-item">
+                  <span>
+                    <button onClick={() => this.subscribeToPackage(pkg)}>Subscribe</button>
+                  </span>
+                </p>
+              </footer>
+            </article>
           </div>
         )
-        
-      });
-    } 
+      })
+    }
   }
 
   renderPackageName(sub) {
@@ -292,12 +290,10 @@ export class Billing extends Component {
             </Card>  
           </Section>
           <Section>
-            <Card>
-              <CardHeader>Packages</CardHeader>
-              <CardContent>
-                {this.renderPackages()}
-              </CardContent>
-            </Card>  
+            <h3>Packages</h3>
+            <div className="tile is-ancestor">
+              {this.renderPackages()}
+            </div>
           </Section>
           
           
