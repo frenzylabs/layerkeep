@@ -8,7 +8,6 @@
 require 'zip'
 
 class ReposController < AuthController
-  before_action :get_user
   respond_to :json
 
   def index
@@ -32,15 +31,15 @@ class ReposController < AuthController
   end
 
   def create
-    post_params = params[:repo]
     commit_message = nil
+
+    @repo        = Repo.new(user: @user, kind: params[:kind])
+    authorize @repo
+    post_params = permitted_attributes(@repo)
     post_params[:description] ||= ""
 
-    @repo        = Repo.new(post_params.permit(:name, :description))
-    @repo.kind   = params[:kind]
-    @repo.user   = @user
-
-    authorize @repo
+    @repo.assign_attributes(post_params)
+    
 
     repo_path = "#{@user.username}/#{params["kind"]}/#{@repo.name.downcase}" if @repo.name
     @repo.path = repo_path
@@ -88,11 +87,11 @@ class ReposController < AuthController
   def update
     repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
     authorize repo
-
-    if repo.update(params.permit(:description))
+    post_params = permitted_attributes(repo)
+    if repo.update(post_params)
       render json: repo.to_json
     else
-      render status: 400, json: @repo.errors.to_json
+      render status: 400, json: repo.errors.to_json
     end
   end
 
@@ -109,11 +108,6 @@ class ReposController < AuthController
       render status: 400, json: {"error": "Please confirm you want to delete this repo"}
     end
   end
-
-  def get_user()
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
 
   def create_from_thingiverse(params) 
     conn = Faraday.new(:url => "https://api.thingiverse.com") do |con|
@@ -178,6 +172,4 @@ class ReposController < AuthController
     end
     return 400, "Error"
   end
-
-
 end

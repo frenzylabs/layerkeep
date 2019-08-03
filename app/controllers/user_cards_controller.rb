@@ -37,6 +37,8 @@ class UserCardsController < AuthController
   end
 
   def destroy
+    customer = stripe_customer(@user, params)
+    card = UserCard.find(params[:id])
     redirect_to root_path, notice: "Your subscription has been canceled."
   end
 
@@ -53,13 +55,4 @@ class UserCardsController < AuthController
                     Stripe::Customer.create(customer_options)
                   end
   end
-
-  def get_user
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
-  def authorize_user 
-    authorize(get_user())
-  end
-
 end

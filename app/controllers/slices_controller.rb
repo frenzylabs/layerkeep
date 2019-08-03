@@ -1,5 +1,4 @@
 class SlicesController < AuthController
-  before_action :get_user
   respond_to :json
 
   def new
@@ -180,9 +179,5 @@ class SlicesController < AuthController
 
   def sanitize_filepath(filepath)
     filepath.gsub(/[^0-9A-z.\-\/]/, "")
-  end  
-
-  def get_user()
-    @user ||= User.find_by!(username: params["user"] || "")
   end
 end

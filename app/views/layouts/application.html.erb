@@ -11,11 +11,14 @@
     <%= javascript_pack_tag     'application' %>
 
     <script>
+      var features = <%= (current_user && raw(current_user.subscription_handler.features.to_json)) || {} %>
       window.currentUser = {
         id:       "<%= current_user.id || '' %>",
         username: "<%= current_user.username %>",
-        email:    "<%= current_user.email %>"
+        email:    "<%= current_user.email %>",
+        features: features
       }
+      
       window.stripeApiKey = "<%= Rails.application.config.settings["stripe"]["api_key"] %> "
     </script>
     <script id="stripe-js" src="https://js.stripe.com/v3/" async></script>

@@ -21,7 +21,7 @@ export class Settings extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { activeTab: 0, curLocation: {} }
+    this.state = { activeTab: 0 }
 
     this.tabAction    = this.tabAction.bind(this)
     this.submitAction = this.submitAction.bind(this)
@@ -69,15 +69,14 @@ export class Settings extends React.Component {
 
           <div style={{border: '1px solid #e0e0e0', borderTop: 'none'}}>
             <Box style={{border: 'none', boxShadow: 'none'}}>
-              {this.state.curLocation ?
-                <Switch >
-                  <Route path={`${this.props.match.url}/account`} render={ props =>
-                    <AccountSettings {...props} {...this.props} /> 
-                  }/>
+                <Switch >                  
                   <Route path={`${this.props.match.url}/billing`} render={ props =>
                     <Billing {...props}  {...this.props}/> 
                   }/>
-                </Switch> : "" }
+                  <Route path={`${this.props.match.url}`} exact={false} render={ props =>
+                    <AccountSettings {...props} {...this.props} /> 
+                  }/>
+                </Switch>
             </Box>
           </div>
         </Container>

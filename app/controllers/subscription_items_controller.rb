@@ -86,15 +86,6 @@ class SubscriptionItemsController < AuthController
                   end
   end
 
-  def get_user
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
-  def authorize_user 
-    authorize(get_user())
-  end
-
-
   def upgrade_trial_subscription(customer, plan)
     subscription = @user.subscriptions.find_by(is_trial: false)
 

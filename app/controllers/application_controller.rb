@@ -35,12 +35,15 @@ class ApplicationController < ActionController::Base
 
   def user_not_authorized(exception)
     logger.info(request.format)
+    # binding.pry
+    error_reason = exception.policy.error_reason || {}
+    
     if request.format != :json
       request.format = :html
     end
     respond_to do |format|
       format.html { render status: 401, :file => File.join(Rails.root, 'public', '401.html') }
-      format.json { render status: 401, :json => {"error": "Not Authorized"} }
+      format.json { render status: 401, :json => {"error": "Not Authorized"}.merge(error_reason) }
     end
   end
 

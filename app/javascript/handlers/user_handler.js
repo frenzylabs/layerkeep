@@ -45,4 +45,8 @@ export default {
     return Request.patch(`/${user}/billing/cards/${item}`, queryParams);
   },
 
+  getFeatures: (user, queryParams = {}) => {
+    return Request.get(`/${user}/features`, queryParams);
+  }
+
 }

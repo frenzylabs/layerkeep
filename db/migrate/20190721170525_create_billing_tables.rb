@@ -7,10 +7,12 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
     create_table :products do |t|
       t.string    :stripe_id
       t.string    :name
+      t.string    :lookup_name
       t.string    :status
       t.boolean   :active, default: true
       t.timestamps
     end
+    add_index :products, :lookup_name, unique: true
 
     create_table :plans do |t|
       t.string      :stripe_id
@@ -22,10 +24,12 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.integer     :trial_period, default: 0
       t.string      :description,  default: ""
       t.jsonb       :metadata,     default: {}
+      t.jsonb       :features,     default: {}
       t.boolean     :active,       default: true
       t.boolean     :is_private,   default: false
       t.timestamps
     end
+    add_index :plans, :nickname
 
     create_table :packages do |t|
       t.citext      :name, null: false
@@ -35,7 +39,7 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.boolean     :is_private,   default: false
       t.timestamps
     end
-    add_index :packages, :name, unique: true
+    add_index :packages, :lookup_name, unique: true
 
     create_table :package_plans do |t|
       t.references  :package, index: true, foreign_key: {on_delete: :cascade}
@@ -53,6 +57,7 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.boolean     :is_trial, default: false
       t.timestamps
     end
+    add_index :subscriptions, :current_period_end
 
     create_table :subscription_items do |t|
       t.string     :stripe_id
@@ -85,8 +90,6 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.string     :cvc_check
       t.timestamps
     end
-
-
 
   end
 end

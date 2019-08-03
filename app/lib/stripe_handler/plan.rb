@@ -34,7 +34,15 @@ class StripeHandler::Plan
     end
   end
 
-  def plan_params(plan)
+  def plan_params(plan)        
+    features = {}
+    if plan[:metadata]["features"]
+      begin
+        features = JSON.parse(plan[:metadata]["features"])   
+      rescue => exception
+        features = {}
+      end
+    end
     {
       stripe_id: plan[:id],
       nickname: plan[:nickname],
@@ -42,6 +50,7 @@ class StripeHandler::Plan
       amount:  plan[:amount],
       interval: plan[:interval],
       metadata: plan[:metadata],
+      features: features,
       active: plan[:active]
     }
   end

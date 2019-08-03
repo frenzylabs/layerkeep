@@ -28,12 +28,12 @@ export default {
     return Request.get(user_project(user, name), opts);
   },
 
-  create: (project, files = null) => {
+  create: (user, project, files = null) => {
     var params = {'repo' : project};
 
 
     if(files == null) {
-      return Request.post(path(), params);
+      return Request.post(user_project(user), params);
     }
 
     var data = new FormData();
@@ -48,7 +48,7 @@ export default {
       }
     }
 
-    return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+    return Request.post(user_project(user), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
 
   commit: (project, files, message) => {

@@ -107,13 +107,6 @@ class SubscriptionsController < AuthController
                   end
   end
 
-  def get_user
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
-  def authorize_user 
-    authorize(get_user())
-  end
 
   def create_subscription(customer, user, plan_hash, stripe_options, package, sub_opts = {})
     stripe_subscription = customer.subscriptions.create(stripe_options)

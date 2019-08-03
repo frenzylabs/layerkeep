@@ -106,6 +106,7 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
     t.boolean "is_private", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "features", default: {}
     t.index ["product_id"], name: "index_plans_on_product_id"
   end
 
@@ -116,6 +117,7 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "lookup_name"
   end
 
   create_table "remote_sources", force: :cascade do |t|

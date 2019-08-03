@@ -46,13 +46,13 @@ Rails.application.routes.draw do
 
   root to: 'main#index'
 
-  
-  get '/auth/:kind', to: 'auth#stomp'
-  post '/auth/:kind', to: 'auth#stomp'
-  get '/auth', to: 'auth#stomp'
-  post '/auth', to: 'auth#stomp'
+  # Stomp calls come from Rabbitmq 
+  get '/auth/:kind', to: 'amqp_auth#stomp'
+  post '/auth/:kind', to: 'amqp_auth#stomp'
+  get '/auth', to: 'amqp_auth#stomp'
+  post '/auth', to: 'amqp_auth#stomp'
 
-  post 'user/settings', to: 'user#settings'
+  post 'user/settings', to: 'users#settings'
 
   get '/slicer_engines', to: 'slicer_engines#index'
   get '/remote_sources', to: 'remote_sources#index'
@@ -88,6 +88,7 @@ Rails.application.routes.draw do
   end
 
   scope ':user' do
+    get 'features', to: 'users#features'
     scope 'billing' do
       resources :subscriptions
       patch 'subscription_items/:item_id', to: 'subscription_items#update'
@@ -122,7 +123,7 @@ Rails.application.routes.draw do
 
   # REACT
 
-  get '*page', to: 'user#index', constraints: ->(req) do
+  get '*page', to: 'users#index', constraints: ->(req) do
     req.format = :html
     !req.xhr? 
   end

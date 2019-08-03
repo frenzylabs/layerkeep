@@ -6,7 +6,9 @@
 # Copyright 2018 WessCope
 #
 
-class UserController < AuthController
+class UsersController < AuthController
+  skip_before_action :get_user, only: [:index, :settings]
+
   def index
   end
 
@@ -44,5 +46,11 @@ class UserController < AuthController
       end
   
     end
+  end
+
+  def features
+    @user ||= User.find_by!(username: params["user"] || "")
+    authorize(@user, :show?)
+    render json: @user.subscription_handler.features
   end
 end

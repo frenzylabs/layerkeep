@@ -31,9 +31,41 @@ import {
   Settings
 } from './components';
 
+import { UserHandler } from './handlers'
+
 import RemoteMessage from './RemoteMessage'
 
 class SideLayout extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {features: {}}
+    this.getUserFeatures = this.getUserFeatures.bind(this);
+    this.cancelRequest    = UserHandler.cancelSource();
+    if (this.props.match.params.username) {
+      if (!currentUser || currentUser.username != this.props.match.params.username) {
+        this.getUserFeatures(this.props.match.params.username)
+      } else {
+        this.state.features = currentUser.features
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Page");
+  }
+
+  getUserFeatures(user) {
+    UserHandler.getFeatures(user, {cancelToken: this.cancelRequest.token})
+    .then((response) => {
+      this.setState({features: response.data.data})
+    })
+    .catch((error) => {
+      console.log(error);
+    }).finally(() => {
+      this.setState({loadFeatures: false})
+    });
+  }
+
   render() {
     const Component = this.props.component;
     return (
@@ -43,7 +75,7 @@ class SideLayout extends React.Component {
             <LeftColumn />
           </Column>
           <Column>
-            <Component {...this.props} />
+            <Component {...this.props} features={this.state.features} />
           </Column>
       </Columns>
       </div>
@@ -116,7 +148,8 @@ class AppContainer extends React.Component {
   
   renderFullLayoutRoutes() {
     return this.state.fullLayoutRoutes.map((item) => {
-      return (<Route key={item.path} exact={item.exact || true} path={item.path} 
+      var exact = item.exact == null ? true : item.exact
+      return (<Route key={item.path} exact={exact} path={item.path} 
         render={ props => 
           <FullScreenLayout component={item.component} {...props} /> 
         }
@@ -126,8 +159,9 @@ class AppContainer extends React.Component {
 
  renderSideBarLayoutRoutes() {
   return this.state.sidebarLayoutRoutes.map((item) => {
+    var exact = item.exact == null ? true : item.exact
     return (
-        <Route key={item.path}  path={item.path}  render={ props =>
+        <Route key={item.path}  exact={exact}  path={item.path}  render={ props =>
           <SideLayout {...item}  {...props} /> 
         }/>
       )

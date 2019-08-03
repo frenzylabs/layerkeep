@@ -6,7 +6,7 @@
 # Copyright 2018 LayerKeep
 #
 
-class PackagesController < AuthController
+class PackagesController < ApplicationController
   def index
     packages = Package.where(active: true, is_private: false)
     serializer = PackagesSerializer.new(packages.includes(:plans))
