@@ -26,12 +26,27 @@ import { InjectedSubscriptionForm } from './subscription_form'
 import { InjectedCardSection } from './card'
 import Modal              from '../../Modal'
 
-import PaymentMethod from './payment_method'
+import {
+  PaymentMethod,
+  Subscription,
+  Packages
+ } from './sections'
 
 export class Billing extends Component {
   constructor(props) {
     super(props);
-    this.state = {loadPackages: true, loadSubscriptions: true, loadCards: true, stripe: null, modalIsActive: false, modal: {}, packages: [], subscription: null, card: {}};
+    this.state = {
+      loadPackages: true, 
+      loadSubscriptions: true, 
+      loadCards: true, 
+      stripe: null, 
+      modalIsActive: false, 
+      modal: {}, 
+      packages: [], 
+      subscription: null, 
+      card: {},
+      packageModalActive: false
+    };
 
     this.getPackages      = this.getPackages.bind(this);
     this.getSubscriptions = this.getSubscriptions.bind(this);
@@ -153,6 +168,18 @@ export class Billing extends Component {
     }
   }
 
+  packageName() {
+    let sub = this.state.subscription
+    var pkg = this.state.packages.find(x => x.id == sub.attributes.package_id)
+    if (pkg) {
+      return (
+        <p>
+          {pkg.attributes.name}
+        </p>
+      )
+    }
+}
+
   renderPackageName(sub) {
     var pkg = this.state.packages.find(x => x.id == sub.attributes.package_id)
     if (pkg) {
@@ -166,7 +193,7 @@ export class Billing extends Component {
 
   renderSubscription() {
     if (this.state.subscription) {
-      var sub = this.state.subscription      
+      var sub = this.state.subscription
       var amount_interval = sub.attributes.items.reduce((total, x) => x.attributes.plan.attributes.amount + total, 0)
       return (
         <Level>
@@ -216,10 +243,12 @@ export class Billing extends Component {
   }
 
   dismissAction() {
+    console.log(arguments)
+
     this.setState({modalIsActive: false, modal: {}})
   }
 
-  renderSubModal() {
+  renderStripeModal() {
     if (this.state.modalIsActive) {
       let modal = this.state.modal
       let card = this.state.card
@@ -235,6 +264,16 @@ export class Billing extends Component {
         />
       )
     }
+  }
+
+  renderPackageSelectModal() {
+    return(
+      <Modal 
+        {...this.props}
+        isActive={this.state.packageModalActive}
+        component={Modal.packageSelect}
+      />
+    )
   }
 
   activateCreditCard(card) {
@@ -287,29 +326,37 @@ export class Billing extends Component {
     }
   }
 
+  selectPackage() {
+    this.setState({
+      ...this.state,
+      packageModalActive: true
+    })
+  }
+
   render() {
     return (
         <div>
-          <PaymentMethod card={this.getCard()} onClick={this.activateCreditCard.bind(this)} />
+          <PaymentMethod 
+            card={this.getCard()} 
+            onClick={this.activateCreditCard.bind(this)} 
+          />
           
           <br/>
 
-          <Card>
-            <CardHeader>Subscription</CardHeader>
-            <CardContent>
-              {this.renderSubscription()}
-            </CardContent>
-          </Card>  
-        
-          <Section>
-            <h3>Packages</h3>
-            <div className="tile is-ancestor">
-              {this.renderPackages()}
-            </div>
-          </Section>
-          
-          
-          <div>{this.renderSubModal()}</div>
+          <Subscription 
+            subscription={this.state.subscription}
+            package={this.packageName()}
+          />
+
+          <br/>
+
+          <Packages
+            packages={this.state.packages || []}
+            packageClick={this.selectPackage.bind(this)}
+          />
+
+          {this.renderStripeModal()}
+          {this.renderPackageSelectModal()}
         </div>
     );
   }

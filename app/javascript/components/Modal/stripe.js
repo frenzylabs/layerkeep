@@ -41,7 +41,7 @@ export default class StripeModal extends React.Component {
     UserHandler
     .createCard(window.currentUser.username, {'source_token': token.id})
     .then((res) => {
-      this.props.dismissAction()
+      this.props.dismissAction(res)
     })
     .catch((err) => {
       this.setState({
