@@ -16,11 +16,13 @@ import { Box }                                      from 'bloomer/lib/elements/B
 import UploadModal  from './upload';
 import SpinnerModal from './spinner';
 import ErrorModal   from './error';
+import StripeModal  from './stripe';
 
 export default class Modal extends React.Component {
   static upload   = UploadModal;
   static spinner  = SpinnerModal;
   static error    = ErrorModal;
+  static stripe   = StripeModal;
 
   render() {
     const styles = this.props.component.parentStyles || {}
@@ -29,8 +31,8 @@ export default class Modal extends React.Component {
       <BulmaModal isActive={this.props.isActive}>
         <BulmaModalBackground onClick={this.props.dismissAction}/>
         <BulmaModalContent>
-        <Box style={styles}>{<this.props.component dismissAction={this.props.dismissAction} {...this.props} />}</Box>
-      </BulmaModalContent>
+          <Box style={styles}>{<this.props.component dismissAction={this.props.dismissAction} {...this.props} />}</Box>
+        </BulmaModalContent>
 
         <BulmaModalClose onClick={this.props.dismissAction}/>
       </BulmaModal>

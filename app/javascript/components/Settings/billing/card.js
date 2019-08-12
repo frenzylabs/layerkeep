@@ -1,11 +1,21 @@
+//
+//  card.js
+//  LayerKeep
+// 
+//  Created by Kevin Musselman (kevin@frenzylabs.com) on 08/02/19
+//  Copyright 2019 FrenzyLabs,llc.
+//
+
 import React, {Component} from 'react';
-import {StripeProvider, 
+import {
+  StripeProvider, 
   Elements, 
   CardElement,
   CardNumberElement,
   CardCvcElement,
   CardExpiryElement,
   injectStripe} from 'react-stripe-elements';
+
 import {UserHandler}  from '../../../handlers';
 
 class CardSection extends React.Component {
@@ -18,11 +28,15 @@ class CardSection extends React.Component {
       card.expyear = this.props.card.attributes.exp_year
     }
 
-    this.state = { stripe: null, card: card };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.createCard   = this.createCard.bind(this)
+    this.state = { 
+      stripe: null, 
+      card: card 
+    };
+    
+    this.handleSubmit   = this.handleSubmit.bind(this);
+    this.createCard     = this.createCard.bind(this)
     this.changeExpMonth = this.changeExpMonth.bind(this)
-    this.changeExpYear = this.changeExpYear.bind(this)
+    this.changeExpYear  = this.changeExpYear.bind(this)
   }
   
   async handleSubmit(ev) {
@@ -85,7 +99,7 @@ class CardSection extends React.Component {
 
   renderNewForm() {
     return (
-      <div>
+      <div className="panel">
         <h1>Add Card</h1>
         <label>
           Card details

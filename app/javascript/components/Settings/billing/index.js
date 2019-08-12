@@ -1,26 +1,19 @@
+//
+//  index.js
+//  LayerKeep
+// 
+//  Created by Kevin Musselman (kevin@frenzylabs.com) on 08/02/19
+//  Copyright 2019 FrenzyLabs,llc.
+//
+
 import React, {Component} from 'react';
-import { Link } from "react-router-dom";
-import {StripeProvider, Elements, CardElement, injectStripe} from 'react-stripe-elements';
+import {StripeProvider, Elements} from 'react-stripe-elements';
 import {UserHandler}  from '../../../handlers';
 
 import {
-  Box,
-  Container, 
-  Columns, 
-  Column, 
-  Button, 
-  Panel, 
-  PanelHeading, 
-  PanelBlock,
-  PanelIcon,
   Card,
   CardHeader,
-  CardHeaderTitle,
-  CardHeaderIcon,
-  CardFooter,
   CardContent,  
-  Icon,
-  Content,
   Level, 
   LevelItem, 
   LevelLeft, 
@@ -31,7 +24,9 @@ import {
 import { StripeForm } from './stripe_form'
 import { InjectedSubscriptionForm } from './subscription_form'
 import { InjectedCardSection } from './card'
-import Modal              from '../../Modal';
+import Modal              from '../../Modal'
+
+import PaymentMethod from './payment_method'
 
 export class Billing extends Component {
   constructor(props) {
@@ -41,6 +36,8 @@ export class Billing extends Component {
     this.getPackages      = this.getPackages.bind(this);
     this.getSubscriptions = this.getSubscriptions.bind(this);
     this.dismissAction    = this.dismissAction.bind(this);
+    this.getCard          = this.getCard.bind(this);
+
     this.cancelRequest    = UserHandler.cancelSource();
 
     this.getPackages()
@@ -226,7 +223,17 @@ export class Billing extends Component {
     if (this.state.modalIsActive) {
       let modal = this.state.modal
       let card = this.state.card
-      return (<Modal {...this.props}  isActive={this.state.modalIsActive} dismissAction={this.dismissAction} stripe={this.state.stripe} card={card} {...modal} />)
+      return (
+        <Modal 
+          {...this.props}  
+          isActive={this.state.modalIsActive} 
+          dismissAction={this.dismissAction} 
+          stripe={this.state.stripe} 
+          attributes={modal}
+          card={card}
+          component={Modal.stripe}
+        />
+      )
     }
   }
 
@@ -270,25 +277,30 @@ export class Billing extends Component {
     }
   }
 
+  getCard() {
+    if (this.state.card && this.state.card.attributes) {
+      return this.state.card
+    }
+
+    return {
+      attributes: {}
+    }
+  }
+
   render() {
     return (
         <div>
-          <Section>
-            <Card>
-              <CardHeader>Payment Method</CardHeader>
-              <CardContent>
-                {this.renderCard()}
-              </CardContent>
-            </Card>  
-          </Section>
-          <Section>
-            <Card>
-              <CardHeader>Subscription</CardHeader>
-              <CardContent>
-                {this.renderSubscription()}
-              </CardContent>
-            </Card>  
-          </Section>
+          <PaymentMethod card={this.getCard()} onClick={this.activateCreditCard.bind(this)} />
+          
+          <br/>
+
+          <Card>
+            <CardHeader>Subscription</CardHeader>
+            <CardContent>
+              {this.renderSubscription()}
+            </CardContent>
+          </Card>  
+        
           <Section>
             <h3>Packages</h3>
             <div className="tile is-ancestor">
