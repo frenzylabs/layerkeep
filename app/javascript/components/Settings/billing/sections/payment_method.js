@@ -76,7 +76,7 @@ export default class PaymentMethod extends React.Component {
 
             <div className="column is-1">
               <a onClick={this.updateCard} className="button is-link is-outlined is-small">
-                Update
+                {this.props.card.length > 0 ? 'Update' : 'Add'}
               </a>
             </div>
           </div>
