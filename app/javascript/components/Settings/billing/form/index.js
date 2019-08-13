@@ -22,11 +22,18 @@ class BillingForm extends React.Component {
       return
     }
 
-    let response = await this.props.stripe.createToken({
-      type: 'card',
-      name: window.currentUser.username
-    })
-
+    
+    let response
+    
+    try {
+      response = await this.props.stripe.createToken({
+        type: 'card',
+        name: window.currentUser.username
+      })
+    } catch (error) {
+      console.error(error)
+    }
+    
     await this.props.handleSubmit(response)
 
   }

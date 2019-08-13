@@ -6,7 +6,8 @@
 //  Copyright 2019 FrenzyLabs,llc.
 //
 
-import React from 'react'
+import React      from 'react'
+import * as dayjs from 'dayjs'
 
 export default class PaymentMethod extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ export default class PaymentMethod extends React.Component {
 
     this.renderIcon     = this.renderIcon.bind(this)
     this.renderLastFour = this.renderLastFour.bind(this)
-    this.renderAddress  = this.renderAddress.bind(this)
+    this.renderUpdated  = this.renderUpdated.bind(this)
     this.updateCard     = this.updateCard.bind(this)
   }
 
@@ -25,29 +26,49 @@ export default class PaymentMethod extends React.Component {
   }
 
   renderIcon() {
-    let icon = this.props.card.attributes.brand ? `fab fa-cc-${this.props.attributes.brand.type.toLowerCase()}` : 'fal fa-credit-card'
+    var icon = 'fal fa-credit-card'
+
+    if(this.props.card.attributes.brand) {
+      icon = `fab fa-cc-${this.props.card.attributes.brand.toLowerCase()}`
+    }
 
     return (
-      <span className="icon is-medium">
-        <i className={`${icon} fa-2x`}></i>
-      </span>
+      <div className="column is-narrow is-1" style={{textAlign: 'center'}}>
+        <span className="icon is-medium">
+          <i className={`${icon} fa-2x`}></i>
+        </span>
+      </div>
     )
   }
 
   renderLastFour() {
-    let caption = this.props.card.attributes.last4 ? `Last 4: ${this.props.attributes.card.last4}` : (<a onClick={this.updateCard}>Add a credit card</a>)
-    let expiry  = (this.props.card.attributes.exp_month && this.props.card.attributes.exp_year) ? `exp: ${this.props.card.attributes.exp_month}/${this.props.card.attributes.exp_year}` : ''
+    let caption = this.props.card.attributes.last4 ? (<p>Card ending in <strong>{this.props.card.attributes.last4}</strong></p>) : (<a onClick={this.updateCard}>Add a credit card</a>)
+    let expiry  = (this.props.card.attributes.exp_month && this.props.card.attributes.exp_year) ? (<p>exp date: <strong>{this.props.card.attributes.exp_month}/{this.props.card.attributes.exp_year}</strong></p>) : ''
 
     return (
-      <p className="content">{caption} &nbsp; {expiry}</p>
+      <React.Fragment>
+        <div className="column" style={{textAlign: 'center'}}>
+          {caption}
+        </div>
+
+        <div className="column" style={{textAlign: 'center'}}>
+          {expiry}
+        </div>
+      </React.Fragment>
     )
   }
 
-  renderAddress() {
-    let address = this.props.card.attributes.address || ""
+  renderUpdated() {
+    var updated = ""
+
+    if(this.props.card.attributes.updated_at) {
+      updated = dayjs(this.props.card.attributes.updated_at).format('MM.DD.YY')
+    }
 
     return (
-      <p className="content">{address}</p>
+      <div className="column" style={{textAlign: 'center'}}>
+        Added on <strong>{updated}</strong>
+      </div>
     )
   }
 
@@ -62,21 +83,15 @@ export default class PaymentMethod extends React.Component {
 
         <div className="card-content" style={{boxShadow: 'none'}}>
           <div className="columns is-vcentered">
-            <div className="column is-1 is-narrow">
-              {this.renderIcon()}
-            </div>
+            {this.renderIcon()}
 
-            <div className="column is-3">
-              {this.renderLastFour()}
-            </div>
+            {this.renderLastFour()}
 
-            <div className="column">
-              {this.renderAddress()}
-            </div>
+            {this.renderUpdated()}
 
-            <div className="column is-1">
+            <div className="column is-narrow is-1" style={{textAlign: 'right'}}>
               <a onClick={this.updateCard} className="button is-link is-outlined is-small">
-                {this.props.card.length > 0 ? 'Update' : 'Add'}
+                {this.props.card.attributes.last4 ? 'Update' : 'Add'}
               </a>
             </div>
           </div>

@@ -55,15 +55,18 @@ export class Billing extends Component {
 
     this.cancelRequest    = UserHandler.cancelSource();
 
-    this.getPackages()
-    this.getSubscriptions()
-    this.getActiveCard()
     window.b = this;
   }
 
   componentDidMount() {
+    this.getPackages()
+    this.getSubscriptions()
+    this.getActiveCard()
+
     if (window.Stripe) {
-      this.setState({stripe: window.Stripe(window.stripeApiKey)});
+      this.setState({
+        stripe: window.Stripe(window.stripeApiKey)
+      });
     } else {
       document.querySelector('#stripe-js').addEventListener('load', () => {
         // Create Stripe instance once Stripe.js loads
@@ -106,6 +109,7 @@ export class Billing extends Component {
 
   getActiveCard() {
     let user = this.props.match.params.username;
+
     UserHandler.raw(`/${user}/billing/cards`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({card: response.data.data})
@@ -238,20 +242,35 @@ export class Billing extends Component {
   
 
   activateModal(pkg) {
-    var modal = {package: pkg, subscription: this.state.subscription, card: this.state.card, component: StripeForm, formComponent: InjectedSubscriptionForm}
+    var modal = {
+      package:        pkg, 
+      subscription:   this.state.subscription, 
+      card:           this.state.card, 
+      component:      StripeForm, 
+      formComponent:  InjectedSubscriptionForm
+    }
+
     this.setState({modal: modal, modalIsActive: true})
   }
 
   dismissAction() {
-    console.log(arguments)
+    if(arguments.length > 0, arguments[0].card) {
+      this.getActiveCard()
+    }
 
-    this.setState({modalIsActive: false, modal: {}})
+    this.setState({
+      ...this.state,
+      modalIsActive:      false, 
+      packageModalActive: false,
+      modal:              {}
+    })
   }
 
   renderStripeModal() {
     if (this.state.modalIsActive) {
       let modal = this.state.modal
-      let card = this.state.card
+      let card  = this.state.card
+
       return (
         <Modal 
           {...this.props}  
@@ -266,19 +285,38 @@ export class Billing extends Component {
     }
   }
 
+  selectAction() {
+    console.log("here")
+
+    this.dismissAction()
+  }
+
   renderPackageSelectModal() {
     return(
       <Modal 
         {...this.props}
         isActive={this.state.packageModalActive}
         component={Modal.packageSelect}
+        dismissAction={this.dismissAction} 
+        selectAction={this.selectAction.bind(this)}
       />
     )
   }
 
   activateCreditCard(card) {
-    var modal = { card: card, component: StripeForm, formComponent: InjectedCardSection  }
-    this.setState({ modal: modal, modalIsActive: true })
+    var modal = { 
+      card: card, 
+      stripe: this.state.stripe,
+      component: StripeForm, 
+      formComponent: 
+      InjectedCardSection  
+    }
+
+    this.setState({ 
+      ...this.state,
+      modal: modal, 
+      modalIsActive: true 
+    })
   }
 
   renderCard() {

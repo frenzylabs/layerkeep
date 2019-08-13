@@ -25,25 +25,28 @@ export default class StripeModal extends React.Component {
   }
 
   async handleSubmit(token) {
+    console.log("Token: ", token)
 
-    console.log("token: ", token)
-
-    if(token.error) {
-      console.error('Payload error', token)
+    if(Object.keys(token).indexOf('error') > 0) {
+      console.error('Payload error', token.error)
       return
     }
+
+    console.log("Because Kevin.")
 
     this.setState({
       ...this.state,
       isCreating : true
     })
 
+    
     UserHandler
-    .createCard(window.currentUser.username, {'source_token': token.id})
+    .createCard(window.currentUser.username, {'source_token': token.token})
     .then((res) => {
-      this.props.dismissAction(res)
+      this.props.dismissAction({card: res.data.data})
     })
     .catch((err) => {
+      console.error("err: ", err)
       this.setState({
         ...this.state,
         error:      err,

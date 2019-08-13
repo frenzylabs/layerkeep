@@ -54,8 +54,8 @@ export default class PackageSelectModal extends React.Component {
         </div>
 
         <footer className="card-footer">
-          <a className="card-footer-item">Select</a>
-          <a className="card-footer-item">Cancel</a>
+          <a className="card-footer-item" onClick={this.props.selectAction}>Select</a>
+          <a className="card-footer-item" onClick={this.props.dismissAction}>Cancel</a>
         </footer>
       </div>
     )
