@@ -25,8 +25,7 @@ class SlicesController < AuthController
   end
 
   def create
-    slicer_engine = SlicerEngine.find(params["engine_id"])
-    
+
     project_params = params.require("projects")
     projects = slice_files(project_params, "projects")
     throw record_not_found and return if projects.empty?
@@ -37,9 +36,9 @@ class SlicesController < AuthController
       name << (pf[:filepath].gsub(/[\/\.]/, "_") + "-" + pf[:commit][0...6] + "-").downcase;
     end
     slice_name << "#{Time.now.utc.to_i}.gcode"
-    slices_path = "#{current_user.username}/slices/#{slice_name}"
+    slices_path = "#{current_user.username}/gcodes/#{slice_name}"
 
-    slice = Slice.new({name: slice_name, path: slices_path, user_id: current_user.id, slicer_engine_id: slicer_engine.id}) 
+    slice = Slice.new({name: slice_name, path: slices_path, user_id: current_user.id}) 
     begin
       Slice.transaction do
         slice.save!
@@ -60,9 +59,58 @@ class SlicesController < AuthController
           profiles: profiles
         }
 
+        $tracker.track(current_user.id, "Slice Manually Created")
+        render json: slice
+      else
+        Rails.logger.info("Slice Invalid: #{slice.errors}")
+        render json: slice.errors
+      end
+    rescue => e
+      Rails.logger.info("ERror with slicing #{e}")
+
+    end
+  end
+
+
+  def generate
+    slicer_engine = SlicerEngine.find(params["engine_id"])
+    
+    project_params = params.require("projects")
+    projects = slice_files(project_params, "projects")
+    throw record_not_found and return if projects.empty?
+    profiles = slice_files(params["profiles"] || [], "profiles")
+    
+    slice_name = ""
+    projects.reduce(slice_name) do |name, pf| 
+      name << (pf[:filepath].gsub(/[\/\.]/, "_") + "-" + pf[:commit][0...6] + "-").downcase;
+    end
+    slice_name << "#{Time.now.utc.to_i}.gcode"
+
+    slice = Slice.new({name: slice_name, path: "", user_id: @user.id, slicer_engine_id: slicer_engine.id}) 
+    begin
+      Slice.transaction do
+        slice.save!
+        slice.project_files.build(projects)
+        slice.profile_files.build(profiles)
+        if slice.valid?
+          slice.save!
+        end
+      end
+
+      if slice.valid?
+        slice_params = {
+          user_id: @user.id,
+          slice_id: slice.id,
+          name: slice_name,
+          path: slice_name,
+          status: "waiting",
+          projects: projects,
+          profiles: profiles
+        }
+
         res = Publisher.publish_header(slice_params.to_json, "slice.new", {"service": "slicer", "slicer": slicer_engine.name.downcase, "slicer-version": slicer_engine.version})
         puts "Publish Slice Res = #{res.inspect}"
-        $tracker.track(current_user.id, "Slice Created")
+        $tracker.track(current_user.id, "Slice Generated", {user_id: @user.id})
         render json: slice
       else
         Rails.logger.info("Slice Invalid: #{slice.errors}")
@@ -103,14 +151,13 @@ class SlicesController < AuthController
     @slice = Slice.find(params[:id])
 
     if params[:logpath]
-      filepath = @slice.log_path
+      fileurl = @slice.log_url
       $tracker.track(current_user.id, "Download Gcodes Logfile")
     else
-      filepath = @slice.path
+      fileurl = @slice.gcode_url
       $tracker.track(current_user.id, "Download Gcodes")
     end
-
-    send_file("#{Rails.application.config.settings["repo_mount_path"]}/" + filepath.downcase, filename: filepath.split("/").last, disposition: :inline)
+    redirect_to fileurl
   end
 
   def slice_files(file_params, kind)

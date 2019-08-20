@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_13_205529) do
+ActiveRecord::Schema.define(version: 2019_08_19_180551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -131,6 +131,9 @@ ActiveRecord::Schema.define(version: 2019_07_13_205529) do
     t.datetime "updated_at", null: false
     t.string "log_path"
     t.bigint "slicer_engine_id"
+    t.jsonb "metadata", default: {}
+    t.jsonb "log_data"
+    t.jsonb "gcode_data"
     t.index ["slicer_engine_id"], name: "index_slices_on_slicer_engine_id"
     t.index ["user_id"], name: "index_slices_on_user_id"
   end

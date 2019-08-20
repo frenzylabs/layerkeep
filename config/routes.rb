@@ -82,8 +82,22 @@ Rails.application.routes.draw do
   end
 
   scope ':user' do
+    
+    # get 'features', to: 'users#features'
+    # scope 'billing' do
+    #   resources :subscriptions
+    #   patch 'subscription_items/:item_id', to: 'subscription_items#update'
+    #   resources :cards, controller: 'user_cards'
+    # end
+    post "/prints/:id/assets/presign", to: "print_assets#presign"
+    resources :prints, constraints: lambda { |req| req.format == :json } do
+      resources :assets, controller: "print_assets"
+    end
+
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
+    post 'slices/generate', to: 'slices#generate'
     resources :slices, constraints: lambda { |req| req.format == :json }
+
 
     scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'

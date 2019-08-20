@@ -25,14 +25,16 @@
     <%= yield %>
 
     <script>
-      (function() {
-        var controller  = "<%= controller_name %>";
-        var action      =  "<%= action_name %>";
-        if (currentUser.id != "") {
-          mixpanel.identify(currentUser.id);
-        }
-        mixpanel.track("Page Load", {"pathname": document.location.pathname, "controller ": controller,  "action": action });
-      })();
+      if (window.mixpanel) {
+        (function() {
+          var controller  = "<%= controller_name %>";
+          var action      =  "<%= action_name %>";
+          if (currentUser.id != "") {
+            mixpanel.identify(currentUser.id);
+          }
+          mixpanel.track("Page Load", {"pathname": document.location.pathname, "controller ": controller,  "action": action });
+        })();
+      }
     </script>
     <%= render 'shared/support' %>
   </body>
