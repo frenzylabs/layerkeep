@@ -106,8 +106,8 @@ export class SliceDetails extends React.Component {
   }
 
   renderLogfileLink() {
-    var log_path = this.state.slice.data.attributes.log_path;
-    if (log_path && log_path.length > 0) {
+    var log_data = this.state.slice.data.attributes.log_data;
+    if (log_data && log_data["id"]) {
       const urlparams = this.props.match.params;
       const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes?logpath=true`;
       return (

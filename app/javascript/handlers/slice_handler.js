@@ -31,6 +31,6 @@ export default {
 
   slice: (engine_id, projects, profiles) => {
     var params = {'engine_id': engine_id, 'projects' : projects, 'profiles': profiles};
-    return Request.post(path(), params);
+    return Request.post(path("generate"), params);
   },
 }
