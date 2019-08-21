@@ -2,8 +2,8 @@
  *  list.js
  *  LayerKeep
  * 
- *  Created by Wess Cope (me@wess.io) on 04/30/19
- *  Copyright 2018 WessCope
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 04/30/19
+ *  Copyright 2019 Frenzylabs
  */
 
 import React                from 'react';

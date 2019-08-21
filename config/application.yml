@@ -6,11 +6,24 @@ defaults: &defaults
   smtp_username: <%= ENV.fetch('SMTP_USERNAME') { "noreply@mg.layerkeep.com" } %>
   smtp_password: <%= ENV.fetch('SMTP_PASSWORD') { "1a2d3bf61049a0d4ae97043cc4da065d-29b7488f-73824278" } %>
   thingiverse_api_token: <%= ENV.fetch('THINGIVERSE_API_TOKEN') { "13dd7dc6887cf4c5244cc81cd727bf8b" } %>
+  stripe:
+    api_key: <%= ENV.fetch('STRIPE_API_KEY') { "pk_test_wH6zZQSTsuIg7x7YnPlz87ze00lC5rQFuE" } %>
+    secret_key: <%= ENV.fetch('STRIPE_SECRET_KEY') { "sk_test_dtQ80HWQAZZY5iTFrHgjxMMY00kZ07tC3w" } %>
+    signing_secret: <%= ENV.fetch('STRIPE_SIGNING_SECRET') { "whsec_MyjSfFFrc7Qz7WFKlkbfdzz4g7CrrX1G" } %>
+  digitalocean: &do
+    access_key: <%= ENV.fetch('DIGITALOCEAN_ACCESS_KEY') { "KRG33E7ANFWWSJOYGTKT" } %>
+    secret_access_key: <%= ENV.fetch('DIGITALOCEAN_SECRET_ACCESS_KEY') { "3EnVkH/MNqLx8yQZ5MGjnI7tzMIoxo+iZVGo2s1oliY" } %>
+    region: <%= ENV.fetch('DIGITALOCEAN_REGION') { "sfo2" } %> 
+    bucket: <%= ENV.fetch('DIGITALOCEAN_BUCKET') { "layerkeep-dev" } %>
+    endpoint: <%= ENV.fetch('DIGITALOCEAN_ENDPOINT') { "https://sfo2.digitaloceanspaces.com" } %>
+
 
 development:
   <<: *defaults
-  rabbitmq_vhost: '/'  
-
+  rabbitmq_vhost: '/'
+  digitalocean:
+    <<: *do
+    bucket: <%= ENV.fetch('DIGITALOCEAN_BUCKET') { "layerkeep-dev" } %>
 
 staging:
   <<: *defaults
@@ -24,3 +37,9 @@ production:
   <<: *defaults
   rabbitmq_vhost: '/'  
   mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN') { "2424f09396a8104a463a4a7b3dca2786" } %>
+  digitalocean:
+    access_key: <%= ENV['DIGITALOCEAN_ACCESS_KEY'] %>
+    secret_access_key: <%= ENV['DIGITALOCEAN_SECRET_ACCESS_KEY'] %>
+    region: <%= ENV['DIGITALOCEAN_REGION'] %>
+    bucket: <%= ENV['DIGITALOCEAN_BUCKET'] %>
+    endpoint: <%= ENV['DIGITALOCEAN_ENDPOINT'] %>

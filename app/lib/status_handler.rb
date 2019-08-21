@@ -58,7 +58,8 @@ class StatusHandler
           status = meta[:routing_key].split(".").last
 
           unless ["complete", "failed", "success"].include?(slice.status)
-            slice.log_path = content["log_path"] if content["log_path"]
+            slice.gcode_data = content["gcode_data"] if content["gcode_data"]
+            slice.log_data = content["log_data"] if content["log_data"]
             slice.status = status
             slice.save!
             project_name = slice.project_files.first.repo.name

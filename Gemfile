@@ -32,6 +32,10 @@ gem 'grack'
 gem 'faraday'
 gem 'faraday_middleware'
 gem 'rubyzip'
+gem 'stripe'
+gem 'stripe_event'
+gem 'aws-sdk-s3'
+gem "shrine"
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
