@@ -8,6 +8,8 @@
 
 import React        from 'react'
 import SpinnerModal from './spinner'
+import UserHandler                from '../../handlers/user_handler'
+import StripeModal                from './stripe'
 
 export default class PackageSelectModal extends React.Component {
   title = "Update Package";
@@ -16,27 +18,85 @@ export default class PackageSelectModal extends React.Component {
     super(props);
 
     this.state = {
-      isCreating: false
+      isCreating: false,
+      error: null
+    }
+  }
+
+  subscibeToPackage(card = {}) {
+    // User clicked submit
+    this.setState({ isCreating : true })
+    var params = { package_id: this.props.selectedPackage.id }
+    var request;
+    if (this.props.subscription) {
+      request = UserHandler.updateSubscription(this.props.match.params.username, this.props.subscription.id, params)
+    } else {
+      request = UserHandler.createSubscription(this.props.match.params.username, params)
+    }
+
+    request.then((response) => {
+      this.props.selectAction(Object.assign(card, {subscription: response.data}))
+    })
+    .catch((error) => {
+      console.error("err: ", err)
+      this.setState({
+        error:      err,
+        isCreating: false
+      })
+    }).finally(() => {
+
+    });
+  }
+
+  renderFooter() {
+    var amount = this.props.selectedPackage.attributes.plans.reduce((total, x) => total + x.attributes.amount, 0)    
+    if (amount > 0 && !this.props.card) {
+      return (
+        <footer className="card-footer">
+          <StripeModal {...this.props} selectAction={this.updateCardAction.bind(this)} style={{width: '100%'}} />
+        </footer>
+      )
+    } else {
+      if(this.state.isCreating) {
+        return (
+          <SpinnerModal caption="Saving..."/>
+        )
+      }
+      return (
+        <footer className="card-footer">
+          <a className="card-footer-item" onClick={() => this.subscibeToPackage() }>Confirm</a>
+          <a className="card-footer-item" onClick={this.props.dismissAction}>Cancel</a>
+        </footer>
+      )
+    }
+  }
+
+  updateCardAction() {
+    if(arguments.length > 0 && arguments[0].card) {
+      this.subscibeToPackage({card: arguments[0].card })
+    } else {
+      this.props.dismissAction(arguments)
     }
   }
 
   render() {
-    if(this.state.isCreating) {
-      return (
-        <SpinnerModal caption="Saving..."/>
-      )
-    }
-
     return (
       <div className="card" style={{border: 'none'}}>
         <div className="card-header">
-          <p className="card-header-title">Update package to [Package Name]</p>
+          <p className="card-header-title">Update package to {this.props.selectedPackage.attributes.name}</p>
         </div>
+
+        { this.state.error && (
+          <article className="message is-danger">
+            <div className="message-body">
+              {this.state.error}
+            </div>
+          </article>
+        )}
 
         <div className="card-content">
           <p>
-            This is a description. This is like a couple sentences that
-            give you a little tag line about this package.
+            {this.props.selectedPackage.attributes.description}
           </p>
 
           <br/>
@@ -53,10 +113,8 @@ export default class PackageSelectModal extends React.Component {
           </ul>
         </div>
 
-        <footer className="card-footer">
-          <a className="card-footer-item" onClick={this.props.selectAction}>Select</a>
-          <a className="card-footer-item" onClick={this.props.dismissAction}>Cancel</a>
-        </footer>
+          {this.renderFooter()}
+          
       </div>
     )
   }

@@ -33,7 +33,7 @@ export default class Subscription extends React.Component {
   renderDetails() {
     if(this.props.package) {
       return(
-        <h1>Package</h1>
+        <h1>Package: {this.props.package.attributes.name} </h1>
       )
     }
 

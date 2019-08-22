@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_21_170525) do
+ActiveRecord::Schema.define(version: 2019_08_19_180551) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -89,7 +89,7 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
     t.boolean "is_private", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["lookup_name"], name: "index_packages_on_lookup_name", unique: true
+    t.index ["name"], name: "index_packages_on_name", unique: true
   end
 
   create_table "plans", force: :cascade do |t|
@@ -102,24 +102,22 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
     t.integer "trial_period", default: 0
     t.string "description", default: ""
     t.jsonb "metadata", default: {}
-    t.jsonb "features", default: {}
     t.boolean "active", default: true
     t.boolean "is_private", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["nickname"], name: "index_plans_on_nickname"
+    t.jsonb "features", default: {}
     t.index ["product_id"], name: "index_plans_on_product_id"
   end
 
   create_table "products", force: :cascade do |t|
     t.string "stripe_id"
     t.string "name"
-    t.string "lookup_name"
     t.string "status"
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["lookup_name"], name: "index_products_on_lookup_name", unique: true
+    t.string "lookup_name"
   end
 
   create_table "remote_sources", force: :cascade do |t|
@@ -132,7 +130,6 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
   end
 
   create_table "repos", force: :cascade do |t|
-    t.citext "name", null: false
     t.string "description"
     t.string "oid"
     t.string "latest_commit_id"
@@ -144,6 +141,7 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
     t.datetime "updated_at", null: false
     t.bigint "remote_source_id"
     t.string "remote_src_url"
+    t.citext "name"
     t.index ["remote_source_id"], name: "index_repos_on_remote_source_id"
     t.index ["user_id", "kind", "name"], name: "index_repos_on_user_id_and_kind_and_name"
     t.index ["user_id"], name: "index_repos_on_user_id"
@@ -212,7 +210,6 @@ ActiveRecord::Schema.define(version: 2019_07_21_170525) do
     t.boolean "is_trial", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["current_period_end"], name: "index_subscriptions_on_current_period_end"
     t.index ["package_id"], name: "index_subscriptions_on_package_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end

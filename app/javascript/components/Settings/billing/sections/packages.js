@@ -15,19 +15,20 @@ export default class Packages extends React.Component {
     this.renderDetails = this.renderDetails.bind(this)
   }
 
-  renderDetails(pkg, selected) {
+  renderDetails(pkg) {
+    var selected = this.props.currentPackage && pkg.id == this.props.currentPackage.id
+    var pkg_amount = pkg.attributes.plans.reduce((total, x) => x.attributes.amount + total, 0)
     return(
       <div className="card">
         <div className="card-header">
           <p className="card-header-title">
-            Package name
+            {pkg.attributes.name}
           </p>
         </div>
 
         <div className="card-content">
           <p>
-            This is a description. This is like a couple sentences that
-            give you a little tag line about this package.
+            {pkg.attributes.description}
           </p>
 
           <br/>
@@ -44,9 +45,14 @@ export default class Packages extends React.Component {
           </ul>
         </div>
 
+        <br/>
+        <p>
+           Cost: {pkg_amount}
+        </p>
+
         <footer className="card-footer">
           {!selected && 
-            <a className="card-footer-item" onClick={this.props.packageClick}>Select</a>
+            <a className="card-footer-item" onClick={() => this.props.packageClick(pkg)}>Select</a>
           }
           
           {selected &&
@@ -55,6 +61,53 @@ export default class Packages extends React.Component {
         </footer>
       </div>
     )
+  }
+
+  renderCustom() {
+    return(
+      <div className="card">
+        <div className="card-header">
+          <p className="card-header-title">
+            Custom Package
+          </p>
+        </div>
+
+        <div className="card-content">
+          <p>
+            Create a custom package that fits your company's needs.
+          </p>
+
+          <br/>
+
+          <ul style={{listStyle: 'circle', marginLeft: '20px'}}>
+            <li>Feature Name</li>
+            <li>Feature Name</li>
+            <li>Feature Name</li>
+          </ul>
+        </div>
+
+        <br/>
+        <p>
+           Cost: Contact
+        </p>
+
+        <footer className="card-footer">
+            <a className="card-footer-item" >Contact Us</a>
+        </footer>
+      </div>
+    )
+  }
+
+  renderPackages() {
+    if (this.props.packages.length > 0) {      
+      return this.props.packages.map((pkg, index) => {
+        return (
+          <div className="column" key={'pack'+ pkg.id}>
+            {this.renderDetails(pkg)}
+          </div>
+        )
+      })
+    }
   }
 
   render() {
@@ -68,16 +121,9 @@ export default class Packages extends React.Component {
 
         <div className="card-content" style={{boxShadow: 'none'}}>
           <div className="columns is-vcentered is-fullwidth is-12">
-          <div className="column">
-              {this.renderDetails({}, true)}
-            </div>
-
+            {this.renderPackages()}
             <div className="column">
-              {this.renderDetails({}, false)}
-            </div>
-
-            <div className="column">
-              {this.renderDetails({}, false)}
+              {this.renderCustom()}
             </div>
           </div>
         </div>

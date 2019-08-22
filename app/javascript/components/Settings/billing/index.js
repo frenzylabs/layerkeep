@@ -121,149 +121,46 @@ export class Billing extends Component {
     });
   }
 
-  tokenCreated(token) {
-    console.log("token created")
-    this.setState({"cardToken": token})
-  }
-
-  subscribeToPackage(pkg) {
-    var modal = {package: pkg, subscription: this.state.subscription, card: this.state.card, component: StripeForm, formComponent: InjectedSubscriptionForm}
-    this.setState({modal: modal, modalIsActive: true})
-  }
-
-  renderStripeForm() {
-    return (
-      <StripeProvider stripe={this.state.stripe}>          
-        <Elements>            
-          <InjectedCardSection tokenCreated={this.tokenCreated.bind(this)} />
-        </Elements>
-      </StripeProvider>
-    )
-  }
-
-  renderPackages() {
-    if (this.state.packages.length > 0) {
-      return this.state.packages.map((pkg, index) => {
-        var pkg_amount = pkg.attributes.plans.reduce((total, x) => x.attributes.amount + total, 0)
-        return (
-          <div className="tile box is-child" key={'pack'+ pkg.id}>
-            <article className="message is-success">
-              <p className="message-header">{pkg.attributes.name}</p>
-              <div className="message-body">
-                {pkg.attributes.description}
-                {pkg.attributes.description}
-                {pkg.attributes.description}
-                {pkg.attributes.description}
-              </div>
-              <footer className="card-footer">
-                <p>
-                  {pkg_amount}
-                </p>
-                <p className="card-footer-item">
-                  <span>
-                    <button onClick={() => this.subscribeToPackage(pkg)}>Subscribe</button>
-                  </span>
-                </p>
-              </footer>
-            </article>
-          </div>
-        )
-      })
-    }
-  }
-
-  packageName() {
+  currentPackage() {
     let sub = this.state.subscription
-    var pkg = this.state.packages.find(x => x.id == sub.attributes.package_id)
-    if (pkg) {
-      return (
-        <p>
-          {pkg.attributes.name}
-        </p>
-      )
-    }
-}
-
-  renderPackageName(sub) {
-    var pkg = this.state.packages.find(x => x.id == sub.attributes.package_id)
-    if (pkg) {
-      return (
-        <p>
-          {pkg.attributes.name}
-        </p>
-      )
-    }
-  }
-
-  renderSubscription() {
-    if (this.state.subscription) {
-      var sub = this.state.subscription
-      var amount_interval = sub.attributes.items.reduce((total, x) => x.attributes.plan.attributes.amount + total, 0)
-      return (
-        <Level>
-          <LevelLeft>
-            <LevelItem>              
-              {this.renderPackageName(sub)}
-              {sub.attributes.name}
-            </LevelItem>
-            <LevelItem>
-              {sub.attributes.items.length > 0 ? sub.attributes.items[0].description : ''}
-            </LevelItem>
-            
-          </LevelLeft>
-          <LevelRight>
-            <LevelItem>
-              {amount_interval}
-            </LevelItem>
-
-          </LevelRight>              
-        </Level>
-      )
-      // for (var j in sub.attributes.items) {
-      //   let item = sub.attributes.items[j]
-        // var subitem = subprods[item.attributes.plan.attributes.product_id] 
-        
-        // if (!subitem) {
-        //   subitem = {is_trial: sub.attributes.is_trial, trialed: sub.attributes.is_trial, current_period_end: sub.attributes.current_period_end, item: item}
-        // } else {
-        //   if (sub.attributes.is_trial) {
-        //     subitem["trialed"] = true
-        //   } else {
-        //     subitem["is_trial"] = false
-        //     subitem["current_period_end"] = sub.attributes.current_period_end
-        //     subitem["item"] = item
-        //   }
-        // }        
-      // }
+    var pkg = null
+    if (sub) {
+      pkg = this.state.packages.find(x => x.id == sub.attributes.package_id)
+      if (pkg) {
+        return pkg;
+      } else {
+        return {attributes: {name: "Custom"}, id: sub.attributes.package_id}
+      }
     } else {
-
+      var pkg = this.state.packages.find(x => x.attributes.name.toLowerCase() == "free")
+      if (pkg) {
+        return pkg;
+      } else {
+        
+      }
     }
-  }
-  
-
-  activateModal(pkg) {
-    var modal = {
-      package:        pkg, 
-      subscription:   this.state.subscription, 
-      card:           this.state.card, 
-      component:      StripeForm, 
-      formComponent:  InjectedSubscriptionForm
-    }
-
-    this.setState({modal: modal, modalIsActive: true})
   }
 
   dismissAction() {
-    if(arguments.length > 0, arguments[0].card) {
-      this.getActiveCard()
-    }
-
     this.setState({
       ...this.state,
       modalIsActive:      false, 
       packageModalActive: false,
       modal:              {}
     })
+  }
+
+
+  selectAction() {
+    if(arguments.length > 0) {
+      if (arguments[0].card) {
+        this.getActiveCard()
+      }
+      if (arguments[0].subscription) {
+        this.getSubscriptions()
+      }
+    }
+    this.dismissAction()
   }
 
   renderStripeModal() {
@@ -276,6 +173,7 @@ export class Billing extends Component {
           {...this.props}  
           isActive={this.state.modalIsActive} 
           dismissAction={this.dismissAction} 
+          selectAction={this.selectAction.bind(this)}
           stripe={this.state.stripe} 
           attributes={modal}
           card={card}
@@ -285,22 +183,23 @@ export class Billing extends Component {
     }
   }
 
-  selectAction() {
-    console.log("here")
-
-    this.dismissAction()
-  }
 
   renderPackageSelectModal() {
-    return(
-      <Modal 
-        {...this.props}
-        isActive={this.state.packageModalActive}
-        component={Modal.packageSelect}
-        dismissAction={this.dismissAction} 
-        selectAction={this.selectAction.bind(this)}
-      />
-    )
+    if (this.state.packageModalActive) {
+      return(
+        <Modal 
+          {...this.props}
+          selectedPackage={this.state.selectedPackage}
+          subscription={this.state.subscription}
+          card={this.state.card}
+          stripe={this.state.stripe}
+          isActive={this.state.packageModalActive}
+          component={Modal.packageSelect}
+          dismissAction={this.dismissAction} 
+          selectAction={this.selectAction.bind(this)}
+        />
+      )
+    }
   }
 
   activateCreditCard(card) {
@@ -308,8 +207,7 @@ export class Billing extends Component {
       card: card, 
       stripe: this.state.stripe,
       component: StripeForm, 
-      formComponent: 
-      InjectedCardSection  
+      formComponent: InjectedCardSection  
     }
 
     this.setState({ 
@@ -317,41 +215,6 @@ export class Billing extends Component {
       modal: modal, 
       modalIsActive: true 
     })
-  }
-
-  renderCard() {
-    if (this.state.card && this.state.card.attributes) {
-      let card = this.state.card
-      return (
-        <article className="media" key={'card-' + card.id}>
-          <figure className="media-left">
-            <strong>{card.attributes.brand}</strong>
-            <small>{card.attributes.last4}</small>
-            <p>Exp: {card.attributes.exp_month} / {card.attributes.exp_year}</p>
-            <a onClick={() => this.activateCreditCard(card)}>Edit</a>
-          </figure>
-        </article>
-      )
-    } else {
-      return (
-        <Level >
-          <LevelLeft>
-            <LevelItem>
-              Add Card
-            </LevelItem>
-            <LevelItem>
-            </LevelItem>
-            
-          </LevelLeft>
-          <LevelRight>
-            <LevelItem>
-              <a onClick={() => this.activateCreditCard()}>Add</a>
-            </LevelItem>
-
-          </LevelRight>              
-        </Level>
-      )
-    }
   }
 
   getCard() {
@@ -364,10 +227,11 @@ export class Billing extends Component {
     }
   }
 
-  selectPackage() {
+  selectPackage(pkg) {
     this.setState({
       ...this.state,
-      packageModalActive: true
+      packageModalActive: true,
+      selectedPackage: pkg
     })
   }
 
@@ -383,7 +247,7 @@ export class Billing extends Component {
 
           <Subscription 
             subscription={this.state.subscription}
-            package={this.packageName()}
+            package={this.currentPackage()}
           />
 
           <br/>
@@ -391,6 +255,8 @@ export class Billing extends Component {
           <Packages
             packages={this.state.packages || []}
             packageClick={this.selectPackage.bind(this)}
+            subscription={this.state.subscription}
+            currentPackage={this.currentPackage()}
           />
 
           {this.renderStripeModal()}
