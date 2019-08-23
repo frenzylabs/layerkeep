@@ -266,7 +266,7 @@ export class ProjectNew extends React.Component {
   }
 
   renderPrivateOption() {
-    if (this.props.features && this.props.features.project.private_repos) {
+    if (this.props.app.features && this.props.app.features.project.private_repos) {
       return (
         <Control>
           <input type='checkbox' name="private" value='is_private' checked={this.state.isPrivate} onChange={this.privateChanged} />

@@ -7,22 +7,11 @@
 //
 
 import React, {Component} from 'react';
-import {StripeProvider, Elements} from 'react-stripe-elements';
-import {UserHandler}  from '../../../handlers';
+import { connect } from 'react-redux'
+import { UserHandler }  from '../../../handlers';
 
-import {
-  Card,
-  CardHeader,
-  CardContent,  
-  Level, 
-  LevelItem, 
-  LevelLeft, 
-  LevelRight,
-  Section
-} from 'bloomer';
 
 import { StripeForm } from './stripe_form'
-import { InjectedSubscriptionForm } from './subscription_form'
 import { InjectedCardSection } from './card'
 import Modal              from '../../Modal'
 
@@ -32,7 +21,10 @@ import {
   Packages
  } from './sections'
 
-export class Billing extends Component {
+
+import { updateFeatures } from '../../../states/actions'
+
+class BillingSettings extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -157,6 +149,7 @@ export class Billing extends Component {
         this.getActiveCard()
       }
       if (arguments[0].subscription) {
+        this.props.onSubscriptionChange()
         this.getSubscriptions()
       }
     }
@@ -266,4 +259,17 @@ export class Billing extends Component {
   }
 }
 
-export default Billing;
+
+const mapStateToProps = (state, ownProps) => ({
+  state
+})
+
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  onSubscriptionChange: () => dispatch(updateFeatures(ownProps.match.params.username)),
+  dispatch: dispatch
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BillingSettings)

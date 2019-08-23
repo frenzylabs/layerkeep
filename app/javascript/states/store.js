@@ -6,13 +6,15 @@
  *  Copyright 2018 WessCope
  */
 
-import {createStore, combineReducers} from 'redux';
-import Reducer                        from './reducers';
+import {createStore, applyMiddleware, combineReducers} from 'redux';
+import thunkMiddleware from 'redux-thunk'
+import Reducers                        from './reducers/index';
 
 const store = createStore(
-  combineReducers({
-    ...Reducer,
-  })
-);
-  
+  Reducers,
+  applyMiddleware(
+    thunkMiddleware
+  )
+)
+
 export default store;

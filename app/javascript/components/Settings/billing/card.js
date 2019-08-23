@@ -51,7 +51,6 @@ class CardSection extends React.Component {
           if (payload.error) {
             console.log("Payload.error")
           } else {
-            console.log("CreateCard")
             var params = {'source_token': payload.token };
             this.createCard(params)
           }

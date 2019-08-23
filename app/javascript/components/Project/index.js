@@ -154,7 +154,7 @@ export class Project extends React.Component {
 
         <Container className="is-fluid" style={{height: '100%'}}>
          {this.state.project && this.state.project.id ?
-          <Resource kind="projects" item={this.state.project} match={this.props.match} uploadAction={this.uploadAction} />
+          <Resource kind="projects" app={this.props.app} item={this.state.project} match={this.props.match} uploadAction={this.uploadAction} />
           : "" }
         </Container>
 

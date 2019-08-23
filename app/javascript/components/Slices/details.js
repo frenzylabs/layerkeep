@@ -26,8 +26,9 @@ export class SliceDetails extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.match.params.revisionPath
-    this.state = {project: this.props.item, slice: null}
+    
+    var id = this.props.match.params.revisionPath;
+    this.state = {project: this.props.item, slice: {id: id}}
 
     this.cancelRequest = SliceHandler.cancelSource();
     this.getSlice()
@@ -46,7 +47,7 @@ export class SliceDetails extends React.Component {
     var id = this.props.match.params.revisionPath;
     SliceHandler.show(this.props.match.params.username, id, {params, cancelToken: this.cancelRequest.token})
     .then((response) => {
-      this.updateSlice(response.data)
+      this.updateSlice(response.data.data)
     })
     .catch((error) => {
       console.log(error);
@@ -57,10 +58,14 @@ export class SliceDetails extends React.Component {
     this.setState({ slice: data })
   }
 
-  // componentDidUpdate(prevProps) {
-  //   console.log(prevProps);
-  //   console.log(this.props);
-  // }
+  componentDidUpdate() {
+    var currentSliceNot = this.props.app.notifications.slice
+    
+    if (currentSliceNot && (!this.state.slice.attributes 
+        || this.state.slice.attributes.status != currentSliceNot[this.state.slice.id].status)) {
+      this.getSlice()
+    }
+  }
   
   // shouldComponentUpdate(nextProps, nextState) {
   //     const differentList = this.props.list !== nextProps.list;
@@ -74,7 +79,7 @@ export class SliceDetails extends React.Component {
   }
 
   renderStatus() {
-    var status = this.state.slice.data.attributes.status;
+    var status = this.state.slice.attributes.status;
     switch (status) {
       case "success": {
         return (<span className="has-text-success">{status}</span>)
@@ -89,9 +94,9 @@ export class SliceDetails extends React.Component {
   }
 
   renderDownloadLink() {
-    if (this.state.slice.data.attributes.status == "success") {
+    if (this.state.slice.attributes.status == "success") {
       const urlparams = this.props.match.params;
-      const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes`;
+      const url       = `/${urlparams.username}/slices/${this.state.slice.id}/gcodes`;
       return (
         <LevelItem>
           <a className="button is-small" href={url} target="_blank">
@@ -106,10 +111,10 @@ export class SliceDetails extends React.Component {
   }
 
   renderLogfileLink() {
-    var log_data = this.state.slice.data.attributes.log_data;
+    var log_data = this.state.slice.attributes.log_data;
     if (log_data && log_data["id"]) {
       const urlparams = this.props.match.params;
-      const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes?logpath=true`;
+      const url       = `/${urlparams.username}/slices/${this.state.slice.id}/gcodes?logpath=true`;
       return (
         <LevelItem>
           <a className="button is-small" href={url} target="_blank">
@@ -126,8 +131,8 @@ export class SliceDetails extends React.Component {
   renderSlice() {
     var params = this.props.match.params;
     
-    if (this.state.slice && this.state.slice.data.attributes) {
-      var slice = this.state.slice.data.attributes;
+    if (this.state.slice.attributes) {
+      var slice = this.state.slice.attributes;
       slice.status == "success"
       return (
       <Media>

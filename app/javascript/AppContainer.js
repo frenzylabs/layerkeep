@@ -31,39 +31,26 @@ import {
   Settings
 } from './components';
 
-import { UserHandler } from './handlers'
 
 import RemoteMessage from './RemoteMessage'
+import { updateFeatures } from './states/actions'
+
 
 class SideLayout extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {features: {}}
-    this.getUserFeatures = this.getUserFeatures.bind(this);
-    this.cancelRequest    = UserHandler.cancelSource();
-    if (this.props.match.params.username) {
-      if (!currentUser || currentUser.username != this.props.match.params.username) {
-        this.getUserFeatures(this.props.match.params.username)
-      } else {
-        this.state.features = currentUser.features
-      }
+
+    if (!this.props.app.username) {
+        if (this.props.match.params.username) {
+          this.props.updateFeatures(this.props.match.params.username)
+        }
     }
   }
 
   componentWillUnmount() {
-    this.cancelRequest.cancel("Left Page");
-  }
-
-  getUserFeatures(user) {
-    UserHandler.getFeatures(user, {cancelToken: this.cancelRequest.token})
-    .then((response) => {
-      this.setState({features: response.data.data})
-    })
-    .catch((error) => {
-      console.log(error);
-    }).finally(() => {
-      this.setState({loadFeatures: false})
-    });
+    if (this.props.app.cancelRequest) {
+      this.props.app.cancelRequest.cancel("Left Page");
+    }
   }
 
   render() {
@@ -75,7 +62,7 @@ class SideLayout extends React.Component {
             <LeftColumn />
           </Column>
           <Column>
-            <Component {...this.props} features={this.state.features} />
+            <Component {...this.props}  />
           </Column>
       </Columns>
       </div>
@@ -121,7 +108,7 @@ class AppContainer extends React.Component {
       }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.location.pathname != this.props.location.pathname) {
       try {
         var matchLocationParams = this.getPathParams(this.props.location.pathname);
@@ -151,7 +138,7 @@ class AppContainer extends React.Component {
       var exact = item.exact == null ? true : item.exact
       return (<Route key={item.path} exact={exact} path={item.path} 
         render={ props => 
-          <FullScreenLayout component={item.component} {...props} /> 
+          <FullScreenLayout updateFeatures={this.props.updateFeatures} app={this.props.app} component={item.component} {...props} /> 
         }
       />)
     })  
@@ -162,10 +149,10 @@ class AppContainer extends React.Component {
     var exact = item.exact == null ? true : item.exact
     return (
         <Route key={item.path}  exact={exact}  path={item.path}  render={ props =>
-          <SideLayout {...item}  {...props} /> 
+          <SideLayout updateFeatures={this.props.updateFeatures} app={this.props.app} {...item}  {...props} /> 
         }/>
       )
-    });  
+    });
   }
 
   render () {
@@ -190,8 +177,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    updateFeatures: (username) => dispatch(updateFeatures(username))
   }
 }
+
+
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AppContainer));
 

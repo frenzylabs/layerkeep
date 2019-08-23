@@ -15,7 +15,7 @@ import {
 } from 'bloomer';
 
 import { AccountSettings } from './account';
-import { Billing } from './billing/index'
+import Billing from './billing/index'
 
 export class Settings extends React.Component {
   constructor(props) {
@@ -30,7 +30,6 @@ export class Settings extends React.Component {
 
   tabAction(e) {
     e.preventDefault();
-    console.log($(e.currentTarget));
     $('.tab-handle').removeClass('is-active');
     $(e.currentTarget).parent('.tab-handle').addClass('is-active');
     $('.tab-content').hide();
@@ -43,8 +42,6 @@ export class Settings extends React.Component {
   }
 
   render() {
-    console.log("settings props", this.props);
-    
     return (
       <div className="section">
         <Container className="is-fluid">

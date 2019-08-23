@@ -37,7 +37,7 @@ export default class PackageSelectModal extends React.Component {
     request.then((response) => {
       this.props.selectAction(Object.assign(card, {subscription: response.data}))
     })
-    .catch((error) => {
+    .catch((err) => {
       console.error("err: ", err)
       this.setState({
         error:      err,
@@ -83,7 +83,7 @@ export default class PackageSelectModal extends React.Component {
     return (
       <div className="card" style={{border: 'none'}}>
         <div className="card-header">
-          <p className="card-header-title">Update package to {this.props.selectedPackage.attributes.name}</p>
+          <p className="card-header-title">Update Subscription to {this.props.selectedPackage.attributes.name}</p>
         </div>
 
         { this.state.error && (

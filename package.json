@@ -36,6 +36,7 @@
     "react-visibility-sensor": "^5.0.2",
     "redux": "^4.0.1",
     "redux-saga": "^1.0.2",
+    "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "spinkit": "^1.2.5",
     "three": "^0.103.0",
