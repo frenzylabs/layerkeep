@@ -1,25 +1,29 @@
 class StripeHandler::Customer 
   def call(event)
     # Event handling
-    Rails.logger.info("Customer EVENT")
-    Rails.logger.info(event.data.object.id)
+    Rails.logger.info("Stripe Customer EVENT #{event.type}:  id: #{event.data.object.id}")
+
     case event.type 
     when "customer.updated"
       Rails.logger.info("customer updated")
     when "customer.deleted"
       Rails.logger.info("customer deleted")
       user = User.find_by(stripe_id: event.data.object.id)      
-      Rails.logger.info(user)
-      user.user_cards.destroy_all
-      user.subscriptions.destroy_all
-      user.stripe_id = ""
-      user.save!
+      if (user) 
+        Rails.logger.info(user)
+        user.user_cards.destroy_all
+        user.subscriptions.destroy_all
+        user.stripe_id = ""
+        user.save!
+      else
+        Rails.logger.error("Customer deleted with no user object")
+      end
     when "customer.source.created"
       Rails.logger.info("customer source created")
     when "customer.source.deleted"
       Rails.logger.info("customer source deleted")
       if (event.data.object.object == "card")
-        card = UserCard.find_by(stripe_id: event.data.object.id)
+        card = UserCard.find_by(stripe_id: event.data.object.id)        
         card.destroy! if card
       end
     end

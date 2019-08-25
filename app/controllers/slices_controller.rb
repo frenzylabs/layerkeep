@@ -15,7 +15,7 @@ class SlicesController < AuthController
       slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
     end
 
-    slices = slices.includes(:project_files, :profile_files)
+    slices = slices.includes(:project_files, :profile_files, :slicer_engine)
               .order("slices.id desc")
               .page(params["page"]).per(params["per_page"])
     

@@ -57,9 +57,18 @@ end
       row :is_private
     end
 
+    panel 'Subscription' do
+      table_for package do 
+        column(:subscriptions) { |pkg| link_to('Subscriptions', admin_subscriptions_path(q: {package_id_eq: pkg.id})) }
+        column(:count) { |subscr| package.subscriptions.count }
+      end
+    end
+
     panel 'Plans' do
       table_for package.package_plans do 
-        column(:name) { |pp| pp.plan.name }
+        
+        column(:name) { |pp| link_to pp.plan.name, [ :admin, pp.plan ] }
+        column(:nickname) { |pp| link_to pp.plan.nickname, [ :admin, pp.plan ] }
         column(:amount) { |pp| pp.plan.amount }
       end
       

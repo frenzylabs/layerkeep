@@ -72,6 +72,7 @@ class BillingSettings extends Component {
   }
 
   getPackages() {    
+    this.setState({loadPackages: true})
     UserHandler.raw("/packages", {cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({packages: response.data.data})
@@ -84,6 +85,7 @@ class BillingSettings extends Component {
   }
 
   getSubscriptions() {
+    this.setState({loadSubscriptions: true})
     let user = this.props.match.params.username;
     UserHandler.raw(`/${user}/billing/subscriptions`, {cancelToken: this.cancelRequest.token})
     .then((response) => {      
@@ -100,6 +102,7 @@ class BillingSettings extends Component {
 
 
   getActiveCard() {
+    this.setState({loadCards: true})
     let user = this.props.match.params.username;
 
     UserHandler.raw(`/${user}/billing/cards`, {cancelToken: this.cancelRequest.token})
@@ -232,6 +235,7 @@ class BillingSettings extends Component {
     return (
         <div>
           <PaymentMethod 
+            loading={this.state.loadCards}
             card={this.getCard()} 
             onClick={this.activateCreditCard.bind(this)} 
           />
@@ -239,6 +243,7 @@ class BillingSettings extends Component {
           <br/>
 
           <Subscription 
+            loading={this.state.loadSubscriptions}
             subscription={this.state.subscription}
             package={this.currentPackage()}
           />
@@ -246,6 +251,7 @@ class BillingSettings extends Component {
           <br/>
 
           <Packages
+            loading={this.state.loadPackages}
             packages={this.state.packages || []}
             packageClick={this.selectPackage.bind(this)}
             subscription={this.state.subscription}

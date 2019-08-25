@@ -1,8 +1,8 @@
 class StripeHandler::Plan 
   def call(event)
     # Event handling
-    Rails.logger.info("Product EVENT")
-    Rails.logger.info(event.data.object.id)
+    Rails.logger.info("Stripe Plan EVENT #{event.type}:  id: #{event.data.object.id}")
+
     case event.type 
     when "plan.created"
       plan = Plan.find_by(stripe_id: event.data.object.id)
@@ -21,7 +21,7 @@ class StripeHandler::Plan
         Rails.logger.info("plan updated")
       else
         product = Product.find_by(stripe_id: event.data.object[:product])
-        create_plan(params, product)
+        create_plan(params.merge({is_private: true}), product)
         Rails.logger.info("plan created")
       end
     when "plan.deleted"
@@ -38,21 +38,23 @@ class StripeHandler::Plan
     features = {}
     if plan[:metadata]["features"]
       begin
-        features = JSON.parse(plan[:metadata]["features"])   
+        features = JSON.parse(plan[:metadata]["features"])        
       rescue => exception
         features = {}
       end
+      plan[:metadata]["features"] = features
     end
-    {
+    pparams = {
       stripe_id: plan[:id],
       nickname: plan[:nickname],
-      description: plan[:description],
       amount:  plan[:amount],
       interval: plan[:interval],
       metadata: plan[:metadata],
       features: features,
       active: plan[:active]
     }
+    pparams[:description] = plan[:description] if plan[:description]
+    pparams
   end
 
   # {

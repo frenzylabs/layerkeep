@@ -6,6 +6,11 @@ ActiveAdmin.setup do |config|
   #
   config.site_title = "Layer Keep"
 
+  # config.load_paths << Dir["#{Rails.root}/app/admin/lib/json_editor.rb"] 
+  config.load_paths = Dir["#{Rails.root}/app/admin/lib"] + config.load_paths
+  
+  # config.load_paths = [File.join(Rails.root, "app", "ui")]
+
   # Set the link url for the title. For example, to take
   # users to your main site. Defaults to no link.
   #

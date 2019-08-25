@@ -3,13 +3,8 @@ Stripe.api_key             = ENV['STRIPE_SECRET_KEY']     # e.g. sk_live_...
 StripeEvent.signing_secret = Rails.application.config.settings["stripe"]["signing_secret"] # e.g. whsec_...
 
 StripeEvent.configure do |events|
-  events.subscribe 'charge.failed' do |event|
-    Rails.logger.info("STRIPE charge EVENT #{event}")
-    # Define subscriber behavior based on the event object
-    event.class       #=> Stripe::Event
-    event.type        #=> "charge.failed"
-    event.data.object #=> #<Stripe::Charge:0x3fcb34c115f8>
-  end
+  events.subscribe 'charge.', StripeHandler::Charge.new
+  events.subscribe 'invoice.payment_succeeded', StripeHandler::Invoice.new
 
   events.subscribe 'customer.subscription.', StripeHandler::Subscription.new
   events.subscribe 'customer.deleted', StripeHandler::Customer.new

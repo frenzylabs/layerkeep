@@ -207,6 +207,8 @@ ActiveRecord::Schema.define(version: 2019_08_19_180551) do
     t.bigint "package_id"
     t.integer "current_period_end"
     t.string "status"
+    t.string "reason"
+    t.string "failure_code"
     t.boolean "is_trial", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

@@ -1,5 +1,7 @@
+# require 'lib/json_editor'
 ActiveAdmin.register Plan do
   menu parent: 'Billing'
+  json_editor
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
   #
@@ -54,7 +56,8 @@ ActiveAdmin.register Plan do
       f.inputs do 
         f.input :stripe_id
       end
-      f.inputs          # builds an input field for every attribute
+      f.inputs # builds an input field for every attribute
+      
       
       f.actions         # adds the 'Submit' and 'Cancel' buttons
     end

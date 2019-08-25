@@ -275,7 +275,7 @@ export class ProjectNew extends React.Component {
     } else {
       return (
         <Control>
-          <span>Update your subscription for access to Private Projects</span>
+          <div>Update your subscription for access to Private Projects</div>
           <Link className="button" to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</Link>
         </Control>
       )

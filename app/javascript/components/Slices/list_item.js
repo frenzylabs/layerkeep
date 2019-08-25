@@ -29,7 +29,12 @@ export class SliceListItem extends React.Component {
       }
     }
   }
-
+  renderEngine() {
+    var engine = this.props.item.attributes.slicer_engine
+    if (engine && engine.id) {
+      return (<p>Engine: {engine.attributes.name}: {engine.attributes.version} </p>)
+    }
+  }
   render() {
     return (
       <Link to={this.props.path} className="box" data-id={this.props.item.id} key={this.props.item.id} >
@@ -40,12 +45,13 @@ export class SliceListItem extends React.Component {
 
           <MediaContent>
             <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
-            <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
+            <p className="has-text-grey">{this.props.item.attributes.description || ''}</p>
           </MediaContent>
 
           <MediaRight>
             <p>Created: {dayjs(this.props.item.attributes.updated_at).format('MM.DD.YYYY')}</p>
             <p>Status: {this.renderStatus()}</p>
+            {this.renderEngine()}
           </MediaRight>
         </Media>
       </Link>

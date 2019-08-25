@@ -1,6 +1,8 @@
 ActiveAdmin.register User do
   permit_params :email, :username, :password, :password_confirmation, :approved, :stripe_id, :active
 
+  includes :subscriptions
+
   index do
     selectable_column
     id_column
@@ -49,6 +51,37 @@ ActiveAdmin.register User do
     end
   end
   
+  show do
+    # Also works for default content
+    # attributes_table do
+    #   default_attribute_table_rows.each do |field|
+    #     row field
+    #   end
+    default_main_content
+    panel "Billing" do
+      table_for user.subscriptions do
+        column "Subscriptions" do |subscription|
+          link_to subscription.name, [ :admin, subscription ]
+        end
+      end
+
+      table_for user.user_cards do
+        column "User Cards" do |card|
+          link_to card.last4, [ :admin, card ]
+        end
+      end
+    end
+    # attributes_table do
+    #   row :title
+    #   row :author
+    #   row :description
+    #   table_for article.categories.order('name ASC') do
+    #     column "Categories" do |category|
+    #       link_to category.name, [ :admin, category ]
+    #     end
+    #   end
+    # end
+  end
 
   form do |f|
     f.inputs do

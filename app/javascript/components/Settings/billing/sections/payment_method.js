@@ -8,6 +8,7 @@
 
 import React      from 'react'
 import * as dayjs from 'dayjs'
+import SpinnerModal from '../../../Modal/spinner'
 
 export default class PaymentMethod extends React.Component {
   constructor(props) {
@@ -72,6 +73,28 @@ export default class PaymentMethod extends React.Component {
     )
   }
 
+  renderCard() {
+    if (this.props.loading) {
+      return (<SpinnerModal />)
+    }
+    return (
+      <div className="columns is-vcentered">
+        {this.renderIcon()}
+
+        {this.renderLastFour()}
+
+        {this.renderUpdated()}
+
+        <div className="column is-narrow is-1" style={{textAlign: 'right'}}>
+          <a onClick={this.updateCard} className="button is-link is-outlined is-small">
+            {this.props.card.attributes.last4 ? 'Update' : 'Add'}
+          </a>
+        </div>
+      </div>
+    )
+
+  }
+
   render() {
     return (
       <div className="card" style={{border: 'none', boxShadow: 'none'}}>
@@ -82,19 +105,7 @@ export default class PaymentMethod extends React.Component {
         </div>
 
         <div className="card-content" style={{boxShadow: 'none'}}>
-          <div className="columns is-vcentered">
-            {this.renderIcon()}
-
-            {this.renderLastFour()}
-
-            {this.renderUpdated()}
-
-            <div className="column is-narrow is-1" style={{textAlign: 'right'}}>
-              <a onClick={this.updateCard} className="button is-link is-outlined is-small">
-                {this.props.card.attributes.last4 ? 'Update' : 'Add'}
-              </a>
-            </div>
-          </div>
+          {this.renderCard()}
         </div>
       </div>
     )

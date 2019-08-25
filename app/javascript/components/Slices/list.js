@@ -11,6 +11,7 @@ import { Link }             from 'react-router-dom';
 import { SliceListItem }    from './list_item';
 import { SliceEmptyList }   from './empty_list';
 import { SliceHandler }     from '../../handlers';
+import PaginatedList        from '../pagination';
 
 import { 
   Columns, 
@@ -33,6 +34,7 @@ export class SliceList extends React.Component {
     }
     
     this.items = this.items.bind(this);
+    this.onChangePage = this.onChangePage.bind(this);
 
     this.cancelRequest = SliceHandler.cancelSource();
     this.updateSlicesList()
@@ -40,6 +42,12 @@ export class SliceList extends React.Component {
 
   componentWillUnmount() {
     this.cancelRequest.cancel("Left Page");
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.page != prevState.page || this.state.perPage != prevState.perPage) {
+      this.updateSlicesList();
+    }
   }
 
   updateSlicesList() {
@@ -70,6 +78,20 @@ export class SliceList extends React.Component {
   //     const differentList = this.props.list !== nextProps.list;
   //     return differentList;
   // }
+  onChangePage(page) {
+    // update state with new page of items
+    this.setState({ page: page });    
+  }
+
+  renderPagination() {
+    if (this.state.list.data.length > 0) {
+      var {current_page, last_page, total} = this.state.list.meta;
+
+      return (
+        <PaginatedList currentPage={current_page} pageSize={this.state.perPage} totalPages={last_page} totalItems={total} onChangePage={this.onChangePage} /> 
+      )
+    }
+  }
 
   empty() {
     return (
@@ -105,6 +127,7 @@ export class SliceList extends React.Component {
 
         <div> 
           {component}
+          {this.renderPagination()}
         </div>
       </div>
     );

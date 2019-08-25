@@ -7,6 +7,7 @@
 //
 
 import React from 'react'
+import SpinnerModal from '../../../Modal/spinner'
 
 export default class Packages extends React.Component {
   constructor(props) {
@@ -15,11 +16,29 @@ export default class Packages extends React.Component {
     this.renderDetails = this.renderDetails.bind(this)
   }
 
+  amount(pkg) {
+    var amount = pkg.attributes.plans.reduce((total, x) => x.attributes.amount + total, 0)
+    if (amount > 0) {
+      return `$${(amount / 100.0).toFixed(2)}` 
+    } else {
+      return 'Free'
+    }
+    
+  }
+
+  renderPlan(pkg) {
+    return pkg.attributes.plans.map(pl => { 
+      return (<li key={pl.id} >{pl.attributes.description}</li>)
+    })
+  }
+
+  
   renderDetails(pkg) {
     var selected = this.props.currentPackage && pkg.id == this.props.currentPackage.id
-    var pkg_amount = pkg.attributes.plans.reduce((total, x) => x.attributes.amount + total, 0)
+    
+    var selClass = selected ? "selected" : "";
     return(
-      <div className="card">
+      <div className={`${selClass} card package`}>
         <div className="card-header">
           <p className="card-header-title">
             {pkg.attributes.name}
@@ -33,21 +52,15 @@ export default class Packages extends React.Component {
 
           <br/>
 
-          <ul style={{listStyle: 'circle', marginLeft: '20px'}}>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
+          <ul style={{listStyle: 'none', marginLeft: '20px'}}>
+            { this.renderPlan(pkg) }
+            
           </ul>
         </div>
 
         <br/>
-        <p>
-           Cost: {pkg_amount}
+        <p style={{padding: '10px'}}>
+           Cost: {this.amount(pkg)}
         </p>
 
         <footer className="card-footer">
@@ -65,7 +78,7 @@ export default class Packages extends React.Component {
 
   renderCustom() {
     return(
-      <div className="card">
+      <div className="card package">
         <div className="card-header">
           <p className="card-header-title">
             Custom Package
@@ -78,18 +91,7 @@ export default class Packages extends React.Component {
           </p>
 
           <br/>
-
-          <ul style={{listStyle: 'circle', marginLeft: '20px'}}>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-          </ul>
         </div>
-
-        <br/>
-        <p>
-           Cost: Contact
-        </p>
 
         <footer className="card-footer">
             <a className="card-footer-item" >Contact Us</a>
@@ -99,6 +101,9 @@ export default class Packages extends React.Component {
   }
 
   renderPackages() {
+    if (this.props.loading) {
+      return (<SpinnerModal />)
+    }
     if (this.props.packages.length > 0) {      
       return this.props.packages.map((pkg, index) => {
         return (
@@ -120,7 +125,7 @@ export default class Packages extends React.Component {
         </div>
 
         <div className="card-content" style={{boxShadow: 'none'}}>
-          <div className="columns is-vcentered is-fullwidth is-12">
+          <div className="columns is-fullwidth is-12">
             {this.renderPackages()}
             <div className="column">
               {this.renderCustom()}

@@ -51,7 +51,17 @@ class SubscriptionsController < AuthController
     else
       render status: 404, json: {error: 'Package Not Found'}
     end
-  end
+  rescue Stripe::InvalidRequestError => e
+    # Invalid parameters were supplied to Stripe's API
+    body = e.json_body
+    err  = body[:error]
+    Rails.logger.info(body)
+    render status: 400, json: body
+  rescue => e
+    # Something else happened, completely unrelated to Stripe
+    Rails.logger.info(e)
+    render status: 400, json: {error: "#{e}"}
+  end 
 
   def update
     customer = stripe_customer(@user, params)
@@ -87,7 +97,22 @@ class SubscriptionsController < AuthController
       render json: SubscriptionsSerializer.new(subscription)
     end
 
-  end
+  # rescue Stripe::RateLimitError => e
+    # Too many requests made to the API too quickly
+  rescue Stripe::InvalidRequestError => e
+    # Invalid parameters were supplied to Stripe's API
+    body = e.json_body
+    err  = body[:error]
+    Rails.logger.info(body)
+    render status: 400, json: body
+  rescue => e
+    # Something else happened, completely unrelated to Stripe
+    Rails.logger.info(e)
+    render status: 400, json: {error: "#{e}"}
+  end    
+
+    # Stripe::InvalidRequestError (Cannot add multiple subscription items with the same plan: plan_FTej3FNWbqeLnk):
+  # end
 
   def destroy
     redirect_to root_path, notice: "Your subscription has been canceled."
@@ -117,7 +142,7 @@ class SubscriptionsController < AuthController
     usersuboptions = {
       stripe_id: stripe_subscription.id, 
       user_id: user.id, 
-      current_period_end: stripe_subscription.current_period_end,
+      current_period_end: (stripe_subscription.current_period_end + (5 * 86400)),
       status: stripe_subscription.status
     }.merge(sub_opts)
     usersuboptions[:package_id] = package.id if package

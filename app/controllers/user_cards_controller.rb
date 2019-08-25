@@ -32,8 +32,30 @@ class UserCardsController < AuthController
       card = StripeHandler::Customer.new().add_card(@user, card)
       render json: UserCardsSerializer.new(card) and return
     end
-    
+
     redirect_to root_path
+  rescue Stripe::CardError => e
+    # Since it's a decline, Stripe::CardError will be caught
+    body = e.json_body
+    err  = body[:error]
+    Rails.logger.info(body)
+    render status: 400, json: body
+  rescue Stripe::RateLimitError => e
+    # Too many requests made to the API too quickly
+  rescue Stripe::InvalidRequestError => e
+    # Invalid parameters were supplied to Stripe's API
+  rescue Stripe::AuthenticationError => e
+    # Authentication with Stripe's API failed
+    # (maybe you changed API keys recently)
+  rescue Stripe::APIConnectionError => e
+    # Network communication with Stripe failed
+  rescue Stripe::StripeError => e
+    # Display a very generic error to the user, and maybe send
+    # yourself an email
+  rescue => e
+    # Something else happened, completely unrelated to Stripe
+    Rails.logger.info(e)
+    render status: 400, json: {error: "#{e}"}
   end
 
   def destroy
@@ -46,7 +68,7 @@ class UserCardsController < AuthController
     @customer ||= if user.stripe_id?
                     cus = Stripe::Customer.retrieve(user.stripe_id)
                     if params[:source_token]
-                    cus = Stripe::Customer.update(cus.id, {source: params[:source_token][:id]})
+                      cus = Stripe::Customer.update(cus.id, {source: params[:source_token][:id]})
                     end
                     cus
                   else

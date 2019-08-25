@@ -54,6 +54,8 @@ class CreateBillingTables < ActiveRecord::Migration[5.2]
       t.references  :package, index: true, foreign_key: true
       t.integer     :current_period_end
       t.string      :status
+      t.string      :reason, default: ""
+      t.string      :failure_code, default: ""
       t.boolean     :is_trial, default: false
       t.timestamps
     end

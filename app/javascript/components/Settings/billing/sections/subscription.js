@@ -7,6 +7,7 @@
 //
 
 import React from 'react'
+import SpinnerModal from '../../../Modal/spinner'
 
 export default class Subscription extends React.Component {
   constructor(props) {
@@ -18,9 +19,9 @@ export default class Subscription extends React.Component {
   }
 
   amount() {
-    let items   = (this.props.subscription || {}).items || []
+    let items = ((this.props.subscription && this.props.subscription.attributes.items) || [])
     let amount  = items.reduce((total, x) => x.attributes.plan.attributes.amount + total, 0)
-
+    
     return amount
   }
 
@@ -30,38 +31,70 @@ export default class Subscription extends React.Component {
     return attributes.length > 0 ? attributes[0].description : ''
   }
 
+  statusClass() {
+    if (this.props.subscription) {
+      switch(this.props.subscription.attributes.status) {
+        case "past_due":
+        case "unpaid":
+          return "is-danger"
+        default: 
+          return ""
+      }
+    }
+    return ""
+  }
+  renderStatus() {
+    if (this.props.subscription) {      
+      // incomplete, incomplete_expired, trialing, active, past_due, unpaid, canceled, or all. Passing in a value of canceled
+      // status = this.props.subscription.attributes.status != 'active'
+      switch(this.props.subscription.attributes.status) {
+        case "active":
+        case "trialing":
+          return ""
+        case "past_due":
+          return (<div className="" style={{color: "red"}}>Your Payment is past due.</div>)
+        case "unpaid":
+          return (<div className=""  style={{color: "red"}}>Your Payment has not been paid.</div>)
+        default:
+          return ""
+      }
+    }
+  }
+
   renderDetails() {
+    if (this.props.loading) {
+      return (<SpinnerModal />)
+    }
+
+    var package_name = "Free"
+    var price = "Free"
+    if (this.props.subscription) {      
+      price = this.amount();
+      if (price > 0) {
+        price = `$${(price / 100.0).toFixed(2)}` 
+      } else {
+        price = 'Free'
+      }
+    } 
+
     if(this.props.package) {
-      return(
-        <h1>Package: {this.props.package.attributes.name} </h1>
-      )
+      package_name = this.props.package.attributes.name
     }
 
     return(
-      <table className='table is-narrow is-fullwidth'>
-        <thead>
-          <tr>
-            <td style={{borderBottom: 'none'}}><strong>Package</strong></td>
-            <td style={{borderBottom: 'none'}}><strong>Price</strong></td>
-            <td style={{borderBottom: 'none'}}><strong>Description</strong></td>
-            
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td width="24%">Free</td>
-            <td width="24%">$0.00</td>
-            <td>
-              Includes 5 gigs of space and as  many public projects as your space will allow.
-              Upgrade to increase space and add other features like private projects.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div className='columns is-narrow is-fullwidth'>
+        <div className="column">
+          <h1>Package: {package_name} </h1>
+        </div>
+        <div className="column" style={{textAlign: 'right'}}>
+          Price: {price}
+        </div>
+      </div>
     )
   }
 
   render() {
+    var subClass = this.statusClass()
     return (
       <div className="card" style={{border: 'none', boxShadow: 'none'}}>
       <div className="card-header" style={{boxShadow: 'none', borderBottom: '1px solid rgba(0, 0, 0, 0.1)'}}>
@@ -70,7 +103,8 @@ export default class Subscription extends React.Component {
         </p>
       </div>
 
-      <div className="card-content" style={{boxShadow: 'none'}}>
+      <div className={`card-content message ${subClass}`} style={{boxShadow: 'none'}}>
+        {this.renderStatus()}
         {this.renderDetails()}
       </div>
     </div>

@@ -39,13 +39,32 @@ export default class PackageSelectModal extends React.Component {
     })
     .catch((err) => {
       console.error("err: ", err)
+      var errMessage = "There was an error saving your card."
+      if (err.response.data && err.response.data.error) {
+        console.log(err.response.data)
+        var error = err.response.data.error
+        if (error.message) {
+          errMessage = error.message
+        } else {
+          errMessage = JSON.stringify(error)
+        }
+        
+      }
       this.setState({
-        error:      err,
+        error:      errMessage,
         isCreating: false
       })
     }).finally(() => {
 
     });
+  }
+
+  updateCardAction() {
+    if(arguments.length > 0 && arguments[0].card) {
+      this.subscibeToPackage({card: arguments[0].card })
+    } else {
+      this.props.dismissAction(arguments)
+    }
   }
 
   renderFooter() {
@@ -71,13 +90,13 @@ export default class PackageSelectModal extends React.Component {
     }
   }
 
-  updateCardAction() {
-    if(arguments.length > 0 && arguments[0].card) {
-      this.subscibeToPackage({card: arguments[0].card })
-    } else {
-      this.props.dismissAction(arguments)
-    }
+  renderPlan() {
+    return this.props.selectedPackage.attributes.plans.map(pl => { 
+      return (<li key={pl.id} >{pl.attributes.description}</li>)
+    })
   }
+
+
 
   render() {
     return (
@@ -102,14 +121,7 @@ export default class PackageSelectModal extends React.Component {
           <br/>
 
           <ul style={{listStyle: 'circle', marginLeft: '20px'}}>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
-            <li>Feature Name</li>
+            {this.renderPlan()}
           </ul>
         </div>
 
