@@ -75,7 +75,7 @@ class BillingSettings extends Component {
     this.setState({loadPackages: true})
     UserHandler.raw("/packages", {cancelToken: this.cancelRequest.token})
     .then((response) => {
-      this.setState({packages: response.data.data})
+      this.setState({packages: response.data.data.reverse()})
     })
     .catch((error) => {
       console.log(error);

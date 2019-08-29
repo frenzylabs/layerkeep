@@ -27,16 +27,37 @@ export default class Packages extends React.Component {
   }
 
   renderPlan(pkg) {
-    return pkg.attributes.plans.map(pl => { 
-      return (<li key={pl.id} >{pl.attributes.description}</li>)
+
+    var attributes = pkg.attributes.plans.map(pl => {
+      if(pl.attributes.feature_details != null && pl.attributes.feature_details['details']) {
+        return pl.attributes.feature_details.details.map((detail, index) => {
+          return detail
+        })
+      } else {
+        return null
+      }
+    }).flatMap((attr) => {
+      return attr
+    }).filter((attr) => { return attr != null})
+
+    let lineItems = (attributes.length > 0 ? attributes : pkg.attributes.plans.map((pl) => {
+      return pl.attributes.description
+    })).map((item, index) => {
+      return (<li className="package-list-item" key={++index} >{item}</li>) 
     })
+
+    return (
+      <ul className="package-block">
+        {lineItems}
+      </ul>
+    )
   }
 
   
   renderDetails(pkg) {
     var selected = this.props.currentPackage && pkg.id == this.props.currentPackage.id
-    
     var selClass = selected ? "selected" : "";
+
     return(
       <div className={`${selClass} card package`}>
         <div className="card-header">
@@ -46,7 +67,7 @@ export default class Packages extends React.Component {
         </div>
 
         <div className="card-content">
-          <p>
+          <p className="package-description">
             {pkg.attributes.description}
           </p>
 

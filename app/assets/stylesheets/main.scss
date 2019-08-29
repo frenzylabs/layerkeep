@@ -318,3 +318,15 @@ html, body {
 .d2h-file-side-diff .d2h-code-line-ctn {
   white-space: pre-wrap;
 }
+
+.package-block {
+  list-style-type: disc !important;
+
+  li {
+    font-size: 16px !important;
+  }
+}
+
+.package-description {
+  font-size: 14px !important;
+}
