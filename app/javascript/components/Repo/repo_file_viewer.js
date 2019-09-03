@@ -63,7 +63,7 @@ export class RepoFileViewer extends React.Component {
           <div className="columns is-mobile" style={{width: '100%', height: '100%'}}>
               <div className="column" style={{flex: 'unset'}}>
                 <div className="level-item">
-                  <RevisionPathTrail match={this.props.match} branches={this.props.item.branches || []} meta={this.state.meta} />
+                  <RevisionPathTrail match={this.props.match} branches={this.props.item.branches || {}} meta={this.state.meta} />
                 </div>
               </div>
               

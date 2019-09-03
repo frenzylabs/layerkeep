@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   def handle_record_not_found(exception)
     respond_to do |format|
       format.html { render status: 404, :file => File.join(Rails.root, 'public', '404.html') }
-      format.json { render status: 404, :json => {"error": "#{exception.message}"} }
+      format.json { render status: 404, :json => {"error": "Record Not Found"} }
     end
   end
 

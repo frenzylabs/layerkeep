@@ -23,8 +23,8 @@ class ReposController < AuthController
     authorize repo
 
     git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
-    branches = git_repo.branches.collect {|branch| branch.name } 
-
+    branches = git_repo.branches.collect {|branch| { name: branch.name, commit: branch.target_id } } 
+    
     reposerializer = ReposSerializer.new(repo, {params: {branches: branches}})
     
     render json: reposerializer #repo.to_hash.merge({branches: branches})
@@ -35,10 +35,14 @@ class ReposController < AuthController
 
     @repo        = Repo.new(user: @user, kind: params[:kind])
     authorize @repo
-    post_params = permitted_attributes(@repo)
-    post_params[:description] ||= ""
-
-    @repo.assign_attributes(post_params)
+    repo_params = permitted_attributes(@repo)
+    repo_params[:description] ||= ""
+    
+    @repo.assign_attributes(repo_params)
+    
+    
+    post_params = params["repo"]
+    
     
 
     repo_path = "#{@user.username}/#{params["kind"]}/#{@repo.name.downcase}" if @repo.name
@@ -116,7 +120,7 @@ class ReposController < AuthController
     end
     
     resp = conn.get do |req|
-      req.url "/things/#{params[:thing_id]}/packageURL"
+      req.url "/things/#{params[:thing_id]}/package-url"
       req.headers['Authorization'] = "Bearer #{Rails.application.config.settings["thingiverse_api_token"]}"
     end
 
@@ -124,6 +128,7 @@ class ReposController < AuthController
 
     error_msg = "Error Retrieving From Thingiverse"
     error_msg += ": #{resp.body['error']}" if resp.body["error"]
+    error_msg += ": #{resp.headers["x-error"]}" if resp.headers["x-error"]
     if resp.body["public_url"]
       uri = URI(resp.body["public_url"])
       code, tmpfilepath = download_to_tmp_path(uri)        

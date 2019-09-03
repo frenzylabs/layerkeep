@@ -15,6 +15,9 @@ class User < ApplicationRecord
   has_many :subscriptions
   has_many :subscription_items
   has_many :user_cards
+  has_many :slices
+
+  has_many :assets
 
 
   validates :username, length: {minimum: 2}

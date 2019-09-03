@@ -22,6 +22,7 @@
     "pdfjs-dist": "2.0.943",
     "prismjs": "^1.16.0",
     "prop-types": "^15.7.2",
+    "qs": "^6.8.0",
     "react": "^16.8.6",
     "react-activestorage-provider": "^0.8.0",
     "react-data-grid": "^6.1.0",

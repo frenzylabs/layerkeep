@@ -64,6 +64,8 @@ class RepoPolicy
     user && repo.user_id == user.id
   end
 
+  
+
   def permitted_attributes_for_update
     if repo.user.subscription_handler.features["project"]["private_repos"]
       [:description, :is_private]
@@ -74,9 +76,15 @@ class RepoPolicy
 
   def permitted_attributes_for_create
     if repo.user.subscription_handler.features["project"]["private_repos"]
-      [:name, :description, :is_private]
+      repo_create_attributes + [:is_private]
     else
-      [:name, :description]
+      repo_create_attributes
     end
   end
+
+  private 
+  def repo_create_attributes
+    [:name, :description]
+  end
+  
 end

@@ -72,6 +72,9 @@ Shrine.plugin :presign_endpoint, rack_response: -> (data, request) do
   [201, { "Content-Type" => "application/json" }, [body]]
 end
 
+
+Shrine.plugin :pretty_location
+
 # Shrine.plugin :derivation_endpoint,
 #   secret_key: "secret",
 #   download_errors: [defined?(Shrine::Storage::S3) ? Aws::S3::Errors::NotFound : Errno::ENOENT]

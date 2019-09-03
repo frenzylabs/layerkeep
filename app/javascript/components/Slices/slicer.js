@@ -1,9 +1,9 @@
 /*
- *  details.js
+ *  slicer.js
  *  LayerKeep
  * 
- *  Created by Wess Cope (me@wess.io) on 04/30/19
- *  Copyright 2018 WessCope
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 08/14/19
+ *  Copyright 2019 Frenzylabs
  */
 
 import React        from 'react';
@@ -83,12 +83,9 @@ export class Slicer extends React.Component {
       var engines = response.data.data.map((item) => {
         return {name: item.attributes.name + ": " + item.attributes.version, value: item.id, id: item.id}
       })
-      // console.log("profiles: ", profiles)
       this.setState({ engines: engines})
 
-      // if (engines.length == 1) {
       this.selectEngine(engines[0], "engines0")
-      // }
     })
     .catch((error) => {
       console.log(error);
@@ -105,7 +102,6 @@ export class Slicer extends React.Component {
   loadProjects() {    
     ProjectHandler.list(null, {cancelToken: this.cancelRequest.token})
     .then((response) => {
-      // console.log()
       var projects = response.data.data.map((item) => {
         return {name: item.attributes.name, value: item.attributes.path, id: item.id}
       })
@@ -132,7 +128,7 @@ export class Slicer extends React.Component {
       var profiles = response.data.data.map((item) => {
         return {name: item.attributes.name, value: item.attributes.path, id: item.id}
       })
-      // console.log("profiles: ", profiles)
+
       this.setState({ profiles: profiles})
 
       if (profiles.length == 1) {
@@ -145,11 +141,10 @@ export class Slicer extends React.Component {
   }
 
   createSlice() {
-    // console.log("Slice IT");
     var profiles = Object.keys(this.state.profileSelections).reduce((acc, key) => {
       var item = this.state.profileSelections[key];
       if (item.selectedFile && item.selectedFile.name) {
-        acc.push({id: item.selectedRepo.id, revision: item.selectedRevision.name, filepath: item.selectedFile.value})
+        acc.push({repo_id: item.selectedRepo.id, revision: item.selectedRevision.name, filepath: item.selectedFile.value})
       }
       return acc;
     }, [])
@@ -157,7 +152,7 @@ export class Slicer extends React.Component {
     var projects = Object.keys(this.state.projectSelections).reduce((acc, key) => {
       var item = this.state.projectSelections[key];
       if (item.selectedFile && item.selectedFile.name) {
-        acc.push({id: item.selectedRepo.id, name: item.selectedRepo.name, revision: item.selectedRevision.name, filepath: item.selectedFile.value})
+        acc.push({repo_id: item.selectedRepo.id, name: item.selectedRepo.name, revision: item.selectedRevision.name, filepath: item.selectedFile.value})
       }
       return acc;
     }, [])
@@ -167,10 +162,10 @@ export class Slicer extends React.Component {
 
     this.setState({slicing: slicing})
     var params = this.props.match.params;
-    
-    var sliceParams = [params.username, "projects", projects[0].name, "slices"]
+
+    var sliceParams = [params.username, "slices"]
     // {username: "kmussel", kind: "projects", name: "first-project", resouce: "slices"}
-    var slicing = SliceHandler.slice(this.state.selectedEngine.id, projects, profiles).then((response) => {     
+    var slicing = SliceHandler.slice(params.username, this.state.selectedEngine.id, projects, profiles).then((response) => {     
       var slicePath = sliceParams.concat(response.data.id).join("/")
       this.setState( { redirect: slicePath})
 
@@ -190,13 +185,12 @@ export class Slicer extends React.Component {
   }
 
   selectProject(item, id) {
-    // console.log("Selected Project: ", id, item)
     var num = this.getSelection(id)
 
     ProjectHandler.raw(`/${item.value}`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var revisions = response.data.data.attributes.branches.map((item) => {
-        return {name: item, value: item}
+        return {name: item.name, value: item.name }
       })
 
       var selectedRevision = revisions.find((item) => { return item["name"] == "master" })
@@ -222,7 +216,7 @@ export class Slicer extends React.Component {
     var num = this.getSelection(id)
 
     var path = this.state.projectSelections[num].selectedRepo.value + "/tree/" + item.value;
-    ProjectHandler.raw(`/${path}`, {cancelToken: this.cancelRequest.token})
+    ProjectHandler.raw(`/${path}`, {params: {recursive: true}, cancelToken: this.cancelRequest.token })
     .then((response) => {
       var files = response.data.data.reduce((acc, item) => {
         if (item.type == "blob" && item.path.match(/\.(stl|obj)$/i)) {
@@ -272,7 +266,7 @@ export class Slicer extends React.Component {
     ProjectHandler.raw(`/${item.value}`, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var revisions = response.data.data.attributes.branches.map((item) => {
-        return {name: item, value: item}
+        return {name: item.name, value: item.name}
       })
 
       var pj = {...this.state.profileSelections};

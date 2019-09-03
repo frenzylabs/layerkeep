@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_29_162938) do
+ActiveRecord::Schema.define(version: 2019_08_31_141525) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -28,6 +28,22 @@ ActiveRecord::Schema.define(version: 2019_08_29_162938) do
     t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
     t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
     t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id"
+  end
+
+  create_table "assets", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "filepath"
+    t.string "content_type"
+    t.string "kind"
+    t.jsonb "metadata", default: {}
+    t.jsonb "file_data"
+    t.bigint "owner_id"
+    t.string "owner_type"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_assets_on_owner_type_and_owner_id"
+    t.index ["user_id"], name: "index_assets_on_user_id"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -185,6 +201,7 @@ ActiveRecord::Schema.define(version: 2019_08_29_162938) do
     t.jsonb "metadata", default: {}
     t.jsonb "log_data"
     t.jsonb "gcode_data"
+    t.text "description", default: ""
     t.index ["slicer_engine_id"], name: "index_slices_on_slicer_engine_id"
     t.index ["user_id"], name: "index_slices_on_user_id"
   end
@@ -263,6 +280,7 @@ ActiveRecord::Schema.define(version: 2019_08_29_162938) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "assets", "users"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"

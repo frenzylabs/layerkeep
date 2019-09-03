@@ -39,7 +39,7 @@ class PaginatedList extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
       if (this.props.totalItems !== prevProps.totalItems ||
-        this.props.pageSize !== prevProps.pageSize) {
+        this.props.pageSize !== prevProps.pageSize || this.props.currentPage != prevProps.currentPage) {
           this.setPage(this.props.currentPage);
       }
   }

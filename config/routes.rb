@@ -94,10 +94,15 @@ Rails.application.routes.draw do
       patch 'subscription_items/:item_id', to: 'subscription_items#update'
       resources :cards, controller: 'user_cards'
     end
+    post 'assets/:owner/presign', to: 'assets#presign'
+    post 'assets/:owner/:owner_id/presign', to: 'assets#presign'
+
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
-    post 'slices/generate', to: 'slices#generate'
+    post 'slices/generate', to: 'slices#generate'    
     resources :slices, constraints: lambda { |req| req.format == :json }
 
+    # resources :gcodes, controller: 'gcodes', constraints: lambda { |req| req.format == :json }
+    # post 'gcodes/presign', to: 'gcodes#presign'
 
     scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'

@@ -28,7 +28,8 @@ import {
   ProfileList,
   Profile,
   ProfileNew,
-  Settings
+  Settings,
+  SliceIndex
 } from './components';
 
 
@@ -90,11 +91,12 @@ class AppContainer extends React.Component {
      super(props)
      this.state = {
        fullLayoutRoutes: [
-        {path: '/:username/:resource(slices)/new', component: Slicer},
-        {path: '/:username/:kind(projects)/:name/:resouce(slices)/new', component: Slicer},
+        {path: '/:username/:resource(slices)/create', component: Slicer},
+        {path: '/:username/:kind(projects)/:name/:resouce(slices)/create', component: Slicer},
        ],
 
        sidebarLayoutRoutes: [
+        {path: '/:username/:kind(slices)', exact: false, component: SliceIndex},
         {path: '/:username/:kind(settings)', exact: false, component: Settings},
         {path: '/:username/:kind(projects)/new', component: ProjectNew},
         {path: '/:username/:kind(projects)', component: ProjectList},
