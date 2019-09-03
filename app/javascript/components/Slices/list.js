@@ -282,3 +282,6 @@ export class SliceList extends React.Component {
     );
   }
 }
+
+
+export default SliceList

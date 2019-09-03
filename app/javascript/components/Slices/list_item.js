@@ -14,7 +14,7 @@ import { MediaContent } from 'bloomer/lib/components/Media/MediaContent';
 import { MediaRight }   from 'bloomer/lib/components/Media/MediaRight';
 import { Icon }         from 'bloomer/lib/elements/Icon';
 
-export class PrintListItem extends React.Component {
+export class SliceListItem extends React.Component {
   renderStatus() {
     var status = this.props.item.attributes.status;
     switch (status) {
@@ -40,7 +40,7 @@ export class PrintListItem extends React.Component {
 
           <MediaContent>
             <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
-            <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
+            <p className="has-text-grey">{this.props.item.attributes.description || ''}</p>
           </MediaContent>
 
           <MediaRight>
