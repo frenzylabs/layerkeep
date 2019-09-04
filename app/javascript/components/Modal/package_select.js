@@ -48,7 +48,6 @@ export default class PackageSelectModal extends React.Component {
         } else {
           errMessage = JSON.stringify(error)
         }
-        
       }
       this.setState({
         error:      errMessage,
@@ -91,9 +90,28 @@ export default class PackageSelectModal extends React.Component {
   }
 
   renderPlan() {
-    return this.props.selectedPackage.attributes.plans.map(pl => { 
-      return (<li key={pl.id} >{pl.attributes.description}</li>)
+    var attributes = this.props.selectedPackage.attributes.plans.map(pl => {
+      if(pl.attributes.feature_details != null && pl.attributes.feature_details['details']) {
+        return pl.attributes.feature_details.details.map((detail, index) => {
+          return detail
+        })
+      } else {
+        return [pl.attributes.description]
+      }
+    }).flatMap((attr) => {
+        return attr
     })
+
+    let lineItems = attributes.map((item, index) => {
+      if (item)
+        return (<li className="package-list-item" key={++index} >{item}</li>) 
+    })
+
+    return (
+      <ul style={{listStyle: 'circle', marginLeft: '20px'}}>
+        {lineItems}
+      </ul>
+    )
   }
 
 
@@ -120,9 +138,8 @@ export default class PackageSelectModal extends React.Component {
 
           <br/>
 
-          <ul style={{listStyle: 'circle', marginLeft: '20px'}}>
+          
             {this.renderPlan()}
-          </ul>
         </div>
 
           {this.renderFooter()}

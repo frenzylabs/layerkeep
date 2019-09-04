@@ -26,9 +26,33 @@ export default class Subscription extends React.Component {
   }
 
   description() {
-    let attributes = (this.props.subscription.attributes || {}).items || []
+    let items = (this.props.subscription.attributes || {}).items || []
+    var attributes = items.map(item => {
+      var plan = item.attributes.plan
+      if (plan) {
+        if(plan.attributes.feature_details != null && plan.attributes.feature_details['details']) {
+          return plan.attributes.feature_details.details.map((detail, index) => {
+            return detail
+          })
+        } else {
+          return [plan.attributes.description]
+        }
+      } else {
+        return [null]
+      }
+    }).flatMap((attr) => {
+      return attr
+    })
+    let lineItems = attributes.map((item, index) => {
+      if (item)
+        return (<li className="package-list-item" key={++index} >{item}</li>) 
+    })
 
-    return attributes.length > 0 ? attributes[0].description : ''
+    return (
+      <ul className="package-block">
+        {lineItems}
+      </ul>
+    )
   }
 
   statusClass() {
@@ -82,12 +106,21 @@ export default class Subscription extends React.Component {
     }
 
     return(
-      <div className='columns is-narrow is-fullwidth'>
-        <div className="column">
-          <h1>Package: {package_name} </h1>
+      <div className='level is-narrow is-fullwidth'>
+        <div className="level-left">
+          <div className="level-item">
+            <h1>Package: {package_name} </h1>
+          </div>
+         </div>
+         <div className="level-left"> 
+          <div className="level-item">
+            <h1>{this.description()} </h1>
+          </div>
         </div>
-        <div className="column" style={{textAlign: 'right'}}>
-          Price: {price}
+        <div className="level-right" style={{textAlign: 'right'}}>
+          <div className="level-item has-text-align-right">
+            Price: {price}
+          </div>
         </div>
       </div>
     )

@@ -34,16 +34,15 @@ export default class Packages extends React.Component {
           return detail
         })
       } else {
-        return null
+        return [pl.attributes.description]
       }
     }).flatMap((attr) => {
-      return attr
-    }).filter((attr) => { return attr != null})
+        return attr
+    })
 
-    let lineItems = (attributes.length > 0 ? attributes : pkg.attributes.plans.map((pl) => {
-      return pl.attributes.description
-    })).map((item, index) => {
-      return (<li className="package-list-item" key={++index} >{item}</li>) 
+    let lineItems = attributes.map((item, index) => {
+      if (item)
+        return (<li className="package-list-item" key={++index} >{item}</li>) 
     })
 
     return (
