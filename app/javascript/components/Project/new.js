@@ -268,16 +268,28 @@ export class ProjectNew extends React.Component {
   renderPrivateOption() {
     if (this.props.app.features && this.props.app.features.project.private_repos) {
       return (
-        <Control>
-          <input type='checkbox' name="private" value='is_private' checked={this.state.isPrivate} onChange={this.privateChanged} />
-        </Control>
+        <div className="control is-expanded">
+          <label className="checkbox">
+            <input 
+              type='checkbox' 
+              name="private" 
+              value='is_private' 
+              checked={this.state.isPrivate} 
+              onChange={this.privateChanged} 
+            />
+
+            &nbsp; Make this project private
+          </label>
+        </div>
       )
     } else {
       return (
-        <Control>
-          <div>Update your subscription for access to Private Projects</div>
-          <Link className="button" to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</Link>
-        </Control>
+        <div className="control is-expanded">
+          <p>
+            <a style={{fontWeight: 'bold'}} to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</a> to 
+            enable private projects.
+          </p>          
+        </div>
       )
     }
   }
@@ -330,12 +342,11 @@ export class ProjectNew extends React.Component {
                       {this.renderFileOption()}
                     </Field>
 
-                    <Field>
-                      <Label>Private</Label>
-                      {this.renderPrivateOption()}
-                    </Field>
-
+                    <br/><hr/><br/>
+                    
                     <Field isGrouped>
+                      {this.renderPrivateOption()}
+
                       <Control>
                         <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
                       </Control>
