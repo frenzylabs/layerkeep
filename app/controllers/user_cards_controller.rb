@@ -30,6 +30,7 @@ class UserCardsController < AuthController
     if params[:source_token]
       card = params[:source_token][:card]
       card = StripeHandler::Customer.new().add_card(@user, card)
+      @user.update({stripe_id: customer.id})
       render json: UserCardsSerializer.new(card) and return
     end
 

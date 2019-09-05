@@ -24,7 +24,7 @@ export default class StripeModal extends React.Component {
     }
   }
 
-  async handleSubmit(token) {
+  handleSubmit(token) {
     console.log("Token: ", token)
     if (token.error ) {
       console.error('Payload error', token.error)
