@@ -26,7 +26,8 @@ export default class Subscription extends React.Component {
   }
 
   description() {
-    let items = (this.props.subscription.attributes || {}).items || []
+    let items = ((this.props.subscription && this.props.subscription.attributes.items) || [])
+    
     var attributes = items.map(item => {
       var plan = item.attributes.plan
       if (plan) {
