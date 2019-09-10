@@ -36,7 +36,7 @@ export class UserNavMenu extends React.Component {
             <NavbarDivider />
             
             <NavbarItem >
-              <Link to={`/${currentUser.username}/settings`}> Settings </Link>
+              <Link to={`/${currentUser.username}/settings/account`}> Settings </Link>
             </NavbarItem>
 
             <NavbarDivider />

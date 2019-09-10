@@ -43,6 +43,7 @@ import { TextArea } from 'bloomer/lib/elements/Form/TextArea';
             placeholder={placeholder} 
             className={className} 
             onChange={this.changeValue}
+            value={this.props.getValue() || ''}
           ></TextArea>
 
           {null && 

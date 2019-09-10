@@ -28,12 +28,32 @@ import {
   ProfileList,
   Profile,
   ProfileNew,
-  Settings
+  Settings,
+  SliceIndex
 } from './components';
 
+
 import RemoteMessage from './RemoteMessage'
+import { updateFeatures } from './states/actions'
+
 
 class SideLayout extends React.Component {
+  constructor(props) {
+    super(props)
+
+    if (!this.props.app.username) {
+        if (this.props.match.params.username) {
+          this.props.updateFeatures(this.props.match.params.username)
+        }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.props.app.cancelRequest) {
+      this.props.app.cancelRequest.cancel("Left Page");
+    }
+  }
+
   render() {
     const Component = this.props.component;
     return (
@@ -43,7 +63,7 @@ class SideLayout extends React.Component {
             <LeftColumn />
           </Column>
           <Column>
-            <Component {...this.props} />
+            <Component {...this.props}  />
           </Column>
       </Columns>
       </div>
@@ -71,12 +91,13 @@ class AppContainer extends React.Component {
      super(props)
      this.state = {
        fullLayoutRoutes: [
-        {path: '/:username/:resource(slices)/new', component: Slicer},
-        {path: '/:username/:kind(projects)/:name/:resouce(slices)/new', component: Slicer},
+        {path: '/:username/:resource(slices)/create', component: Slicer},
+        {path: '/:username/:kind(projects)/:name/:resouce(slices)/create', component: Slicer},
        ],
 
        sidebarLayoutRoutes: [
-        {path: '/:username/:kind(settings)', component: Settings},
+        {path: '/:username/:kind(slices)', exact: false, component: SliceIndex},
+        {path: '/:username/:kind(settings)', exact: false, component: Settings},
         {path: '/:username/:kind(projects)/new', component: ProjectNew},
         {path: '/:username/:kind(projects)', component: ProjectList},
         {path: '/:username/:kind(projects)/:name/:resource/:revisionPath(.*)?', component: Project},
@@ -89,7 +110,7 @@ class AppContainer extends React.Component {
       }
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.location.pathname != this.props.location.pathname) {
       try {
         var matchLocationParams = this.getPathParams(this.props.location.pathname);
@@ -116,9 +137,10 @@ class AppContainer extends React.Component {
   
   renderFullLayoutRoutes() {
     return this.state.fullLayoutRoutes.map((item) => {
-      return (<Route key={item.path} exact path={item.path} 
+      var exact = item.exact == null ? true : item.exact
+      return (<Route key={item.path} exact={exact} path={item.path} 
         render={ props => 
-          <FullScreenLayout component={item.component} {...props} /> 
+          <FullScreenLayout updateFeatures={this.props.updateFeatures} app={this.props.app} component={item.component} {...props} /> 
         }
       />)
     })  
@@ -126,12 +148,13 @@ class AppContainer extends React.Component {
 
  renderSideBarLayoutRoutes() {
   return this.state.sidebarLayoutRoutes.map((item) => {
+    var exact = item.exact == null ? true : item.exact
     return (
-        <Route key={item.path} exact path={item.path}  render={ props =>
-          <SideLayout {...item}  {...props} /> 
+        <Route key={item.path}  exact={exact}  path={item.path}  render={ props =>
+          <SideLayout updateFeatures={this.props.updateFeatures} app={this.props.app} {...item}  {...props} /> 
         }/>
       )
-    });  
+    });
   }
 
   render () {
@@ -156,8 +179,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    updateFeatures: (username) => dispatch(updateFeatures(username))
   }
 }
+
+
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AppContainer));
 

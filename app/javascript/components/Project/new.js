@@ -7,7 +7,7 @@
  */
 
 import React              from 'react';
-import { Redirect }       from 'react-router-dom';
+import { Link, Redirect }       from 'react-router-dom';
 import Formsy             from 'formsy-react';
 import { 
   Section,
@@ -35,11 +35,12 @@ export class ProjectNew extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
+    this.initialState = {
       nameLabel:        {title: "Name", caption: ""},
       canSubmit :       false, 
       name:             null,
       description:      "",
+      isPrivate:        false,
       files:            [],
       fileList:         null,
       creatingRepo:     false,
@@ -47,10 +48,13 @@ export class ProjectNew extends React.Component {
       fileSources:      []
     };
     
+    this.state = Object.assign({}, this.initialState);
+
     this.disableButton      = this.disableButton.bind(this);
     this.enableButton       = this.enableButton.bind(this);
     this.nameChanged        = this.nameChanged.bind(this);
     this.descriptionChanged = this.descriptionChanged.bind(this);
+    this.privateChanged     = this.privateChanged.bind(this);
     this.filesChanged       = this.filesChanged.bind(this);
     this.deleteFile         = this.deleteFile.bind(this);
     this.renderFiles        = this.renderFiles.bind(this);
@@ -65,6 +69,13 @@ export class ProjectNew extends React.Component {
 
   componentWillUnmount() {
     this.cancelRequest.cancel("Left Page");
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.location.pathname != this.props.location.pathname) {
+      this.uploadFieldRef.clearFiles();
+      this.setState(this.initialState)
+    }
   }
 
   loadRemoteSources() {    
@@ -109,6 +120,10 @@ export class ProjectNew extends React.Component {
     });
   }
 
+  privateChanged(e) {
+    this.setState({isPrivate: e.currentTarget.checked});
+  }
+
   filesChanged(files) {
     this.setState({
       files: Array.from(files).concat((this.state.files || [])),
@@ -136,7 +151,7 @@ export class ProjectNew extends React.Component {
   }
 
   submit(formData) {
-    var repoData = Object.assign(formData, {name: this.state.name})
+    var repoData = Object.assign(formData, {name: this.state.name, is_private: this.state.isPrivate})
     if (this.state.selectedFileSource && this.state.selectedFileSource.id != "0") {
       repoData["remote_source_id"] = this.state.selectedFileSource.id
     }
@@ -146,7 +161,7 @@ export class ProjectNew extends React.Component {
       creatingRepo: true
     });
 
-    ProjectHandler.create(repoData, this.state.files)
+    ProjectHandler.create(this.props.match.params.username, repoData, this.state.files)
     .then((response) => {
       this.setState({
         ...this.state,
@@ -250,6 +265,35 @@ export class ProjectNew extends React.Component {
     )
   }
 
+  renderPrivateOption() {
+    if (this.props.app.features && this.props.app.features.project.private_repos) {
+      return (
+        <div className="control is-expanded">
+          <label className="checkbox">
+            <input 
+              type='checkbox' 
+              name="private" 
+              value='is_private' 
+              checked={this.state.isPrivate} 
+              onChange={this.privateChanged} 
+            />
+
+            &nbsp; Make this project private
+          </label>
+        </div>
+      )
+    } else {
+      return (
+        <div className="control is-expanded">
+          <p>
+            <a style={{fontWeight: 'bold'}} to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</a> to 
+            enable private projects.
+          </p>          
+        </div>
+      )
+    }
+  }
+
   render() {
     if(this.state.redirect) { 
       return (<Redirect to={`/${currentUser.username}/projects/${this.state.projectName}/`}/>);
@@ -275,6 +319,7 @@ export class ProjectNew extends React.Component {
                       onChange={this.nameChanged}
                       placeholder="What should we call this project?"
                       validationError="Name is required"
+                      value={this.state.name}
                       required
                     />
                     
@@ -283,6 +328,7 @@ export class ProjectNew extends React.Component {
                       name="description"
                       onChange={this.descriptionChanged}
                       placeholder="Tell us about it"
+                      value={this.state.description}
                     />
 
                     <Field>
@@ -296,7 +342,11 @@ export class ProjectNew extends React.Component {
                       {this.renderFileOption()}
                     </Field>
 
+                    <br/><hr/><br/>
+                    
                     <Field isGrouped>
+                      {this.renderPrivateOption()}
+
                       <Control>
                         <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
                       </Control>

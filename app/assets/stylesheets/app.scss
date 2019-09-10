@@ -90,3 +90,11 @@
 .has-navbar-fixed-top {
  padding-top: 3.25rem;
 }
+
+
+.tabs .tab-handle .is-active {
+  background-color: white !important;
+  border-color: #dbdbdb;
+  border-bottom-color: transparent !important;
+  color: #3273dc !important;
+}

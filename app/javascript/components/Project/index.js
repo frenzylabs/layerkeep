@@ -88,29 +88,37 @@ export class Project extends React.Component {
   }
 
   renderResource() {
-    switch (this.props.match.params.resource) {
-      case 'tree': {
-        return RepoDetails;
-      }
-      case 'revision': {
-        return Revision;
-      }
-      case 'revisions': {
-        return Revisions;
-      }
-      case 'files': {
-        return RepoFileViewer;
-      }
-      case 'slices': {
-        if (this.props.match.params.revisionPath && this.props.match.params.revisionPath.match(/[\d]+/)) {
-          return SliceDetails;
+    if (!(this.state.project && this.state.project.id)) return null;
+
+    var props = {app: this.props.app, item: this.state.project, match: this.props.match, uploadAction: this.uploadAction}
+    var Resource = ((resource) => {
+    switch (resource) {
+        case 'tree': {
+          return RepoDetails;
         }
-        return SliceList;
+        case 'revision': {
+          return Revision;
+        }
+        case 'revisions': {
+          return Revisions;
+        }
+        case 'files': {
+          return RepoFileViewer;
+        }
+        case 'slices': {
+          if (this.props.match.params.revisionPath && this.props.match.params.revisionPath.match(/[\d]+/)) {
+            props["match"]["params"]["sliceId"] = this.props.match.params.revisionPath
+            return SliceDetails;
+          }
+          return SliceList;
+        }
+        default: {
+          return RepoDetails;
+        }
       }
-      default: {
-        return RepoDetails;
-      }
-    }
+    })(this.props.match.params.resource)
+
+    return (<Resource {...props} />)
   }
 
   render() {
@@ -145,7 +153,7 @@ export class Project extends React.Component {
             <Column className="has-text-right">
               <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/revisions`}>Revisions</Link>
               { currentUser.username == this.props.match.params.username ? 
-              <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/slices`}>Slices</Link>
+              <Link className="button" to={`/${this.props.match.params.username}/slices?q[repo_id]=${this.state.project.id}`}>Slices</Link>
               : "" }
             </Column>
           </Columns>
@@ -153,9 +161,7 @@ export class Project extends React.Component {
         
 
         <Container className="is-fluid" style={{height: '100%'}}>
-         {this.state.project && this.state.project.id ?
-          <Resource kind="projects" item={this.state.project} match={this.props.match} uploadAction={this.uploadAction} />
-          : "" }
+         {this.renderResource()}
         </Container>
 
         <Modal component={Modal.upload} isActive={this.state.isUploadActive} dismissAction={this.dismissAction} urlParams={this.props.match.params} repoName={this.state.project.name} />

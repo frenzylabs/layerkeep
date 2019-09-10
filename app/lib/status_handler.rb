@@ -53,7 +53,7 @@ class StatusHandler
       begin
         content = JSON.parse(payload)
 
-        if content["slice_id"] 
+        if content["slice_id"]
           slice = Slice.includes([:user, project_files: :repo]).find(content["slice_id"])
           status = meta[:routing_key].split(".").last
 
@@ -68,7 +68,7 @@ class StatusHandler
               kind: 'slice',
               status: status,
               message: "Slice for #{project_name} has status: #{status}",
-              path: "/#{slice.user.username}/projects/#{project_name}/slices/#{slice.id}"
+              path: "/#{slice.user.username}/slices/#{slice.id}"
             }
             UserPublisher.publish(body.to_json, slice.user.username)
           end

@@ -16,6 +16,8 @@ import StompSocket from './StompSocket';
 
 import { toast }          from 'react-toastify';
 
+import { receivedNotification } from './states/actions'
+
 function SliceMessage(msg, opts = {}) {
   var textColor = "black";
   if(msg.status == "success") {
@@ -82,6 +84,7 @@ class RemoteMessage extends React.Component {
       content = JSON.parse(msg.body)
       if (content.kind == "slice") {
         SliceMessage(content, { autoClose: 10000 })
+        this.props.receivedNotification(content)
       }
     }
     catch(err) {
@@ -112,8 +115,10 @@ const mapStateToProps = (state) => {
   return state
 }
 
-function mapDispatchToProps() {
-  return {};
+function mapDispatchToProps(dispatch) {
+  return {
+    receivedNotification: (not) => dispatch(receivedNotification(not))
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(RemoteMessage);

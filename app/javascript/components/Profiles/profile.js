@@ -130,7 +130,7 @@ export class Profile extends React.Component {
     
               <p style={{margin: 0, padding: 0}}>
                 {this.state.repo.description}
-              </p>      
+              </p>
             </Column>
 
             <Column isSize={3} className="has-text-right">

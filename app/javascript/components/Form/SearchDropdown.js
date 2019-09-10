@@ -112,6 +112,17 @@ export class SearchDropdown extends React.Component {
     }
   }
 
+  optionNameByValue(item) {
+    if (item == null) {
+      return this.optionName(item)
+    }
+    else {
+      let optValue = this.optionValue(item)
+      let option = this.state.dropdownOptions ? this.state.dropdownOptions.find((x) => this.optionValue(x) == optValue) : null
+      return this.optionName(option)
+    }
+  }
+
   optionName(item) {
     if (item == null) {
       return this.props.promptText || this.state.promptText;
@@ -127,7 +138,7 @@ export class SearchDropdown extends React.Component {
     if (typeof(item) == "string") {
       return item;
     } else {
-      return item.value
+      return item.value || item.name
     }
   }
 
@@ -154,7 +165,7 @@ export class SearchDropdown extends React.Component {
       <Dropdown key={this.id} onChange={this.onChange} onBlur={this.onBlur} isActive={this.state.isActive}>
         <DropdownTrigger onClick={this.toggleIsActive}>
           <Button isOutlined aria-haspopup="true" aria-controls="dropdown-menu" isSize="small">
-            <span>{this.optionName(this.state.selected)}</span>
+            <span>{this.optionNameByValue(this.state.selected)}</span>
             <Icon icon="angle-down" className="fas fa-angle-down" isSize="small" />
           </Button>
         </DropdownTrigger>

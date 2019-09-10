@@ -59,7 +59,6 @@ export class Revisions extends React.Component {
   }
 
   items() {
-    console.log(this.state.revisions);
     return this.state.revisions.data.map((item) => {
       return (<RevisionListItem kind={this.props.kind} match={this.props.match} item={item} key={item.id} />)
     });

@@ -8,8 +8,9 @@
 
 
 Rails.application.routes.draw do
-
+  mount StripeEvent::Engine, at: '/stripe' # provide a custom path
   use_doorkeeper
+  
   devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
 
   ## Admin subdomain routes
@@ -45,16 +46,21 @@ Rails.application.routes.draw do
 
   root to: 'main#index'
 
-  
-  get '/auth/:kind', to: 'auth#stomp'
-  post '/auth/:kind', to: 'auth#stomp'
-  get '/auth', to: 'auth#stomp'
-  post '/auth', to: 'auth#stomp'
+  # Stomp calls come from Rabbitmq 
+  get '/auth/:kind', to: 'amqp_auth#stomp'
+  post '/auth/:kind', to: 'amqp_auth#stomp'
+  get '/auth', to: 'amqp_auth#stomp'
+  post '/auth', to: 'amqp_auth#stomp'
 
-  post 'user/settings', to: 'user#settings'
+  post 'user/settings', to: 'users#settings'
 
   get '/slicer_engines', to: 'slicer_engines#index'
   get '/remote_sources', to: 'remote_sources#index'
+
+  get '/packages', to: 'packages#index'
+  get '/plans', to: 'plans#index'
+  get '/products', to: 'products#index'
+  
 
   concern :repo_files do |options|
     options ||= {}
@@ -82,22 +88,21 @@ Rails.application.routes.draw do
   end
 
   scope ':user' do
-    
-    # get 'features', to: 'users#features'
-    # scope 'billing' do
-    #   resources :subscriptions
-    #   patch 'subscription_items/:item_id', to: 'subscription_items#update'
-    #   resources :cards, controller: 'user_cards'
-    # end
-    post "/prints/:id/assets/presign", to: "print_assets#presign"
-    resources :prints, constraints: lambda { |req| req.format == :json } do
-      resources :assets, controller: "print_assets"
+    get 'features', to: 'users#features'
+    scope 'billing' do
+      resources :subscriptions
+      patch 'subscription_items/:item_id', to: 'subscription_items#update'
+      resources :cards, controller: 'user_cards'
     end
+    post 'assets/:owner/presign', to: 'assets#presign'
+    post 'assets/:owner/:owner_id/presign', to: 'assets#presign'
 
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
-    post 'slices/generate', to: 'slices#generate'
+    post 'slices/generate', to: 'slices#generate'    
     resources :slices, constraints: lambda { |req| req.format == :json }
 
+    # resources :gcodes, controller: 'gcodes', constraints: lambda { |req| req.format == :json }
+    # post 'gcodes/presign', to: 'gcodes#presign'
 
     scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'
@@ -123,7 +128,7 @@ Rails.application.routes.draw do
 
   # REACT
 
-  get '*page', to: 'user#index', constraints: ->(req) do
+  get '*page', to: 'users#index', constraints: ->(req) do
     req.format = :html
     !req.xhr? 
   end

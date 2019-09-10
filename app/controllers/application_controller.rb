@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   def handle_record_not_found(exception)
     respond_to do |format|
       format.html { render status: 404, :file => File.join(Rails.root, 'public', '404.html') }
-      format.json { render status: 404, :json => {"error": "#{exception.message}"} }
+      format.json { render status: 404, :json => {"error": "Record Not Found"} }
     end
   end
 
@@ -35,12 +35,15 @@ class ApplicationController < ActionController::Base
 
   def user_not_authorized(exception)
     logger.info(request.format)
+    # binding.pry
+    error_reason = exception.policy.error_reason || {}
+    
     if request.format != :json
       request.format = :html
     end
     respond_to do |format|
       format.html { render status: 401, :file => File.join(Rails.root, 'public', '401.html') }
-      format.json { render status: 401, :json => {"error": "Not Authorized"} }
+      format.json { render status: 401, :json => {"error": "Not Authorized"}.merge(error_reason) }
     end
   end
 

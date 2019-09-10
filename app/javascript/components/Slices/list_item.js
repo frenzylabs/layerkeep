@@ -2,8 +2,8 @@
  *  list_item.js
  *  LayerKeep
  * 
- *  Created by Wess Cope (me@wess.io) on 04/30/19
- *  Copyright 2018 WessCope
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 09/03/19
+ *  Copyright 2019 Frenzylabs
  */
 
 import React            from 'react';
@@ -40,7 +40,7 @@ export class SliceListItem extends React.Component {
 
           <MediaContent>
             <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
-            <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
+            <p className="has-text-grey">{this.props.item.attributes.description || ''}</p>
           </MediaContent>
 
           <MediaRight>
