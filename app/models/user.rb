@@ -11,7 +11,13 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable  
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable         
   # has_and_belongs_to_many :organizations  
-  # has_many :slices
+  has_one  :layerkeep_subscription, -> { where(name: 'layerkeep' ) }, class_name: 'Subscription'
+  has_many :subscriptions
+  has_many :subscription_items
+  has_many :user_cards
+  has_many :slices
+
+  has_many :assets
 
 
   validates :username, length: {minimum: 2}
@@ -83,5 +89,12 @@ class User < ApplicationRecord
 
   def self.find_record login
     where(["username = :value OR email = :value", {value: login}]).first
+  end
+
+  def subscription_handler
+    @subscription_handler ||= SubscriptionHandler.new(self)
+  end
+  def has_valid_subscription(nickname) 
+
   end
 end

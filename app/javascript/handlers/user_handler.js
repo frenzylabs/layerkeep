@@ -6,18 +6,47 @@
  *  Copyright 2018 WessCope
  */
 
-import Request from './request_client';
+import {Request, CancelToken} from './request_client';
 
 function path(endpoint) {
   return `/user/${endpoint || ''}`;
 }
 
 export default {
+  cancelSource: () => {
+    return CancelToken.source();
+  },
+
   saveSettings: (params) => {
     return Request.post(path('settings'), {user: params});
   },
 
   authToken: () => {
     return Request.post('/oauth/access_tokens'); 
+  },
+
+  raw: (url, opts = {}) => {
+    return Request.get(url, opts);
+  },
+
+  createSubscription: (user, queryParams = {}) => {
+    return Request.post(`/${user}/billing/subscriptions`, queryParams);
+  },
+
+  updateSubscription: (user, item, queryParams = {}) => {
+    return Request.patch(`/${user}/billing/subscriptions/${item}`, queryParams);
+  },
+
+  createCard: (user, queryParams = {}) => {
+    return Request.post(`/${user}/billing/cards`, queryParams);
+  },
+
+  updateCard: (user, item, queryParams = {}) => {
+    return Request.patch(`/${user}/billing/cards/${item}`, queryParams);
+  },
+
+  getFeatures: (user, queryParams = {}) => {
+    return Request.get(`/${user}/features`, queryParams);
   }
+
 }

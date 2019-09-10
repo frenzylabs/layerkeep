@@ -8,7 +8,6 @@
 require 'zip'
 
 class ReposController < AuthController
-  before_action :get_user
   respond_to :json
 
   def index
@@ -24,23 +23,27 @@ class ReposController < AuthController
     authorize repo
 
     git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
-    branches = git_repo.branches.collect {|branch| branch.name } 
-
+    branches = git_repo.branches.collect {|branch| { name: branch.name, commit: branch.target_id } } 
+    
     reposerializer = ReposSerializer.new(repo, {params: {branches: branches}})
     
     render json: reposerializer #repo.to_hash.merge({branches: branches})
   end
 
   def create
-    post_params = params[:repo]
     commit_message = nil
-    post_params[:description] ||= ""
 
-    @repo        = Repo.new(post_params.permit(:name, :description))
-    @repo.kind   = params[:kind]
-    @repo.user   = @user
-
+    @repo        = Repo.new(user: @user, kind: params[:kind])
     authorize @repo
+    repo_params = permitted_attributes(@repo)
+    repo_params[:description] ||= ""
+    
+    @repo.assign_attributes(repo_params)
+    
+    
+    post_params = params["repo"]
+    
+    
 
     repo_path = "#{@user.username}/#{params["kind"]}/#{@repo.name.downcase}" if @repo.name
     @repo.path = repo_path
@@ -88,11 +91,11 @@ class ReposController < AuthController
   def update
     repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
     authorize repo
-
-    if repo.update(params.permit(:description))
+    post_params = permitted_attributes(repo)
+    if repo.update(post_params)
       render json: repo.to_json
     else
-      render status: 400, json: @repo.errors.to_json
+      render status: 400, json: repo.errors.to_json
     end
   end
 
@@ -110,11 +113,6 @@ class ReposController < AuthController
     end
   end
 
-  def get_user()
-    @user ||= User.find_by!(username: params["user"] || "")
-  end
-
-
   def create_from_thingiverse(params) 
     conn = Faraday.new(:url => "https://api.thingiverse.com") do |con|
       con.response :json, :content_type => /\bjson$/
@@ -122,7 +120,7 @@ class ReposController < AuthController
     end
     
     resp = conn.get do |req|
-      req.url "/things/#{params[:thing_id]}/packageURL"
+      req.url "/things/#{params[:thing_id]}/package-url"
       req.headers['Authorization'] = "Bearer #{Rails.application.config.settings["thingiverse_api_token"]}"
     end
 
@@ -130,6 +128,7 @@ class ReposController < AuthController
 
     error_msg = "Error Retrieving From Thingiverse"
     error_msg += ": #{resp.body['error']}" if resp.body["error"]
+    error_msg += ": #{resp.headers["x-error"]}" if resp.headers["x-error"]
     if resp.body["public_url"]
       uri = URI(resp.body["public_url"])
       code, tmpfilepath = download_to_tmp_path(uri)        
@@ -178,6 +177,4 @@ class ReposController < AuthController
     end
     return 400, "Error"
   end
-
-
 end

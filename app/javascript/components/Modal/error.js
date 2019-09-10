@@ -19,17 +19,21 @@ export default class ErrorModal extends React.Component {
        caption = this.props.requestError.message
        if (!subtext) {
         const data = this.props.requestError.response.data;
-        subtext = Object.keys(data).map((key, index) => {
-          var item = data[key]
-          if (Array.isArray(item)) {
-            item = item.join(", ")
-          } 
-          return (
-            <div key={key} >
-              {key}: {item}
-            </div>
-          )
-        })
+        if (!data) {
+          subtext = "Uknown Error"
+        } else {
+          subtext = Object.keys(data).map((key, index) => {
+            var item = data[key]
+            if (Array.isArray(item)) {
+              item = item.join(", ")
+            } 
+            return (
+              <div key={key} >
+                {key}: {item}
+              </div>
+            )
+          })
+        }
        }
     }
 

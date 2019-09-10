@@ -6,7 +6,7 @@
 
 # OS Mess
 .DS_Store
-/.DS_Store
+**/.DS_Store
 /.dist
 /.vscode
 

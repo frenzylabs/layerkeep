@@ -9,11 +9,13 @@
 
 import {Request, CancelToken} from './request_client';
 
+const QS = require('qs');
+
 function path(endpoint) {
   return '/' + currentUser.username + '/slices/' + (endpoint || '');
 }
 
-function user_path(username, endpoint) {
+function userPath(username, endpoint) {
   return `/${(username || currentUser.endpoint)}/slices/${endpoint || ''}`
 }
 
@@ -21,16 +23,37 @@ export default {
   cancelSource: () => {
     return CancelToken.source();
   },
-  list: (username, params = {}) => {
-    return Request.get(user_path(username), params);
+  list: (username, opts = {}) => {
+    var qs = opts["qs"]
+    delete opts["qs"]
+    var path = userPath(username) + QS.stringify(qs, { addQueryPrefix: true })
+    return Request.get(path, opts);
+  },
+
+  get: (user, printId, opts = {}) => {
+    return Request.get(userPath(user, printId), opts);
   },
 
   show: (username, sliceID, params = {}) => {
-    return Request.get(user_path(username, sliceID), params);
+    return Request.get(userPath(username, sliceID), params);
   },
 
-  slice: (engine_id, projects, profiles) => {
+  update: (user, sliceID, sliceAttrs, opts = {}) => {
+    var params = {'slice' : sliceAttrs};
+    return Request.patch(userPath(user, sliceID), params, opts);
+  },
+
+  create: (user, sliceAttrs, opts = {}) => {
+    var params = {'slice' : sliceAttrs};
+    return Request.post(userPath(user), params, opts);
+  },
+
+  delete: (user, sliceID, opts = {}) => {
+    return Request.delete(userPath(user, sliceID), opts);
+  },
+
+  slice: (user, engine_id, projects, profiles) => {
     var params = {'engine_id': engine_id, 'projects' : projects, 'profiles': profiles};
-    return Request.post(path("generate"), params);
+    return Request.post(userPath(user, "generate"), params);
   },
 }

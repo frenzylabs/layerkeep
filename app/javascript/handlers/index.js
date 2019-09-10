@@ -13,3 +13,4 @@ export { default as ProjectHandler }  from './project_handler';
 export { default as RepoHandler }     from './repo_handler';
 export { default as SliceHandler }    from './slice_handler';
 export { default as UserHandler }     from './user_handler';
+export { default as GcodeHandler }     from './slice_handler';

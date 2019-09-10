@@ -13,14 +13,18 @@ import { ModalContent as BulmaModalContent }        from 'bloomer/lib/components
 import { ModalClose as BulmaModalClose }            from 'bloomer/lib/components/Modal/ModalClose';
 import { Box }                                      from 'bloomer/lib/elements/Box';
 
-import UploadModal  from './upload';
-import SpinnerModal from './spinner';
-import ErrorModal   from './error';
+import UploadModal        from './upload';
+import SpinnerModal       from './spinner';
+import ErrorModal         from './error';
+import StripeModal        from './stripe';
+import PackageSelectModal from './package_select';
 
 export default class Modal extends React.Component {
-  static upload   = UploadModal;
-  static spinner  = SpinnerModal;
-  static error    = ErrorModal;
+  static upload         = UploadModal;
+  static spinner        = SpinnerModal;
+  static error          = ErrorModal;
+  static stripe         = StripeModal;
+  static packageSelect  = PackageSelectModal;
 
   render() {
     const styles = this.props.component.parentStyles || {}
@@ -29,8 +33,12 @@ export default class Modal extends React.Component {
       <BulmaModal isActive={this.props.isActive}>
         <BulmaModalBackground onClick={this.props.dismissAction}/>
         <BulmaModalContent>
-        <Box style={styles}>{<this.props.component dismissAction={this.props.dismissAction} {...this.props} />}</Box>
-      </BulmaModalContent>
+          <Box 
+            style={styles}>{<this.props.component 
+            dismissAction={this.props.dismissAction} 
+            {...this.props} />}
+          </Box>
+        </BulmaModalContent>
 
         <BulmaModalClose onClick={this.props.dismissAction}/>
       </BulmaModal>

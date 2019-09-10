@@ -39,7 +39,7 @@ class Details extends React.Component {
       repo_files:       [], 
       image_paths:      [],
       meta:             {}, 
-      branches:         this.props.item.branches || [], 
+      branches:         this.props.item.branches || {}, 
       currentRevision:  "", 
       message:          '', 
       lastUpdate:       '',

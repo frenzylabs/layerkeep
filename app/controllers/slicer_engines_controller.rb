@@ -1,4 +1,5 @@
 class SlicerEnginesController < AuthController
+  skip_before_action :get_user
   respond_to :json
 
   def new

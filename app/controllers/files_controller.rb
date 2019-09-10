@@ -10,11 +10,12 @@
 class FilesController < RepoAuthController
 
   def index
+    recursive = params[:recursive] || false
     start_commit = @repo_handler.current_commit
     @filepath = @repo_handler.filepath.chomp("/")
     rootpath = @filepath.blank? ? "" : @filepath + "/"
     pathmatch = Regexp.new("(?:#{@filepath}(?:\/))?([^\/]+)", "m")
-    file_paths = file_list(start_commit, @filepath)
+    file_paths = file_list(start_commit, @filepath, nil, recursive)
 
     @files = []
 
@@ -24,17 +25,28 @@ class FilesController < RepoAuthController
     walker.inject(@files) do |a, c|
       break if file_paths.empty?
       if c.parents.first 
-        c.parents.first.diff(c, paths: file_paths).deltas.each do |d| 
-          filename, filetype = build_filepath(d.new_file[:path], pathmatch)          
-          filepath = rootpath + filename
+        c.parents.first.diff(c, paths: file_paths).deltas.each do |d|
+          if recursive
+            filename = filepath = d.new_file[:path]
+            filetype = :blob
+          else
+            filename, filetype = build_filepath(d.new_file[:path], pathmatch)          
+            filepath = rootpath + filename
+          end
           if file_paths.delete(filepath)
             a << {name: filename, path: filepath, type: filetype, author: c.author, date: c.time, commit: c.oid, subject: c.message.split("\n").first, message: c.message}
           end
         end
       else
         c.diff(paths: file_paths).deltas.each do |d| 
-          filename, filetype = build_filepath(d.old_file[:path], pathmatch)
-          filepath = rootpath + filename
+          if recursive
+            filepath = d.new_file[:path]
+            filetype = :blob
+          else
+            filename, filetype = build_filepath(d.old_file[:path], pathmatch)          
+            filepath = rootpath + filename
+          end
+
           if file_paths.delete(filepath) 
             a << {name: filename, path: filepath, type: filetype, author: c.author, date: c.time, commit: c.oid, subject: c.message.split("\n").first, message: c.message}
           end
@@ -130,21 +142,25 @@ class FilesController < RepoAuthController
     [filename, filetype]
   end
 
-
-  def file_list(start_commit, filepath, pathmatch = nil)
+  def file_list(start_commit, filepath, pathmatch = nil, recursive = true)
     filepath = filepath.chomp("/")
     pathmatch ||= Regexp.new("(?:#{filepath}(?:\/))?([^\/]+)", "m")
     current_files = []
     start_commit.tree.walk(:postorder).inject(current_files) do |a, (rootpath, f)| 
-      rootpath = rootpath.chomp("/") + "/" if f[:type] == :tree
+
       fullname = rootpath + f[:name]
-      if fullname.starts_with?(filepath) && fullname.scan(pathmatch).count < 2
-        a.push(f) 
+      if fullname.starts_with?(filepath) && (recursive || fullname.scan(pathmatch).count < 2)
+        if recursive
+          if f[:type] != :tree 
+            a.push(fullname) 
+          end
+        else
+          a.push(fullname) 
+        end
       end
       a
     end
 
-    rootpath = filepath.blank? ? "" : filepath + "/"
-    file_paths = current_files.map { |f| rootpath + f[:name] }
+    current_files
   end
 end

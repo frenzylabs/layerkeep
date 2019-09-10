@@ -2,207 +2,258 @@
  *  details.js
  *  LayerKeep
  * 
- *  Created by Kevin Musselman (kmussel@gmail.com) on 05/12/19
- *  Copyright 2018 Frenzylabs
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 09/03/19
+ *  Copyright 2019 Frenzylabs
  */
 
 import React              from 'react';
 import { Link }           from 'react-router-dom';
-import { RepoEmptyList }  from '../Repo/empty_list';
 import { SliceHandler }   from '../../handlers';
+import SpinnerModal       from '../Modal/spinner';
+
 
 import { 
-  Columns, 
-  Column, 
-  Level, 
-  LevelItem, 
-  LevelLeft, 
-  LevelRight,
-  Media, 
-  MediaContent
+  Container,
+  Breadcrumb, 
+  BreadcrumbItem,
+  Columns,
+  Column,
+  Button
 } from 'bloomer';
+
 
 export class SliceDetails extends React.Component {
   constructor(props) {
     super(props);
 
-    this.props.match.params.revisionPath
-    this.state = {project: this.props.item, slice: null}
+    this.state = {
+      isLoading: true, 
+      slice: {}
+    };
 
-    this.cancelRequest = SliceHandler.cancelSource();
-    this.getSlice()
+    this.cancelRequest      = SliceHandler.cancelSource()
+    this.loadSliceDetails   = this.loadSliceDetails.bind(this);
+  }
+
+  componentDidMount() {
+    this.loadSliceDetails();
   }
 
   componentWillUnmount() {
-    this.cancelRequest.cancel("Left Page");
+    this.cancelRequest.cancel("Left Form")
   }
-  
-  getSlice() {
-    var url = this.props.match.url
-    var params = {}
-    if (this.state.project) {
-      params["repo_id"] = this.state.project.id
+
+  componentDidUpdate() {
+    var currentSliceNot = this.props.app.notifications.slice
+    
+    if (currentSliceNot && (!this.state.slice.attributes 
+        || this.state.slice.attributes.status != currentSliceNot[this.state.slice.id].status)) {
+      if (!this.state.isLoading)
+        this.loadSliceDetails()
     }
-    var id = this.props.match.params.revisionPath;
-    SliceHandler.show(this.props.match.params.username, id, {params, cancelToken: this.cancelRequest.token})
+  }
+
+  loadSliceDetails() {    
+    this.setState({isLoading: true})
+    SliceHandler.get(this.props.match.params.username, this.props.match.params.sliceId, { cancelToken: this.cancelRequest.token })
     .then((response) => {
-      this.updateSlice(response.data)
+      this.setState({isLoading: false, slice: response.data.data})
     })
-    .catch((error) => {
-      console.log(error);
+    .catch((err) => {
+      var errMessage = "There was an error loading the slice details."
+      if (err.response.data && err.response.data.error) {
+        var error = err.response.data.error
+        if (error.message) {
+          errMessage = error.message
+        } else {
+          errMessage = JSON.stringify(error)
+        }
+      }
+      this.setState({
+        error:      errMessage,
+        isLoading: false
+      })
     });
   }
 
-  updateSlice(data) {
-    this.setState({ slice: data })
-  }
-
-  // componentDidUpdate(prevProps) {
-  //   console.log(prevProps);
-  //   console.log(this.props);
-  // }
-  
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     const differentList = this.props.list !== nextProps.list;
-  //     return differentList;
-  // }
-
-  empty() {
-    return (
-      <RepoEmptyList kind={this.props.match.params.kind} params={this.props.match.params} />
-    );
-  }
 
   renderStatus() {
-    var status = this.state.slice.data.attributes.status;
+    if (!this.state.slice.attributes || !this.state.slice.attributes.slicer_engine) return null;
+
+    var status = this.state.slice.attributes.status;
     switch (status) {
       case "success": {
-        return (<span className="has-text-success">{status}</span>)
+        return (<span className="level-right has-text-success">{status}</span>)
       }
       case "failed": {
-        return (<span className="has-text-danger">{status}</span>)
+        return (<span className="level-right has-text-danger">{status}</span>)
       }
       default: {
-        return (<span>{status}</span>);
+        return (<span className="level-right" >{status}</span>);
       }
     }
   }
 
   renderDownloadLink() {
-    if (this.state.slice.data.attributes.status == "success") {
+    if (this.state.slice.attributes && this.state.slice.attributes.status == "success") {
       const urlparams = this.props.match.params;
-      const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes`;
+      const url       = `/${urlparams.username}/slices/${this.state.slice.id}/gcodes`;
       return (
-        <LevelItem>
+        <div className="level-item">
           <a className="button is-small" href={url} target="_blank">
             <span className="icon is-small">
               <i className="fas fa-download"></i>
             </span>
             <span>Download</span>
           </a>
-        </LevelItem>
+        </div>
       )
     }
   }
 
   renderLogfileLink() {
-    var log_data = this.state.slice.data.attributes.log_data;
+    var log_data = this.state.slice.attributes.log_data;
     if (log_data && log_data["id"]) {
       const urlparams = this.props.match.params;
-      const url       = `/${urlparams.username}/slices/${this.state.slice.data.id}/gcodes?logpath=true`;
+      const url       = `/${urlparams.username}/slices/${this.state.slice.id}/gcodes?logpath=true`;
       return (
-        <LevelItem>
+        <div className="level-item">
           <a className="button is-small" href={url} target="_blank">
             <span className="icon is-small">
               <i className="fas fa-download"></i>
             </span>
             <span>Logfile</span>
           </a>
-        </LevelItem>
+        </div>
       )
     }
   }
 
-  renderSlice() {
-    var params = this.props.match.params;
-    
-    if (this.state.slice && this.state.slice.data.attributes) {
-      var slice = this.state.slice.data.attributes;
-      slice.status == "success"
-      return (
-      <Media>
-        <MediaContent >
-          <Level>
-            <LevelLeft>
-              <LevelItem>{slice.name}</LevelItem>
-            </LevelLeft>
-            <LevelRight>
-              
-                { this.renderDownloadLink()}
-                { this.renderLogfileLink() }
-              <LevelItem>
-                {this.renderStatus()}
-              </LevelItem>
-            </LevelRight>
-          </Level>
-          <br/>
-          <h3 className="title is-4"> Project</h3>
-          <Media >
-            
-            <MediaContent>
-            
-              {slice.project_files.map((pf) => {
-                return (<Level key={pf.id}>  
-                  <LevelLeft>
-                    {pf.filepath}
-                  </LevelLeft>
-                  <LevelItem>
-                    {pf.commit}
-                  </LevelItem>
-                </Level>)
-              })}
-            </MediaContent>
-          </Media>
-          <br/>
-          <h3 className="title is-4">Profiles</h3>
-          <Media >
-            
-            <MediaContent>
-            
-              {slice.profile_files.map((pf) => {
-                return (<Level key={pf.id}>  
-                  <LevelLeft>
-                    {pf.filepath}
-                  </LevelLeft>
-                  <LevelItem>
-                    {pf.commit}
-                  </LevelItem>
-                </Level>)
-              })}
-            </MediaContent>
-          </Media>
-        </MediaContent>
-      </Media>)
-      // .project_files
-      // return (JSON.stringify(this.state.slice))
-    }
+
+  renderGcode() {
+    return (
+      <div className={`card`}>
+        <div className="card-header">
+          <div className="card-header-title level">
+            <p className="level-left">Gcode</p>
+            {this.renderStatus()}            
+          </div>
+        </div>
+
+        <div className="card-content">
+            <div className="level">
+              <div className="level-left">
+                <div className="level-item">
+                  {this.state.slice.attributes.name}
+                </div>
+              </div>
+              <div className="level-right">
+                {this.renderDownloadLink()}
+                {this.renderLogfileLink()}                
+              </div>
+            </div>
+        </div>
+      </div>
+    )
+  }
+
+  renderRepos(files) {
+    if (!files) return null;
+    return files.map((pf) => {
+      const url       = `/${pf.attributes.repo_path}/files/${pf.attributes.commit}/${pf.attributes.filepath}`;
+
+      return (<div className="level" key={pf.id}>  
+                <div className="level-left">
+                  <div className="level-item">{pf.attributes.repo_name}</div>
+                  <div className="level-item">
+                    <Link to={url}>{pf.attributes.filepath}</Link>
+                  </div>
+                  <div className="level-item">
+                  {pf.attributes.commit}
+                </div>
+              </div>
+            </div>)
+    })
+  }
+
+  renderProjectSection() {
+    return (
+      <div className={`card`}>
+        <div className="card-header">
+          <p className="card-header-title">
+            Project File
+          </p>
+        </div>
+
+        <div className="card-content">
+          {this.renderRepos(this.state.slice.attributes.project_files)}
+        </div>
+      </div>
+    )
+  }
+
+  renderProfileSection() {
+    return (
+      <div className={`card`}>
+        <div className="card-header">
+          <p className="card-header-title">
+            Profiles
+          </p>
+        </div>
+
+        <div className="card-content">
+          {this.renderRepos(this.state.slice.attributes.profile_files)}
+        </div>
+      </div>
+    )
   }
   
-  render() {
-    var params = this.props.match.params;
+  renderContent() {
+    if (this.state.isLoading) {
+      return (<SpinnerModal />)
+    } else if (this.state.error) {
+      return (
+        <article className="message is-danger">
+          <div className="message-body">
+            {this.state.error}
+          </div>
+        </article>
+      )
+    } else {
+      return (<div>
+          {this.renderGcode()}
+          {this.renderProjectSection()}
+          {this.renderProfileSection()}
+        </div>
+      )
+    }
+  }
+
+
+  render() {    
     return (
       <div className="section">
-          <Columns className="is-narrow is-gapless">
+        <Container className="is-fluid">
+          <Columns className="is-mobile">
             <Column>
-              
-            </Column>
+              <Breadcrumb>
+                <ul>
+                  <BreadcrumbItem className="title is-4">
+                    <Link to={`/${this.props.match.params.username}/slices`}>Slices</Link>
+                  </BreadcrumbItem>
 
-            <Column isSize={2} className="has-text-right">
-            <Link className="button" to={`/${params.username}/projects/${params.name}/slices/new`}>New Slice</Link>
-          </Column>
+                  <BreadcrumbItem className="title is-4" > &nbsp; {this.props.match.params.sliceId}</BreadcrumbItem>
+                </ul>
+              </Breadcrumb>
+            </Column>
+            <Column className="has-text-right"><Link className="button" to={`${this.props.match.url}/edit`}>Edit</Link></Column>
           </Columns>
-          {this.renderSlice()}
+          {this.renderContent()}
+        </Container>
+        <br/>
       </div>
-    );
-  }
+    )
+  }   
 }
+
+export default SliceDetails;

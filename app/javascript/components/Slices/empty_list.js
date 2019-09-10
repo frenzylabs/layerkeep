@@ -1,9 +1,9 @@
 /*
- *  slice_empty_list.js
+ *  empty_list.js
  *  LayerKeep
  * 
- *  Created by Wess Cope (me@wess.io) on 05/03/19
- *  Copyright 2018 WessCope
+ *  Created by Kevin Musselman (kmussel@gmail.com) on 09/03/19
+ *  Copyright 2019 Frenzylabs
  */
 
 import React            from 'react';
@@ -24,9 +24,9 @@ export class SliceEmptyList extends React.Component {
           </MediaLeft>
 
           <MediaContent style={{textAlign: "center"}}>
-            {"You have no slices created."}
+            {"You have not created any Slices yet."}
             <br/>
-            <Link className="button" to={`/${this.props.params.username}/projects/${this.props.params.name}/slices/new`}>New Slice</Link>
+            <Link className="button" to={`/${this.props.params.username}/slices/new`}>New Slice</Link>
           </MediaContent>
 
           <MediaRight>

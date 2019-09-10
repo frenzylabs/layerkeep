@@ -1,5 +1,5 @@
 class RepoPolicy
-  attr_reader :user, :repo
+  attr_reader :user, :repo, :error_reason
 
   class Scope
     attr_reader :user, :scope
@@ -23,6 +23,17 @@ class RepoPolicy
   def initialize(user, record)
     @user = user
     @repo = record
+    @error_reason = nil
+  end
+
+  def private_repo_enabled
+    if repo.user.subscription_handler.features["project"]["private_repos"] 
+      true
+    else
+      Rails.logger.info("Private repos not enabled")
+      @error_reason = {feature_disabled: 'Private Repos'}      
+      false
+    end
   end
 
   def index?
@@ -30,7 +41,7 @@ class RepoPolicy
   end
 
   def show?
-    !repo.is_private || (user && repo.user_id == user.id)
+    !repo.is_private || (user && repo.user_id == user.id && private_repo_enabled)
   end
 
   def create?
@@ -52,4 +63,28 @@ class RepoPolicy
   def destroy?
     user && repo.user_id == user.id
   end
+
+  
+
+  def permitted_attributes_for_update
+    if repo.user.subscription_handler.features["project"]["private_repos"]
+      [:description, :is_private]
+    else
+      [:description]
+    end
+  end
+
+  def permitted_attributes_for_create
+    if repo.user.subscription_handler.features["project"]["private_repos"]
+      repo_create_attributes + [:is_private]
+    else
+      repo_create_attributes
+    end
+  end
+
+  private 
+  def repo_create_attributes
+    [:name, :description]
+  end
+  
 end

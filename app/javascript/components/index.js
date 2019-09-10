@@ -16,6 +16,7 @@ export { ProfileList }      from './Profiles/list';
 export { Profile }          from './Profiles/profile';
 export { ProfileNew }       from './Profiles/new';
 export { Settings }         from './Settings';
+export { SliceIndex }       from './Slices';
 export { FileViewer }       from './FileViewer';
 export { RepoFileViewer }   from './Repo/repo_file_viewer';
 export { Revisions }        from './Repo/revisions';

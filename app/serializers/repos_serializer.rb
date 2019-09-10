@@ -6,7 +6,7 @@ class ReposSerializer
   attribute :id, :name, :description, :path, :kind, :is_private, :remote_src_url, :user_id, :created_at, :updated_at
   
   attribute :branches do |repo, params|
-    params[:branches] || []
+    params[:branches] || {}
   end
 
 end
