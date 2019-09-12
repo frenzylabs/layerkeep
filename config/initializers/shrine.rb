@@ -1,4 +1,6 @@
 require "shrine"
+return if ENV.fetch("PRECOMPILE_ASSETS", false)
+
 
 # use S3 for production and local file for other environments
 # if Rails.env.production?
