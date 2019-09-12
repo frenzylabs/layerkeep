@@ -29,6 +29,7 @@ ActiveAdmin.register Product do
     f.inputs do
       f.input :stripe_id
       f.input :name
+      f.input :lookup_name
       f.input :status
       f.input :active
     end

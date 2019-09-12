@@ -266,6 +266,8 @@ export class ProjectNew extends React.Component {
   }
 
   renderPrivateOption() {
+    if (!this.props.app.features || !this.props.app.features.project) return;
+
     if (this.props.app.features && this.props.app.features.project.private_repos) {
       return (
         <div className="control is-expanded">
@@ -286,7 +288,7 @@ export class ProjectNew extends React.Component {
       return (
         <div className="control is-expanded">
           <p>
-            <a style={{fontWeight: 'bold'}} to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</a> to 
+            <Link style={{fontWeight: 'bold'}} to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</Link> to 
             enable private projects.
           </p>          
         </div>
