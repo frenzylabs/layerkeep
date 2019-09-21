@@ -266,6 +266,7 @@ export class ProjectNew extends React.Component {
   }
 
   renderPrivateOption() {
+    return;
     if (!this.props.app.features || !this.props.app.features.project) return;
 
     if (this.props.app.features && this.props.app.features.project.private_repos) {

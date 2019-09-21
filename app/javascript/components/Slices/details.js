@@ -46,7 +46,7 @@ export class SliceDetails extends React.Component {
   componentDidUpdate() {
     var currentSliceNot = this.props.app.notifications.slice
     
-    if (currentSliceNot && (!this.state.slice.attributes 
+    if (currentSliceNot && currentSliceNot[this.state.slice.id] && (!this.state.slice.attributes 
         || this.state.slice.attributes.status != currentSliceNot[this.state.slice.id].status)) {
       if (!this.state.isLoading)
         this.loadSliceDetails()
