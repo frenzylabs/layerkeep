@@ -8,10 +8,11 @@
 
 import React              from 'react';
 import { Link }           from 'react-router-dom';
+import ImageGallery       from 'react-image-gallery';
+
+import { PrintHandler }   from '../../handlers';
 import SpinnerModal       from '../Modal/spinner';
-import { SliceHandler, PrintHandler }   from '../../handlers';
-
-
+import { PrintAssetItem } from './asset_item'
 
 import { 
   Container,
@@ -24,23 +25,22 @@ import {
 } from 'bloomer';
 
 
-export class SliceDetails extends React.Component {
+export class PrintDetails extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       isLoading: true, 
-      slice: {},
-      prints: {}
+      print: {}
     };
 
-    this.cancelRequest      = SliceHandler.cancelSource()
-    this.loadSliceDetails   = this.loadSliceDetails.bind(this);
+    this.cancelRequest      = PrintHandler.cancelSource()
+    this.loadPrintDetails   = this.loadPrintDetails.bind(this);
+    window.pd = this;
   }
 
   componentDidMount() {
-    this.loadSliceDetails();
-    this.getPrints();
+    this.loadPrintDetails();
   }
 
   componentWillUnmount() {
@@ -48,23 +48,23 @@ export class SliceDetails extends React.Component {
   }
 
   componentDidUpdate() {
-    var currentSliceNot = this.props.app.notifications.slice
+    var currentPrintNot = this.props.app.notifications.print
     
-    if (currentSliceNot && currentSliceNot[this.state.slice.id] && (!this.state.slice.attributes 
-        || this.state.slice.attributes.status != currentSliceNot[this.state.slice.id].status)) {
+    if (currentPrintNot && currentPrintNot[this.state.print.id] && (!this.state.print.attributes 
+        || this.state.print.attributes.status != currentPrintNot[this.state.print.id].status)) {
       if (!this.state.isLoading)
-        this.loadSliceDetails()
+        this.loadPrintDetails()
     }
   }
 
-  loadSliceDetails() {    
+  loadPrintDetails() {    
     this.setState({isLoading: true})
-    SliceHandler.get(this.props.match.params.username, this.props.match.params.sliceId, { cancelToken: this.cancelRequest.token })
+    PrintHandler.get(this.props.match.params.username, this.props.match.params.printId, { cancelToken: this.cancelRequest.token })
     .then((response) => {
-      this.setState({isLoading: false, slice: response.data.data})
+      this.setState({isLoading: false, print: response.data.data})
     })
     .catch((err) => {
-      var errMessage = "There was an error loading the slice details."
+      var errMessage = "There was an error loading the print details."
       if (err.response.data && err.response.data.error) {
         var error = err.response.data.error
         if (error.message) {
@@ -80,35 +80,11 @@ export class SliceDetails extends React.Component {
     });
   }
 
-  getPrints() {
-    this.setState({isPrintLoading: true, printError: null})    
-    var qs = {q: {slice_id: this.props.match.params.sliceId}, per_page: 100}
-    PrintHandler.list(this.props.match.params.username, { qs: qs, cancelToken: this.cancelRequest.token})
-    .then((response) => {
-      this.setState({isPrintLoading: false, prints: response.data})
-    })
-    .catch((err) => {
-      var errMessage = "There was an error loading the prints."
-      if (err.response && err.response.data && err.response.data.error) {
-        var error = err.response.data.error
-        if (error.message) {
-          errMessage = error.message
-        } else {
-          errMessage = JSON.stringify(error)
-        }
-      }
-      this.setState({
-        printError:      errMessage,
-        isPrintLoading: false
-      })
-    });
-  }
-
 
   renderStatus() {
-    if (!this.state.slice.attributes || !this.state.slice.attributes.slicer_engine) return null;
+    if (!this.state.print.attributes) return null;
 
-    var status = this.state.slice.attributes.status;
+    var status = this.state.print.attributes.status;
     switch (status) {
       case "success": {
         return (<span className="level-right has-text-success">{status}</span>)
@@ -123,9 +99,9 @@ export class SliceDetails extends React.Component {
   }
 
   renderDownloadLink() {
-    if (this.state.slice.attributes && this.state.slice.attributes.status == "success") {
+    if (this.state.print.attributes && this.state.print.attributes.status == "success") {
       const urlparams = this.props.match.params;
-      const url       = `/${urlparams.username}/slices/${this.state.slice.id}/gcodes`;
+      const url       = `/${urlparams.username}/prints/${this.state.print.id}/gcodes`;
       return (
         <div className="level-item">
           <a className="button is-small" href={url} target="_blank">
@@ -140,10 +116,10 @@ export class SliceDetails extends React.Component {
   }
 
   renderLogfileLink() {
-    var log_data = this.state.slice.attributes.log_data;
+    var log_data = this.state.print.attributes.log_data;
     if (log_data && log_data["id"]) {
       const urlparams = this.props.match.params;
-      const url       = `/${urlparams.username}/slices/${this.state.slice.id}/gcodes?logpath=true`;
+      const url       = `/${urlparams.username}/prints/${this.state.print.id}/gcodes?logpath=true`;
       return (
         <div className="level-item">
           <a className="button is-small" href={url} target="_blank">
@@ -159,12 +135,14 @@ export class SliceDetails extends React.Component {
 
 
   renderGcode() {
+    if (!(this.state.print.attributes.slices && this.state.print.attributes.slices.id)) return null;
+
+    const url       = `/${this.props.match.params.username}/slices/${this.state.print.attributes.slices.id}`;
     return (
       <div className={`card`}>
         <div className="card-header">
           <div className="card-header-title level">
-            <p className="level-left">Gcode</p>
-            {this.renderStatus()}            
+            <p className="level-left">Gcode</p>          
           </div>
         </div>
 
@@ -172,7 +150,7 @@ export class SliceDetails extends React.Component {
             <div className="level">
               <div className="level-left">
                 <div className="level-item">
-                  {this.state.slice.attributes.name}
+                  <Link to={url}>{this.state.print.attributes.slices.attributes.name}</Link>
                 </div>
               </div>
               <div className="level-right">
@@ -180,6 +158,8 @@ export class SliceDetails extends React.Component {
                 {this.renderLogfileLink()}                
               </div>
             </div>
+            {this.renderProjectSection()}
+            {this.renderProfileSection()}
         </div>
       </div>
     )
@@ -205,6 +185,7 @@ export class SliceDetails extends React.Component {
   }
 
   renderProjectSection() {
+    if (!this.state.print.attributes.slices) return null
     return (
       <div className={`card`}>
         <div className="card-header">
@@ -214,13 +195,14 @@ export class SliceDetails extends React.Component {
         </div>
 
         <div className="card-content">
-          {this.renderRepos(this.state.slice.attributes.project_files)}
+          {this.renderRepos(this.state.print.attributes.slices.attributes.project_files)}
         </div>
       </div>
     )
   }
 
   renderProfileSection() {
+    if (!this.state.print.attributes.slices) return null
     return (
       <div className={`card`}>
         <div className="card-header">
@@ -230,72 +212,75 @@ export class SliceDetails extends React.Component {
         </div>
 
         <div className="card-content">
-          {this.renderRepos(this.state.slice.attributes.profile_files)}
+          {this.renderRepos(this.state.print.attributes.slices.attributes.profile_files)}
         </div>
       </div>
     )
   }
-  
-  renderPrint(item) {
-    return(
-      <tr key={item.id}>
-        <td className="file-details is-text-overflow">
-          <p>
-            <Link to={`/${this.props.match.params.username}/prints/${item.id}`}>{item.attributes.job}</Link>
-          </p>
-        </td>
-
-        <td colSpan={3} className="cell-content is-text-overflow">
-          <p>
-            {item.attributes.description}
-          </p>
-        </td>
-        
-        <td className="has-text-right">
-          <p>{dayjs(item.attributes.created_at).format('MM.DD.YYYY')}</p>
-        </td>
-      </tr>
-    )
-  }
-
-  renderPrints() {
-    if (this.state.prints.data && this.state.prints.data.length > 0) {
-      return this.state.prints.data.map(this.renderPrint.bind(this));
-      // (item) => {
-      //   return renderPrint(item)
-      //   return (<PrintAssetItem item={item} owner={this.state.print} key={item.attributes.name} match={this.props.match} />)
-      // });
+  renderAssets() {
+    if (this.state.print.attributes.assets.length > 0) {      
+      return this.state.print.attributes.assets.map((item) => {
+        return (<PrintAssetItem item={item} owner={this.state.print} key={item.attributes.name} match={this.props.match} />)
+      });
     } else {
-      return (<tr><td>No Prints</td></tr>)
+      return (<tr><td>No Files</td></tr>)
     }
   }
 
-  renderPrintsContainer() {
+  renderAssetsContainer() {
     return (
-      <div>
-        <h3 className="title is-4" style={{ marginTop: '30px' }}>Prints</h3>
           <Table isNarrow className="is-fullwidth" style={{marginTop: '10px'}}>
             <thead>
               <tr style={{background: '#eff7ff', border: '1px solid #c1ddff'}}>
-                <th colSpan={1} style={{fontWeight: 'normal'}}>
-                  Job #
-                </th>
-                <th colSpan={3} style={{fontWeight: 'normal'}}>
-                  Description
-                </th>
-                <th colSpan={1} className="has-text-right" style={{fontWeight: 'normal'}}>
-                  Created At
+                <th colSpan={5} style={{fontWeight: 'normal'}}>
+                  Asset Name
                 </th>
               </tr>
             </thead>
             <tbody style={{border: '1px solid #dadee1'}}>
-              {this.renderPrints()}
+              {this.renderAssets()}
             </tbody>
           </Table> 
-      </div>
     )
   }
 
+  renderGallery() {
+    if (this.state.print.attributes.assets.length == 0) return null;
+    var assets = this.state.print.attributes.assets
+    var images = assets.reduce((image_paths, item) => { 
+      if (item.attributes.content_type.match(/^image|img/)) {  
+        const url = `${this.props.location.pathname}/assets/${item.id}/download`
+        const img = {
+          original: url,
+          thumbnail: url,  
+        };
+        return image_paths.concat(img)
+      } else {
+        return image_paths;
+      }
+      
+    }, [])
+
+    if (images.length == 0) return null;
+    
+
+    return(
+      <div className="column">
+        <ImageGallery
+          items={images}
+          showPlayButton={false}
+          showFullscreenButton={true}
+          useBrowserFullscreen={false}
+          showBullets={false}
+          infinite={true}
+          lazyLoad={false}
+          showThumbnails={images.length > 1}
+          // renderLeftNav={this.renderLeftNav}
+        />
+      </div>
+    )
+  }
+  
   renderContent() {
     if (this.state.isLoading) {
       return (<SpinnerModal />)
@@ -310,8 +295,15 @@ export class SliceDetails extends React.Component {
     } else {
       return (<div>
           {this.renderGcode()}
-          {this.renderProjectSection()}
-          {this.renderProfileSection()}
+          <br/>
+          {this.renderAssetsContainer()}
+          <div>
+            <div className="columns">
+              {this.renderGallery()}
+              <div className="column">                
+              </div>
+            </div>
+          </div>
         </div>
       )
     }
@@ -327,17 +319,18 @@ export class SliceDetails extends React.Component {
               <Breadcrumb>
                 <ul>
                   <BreadcrumbItem className="title is-4">
-                    <Link to={`/${this.props.match.params.username}/slices`}>Slices</Link>
+                    <Link to={`/${this.props.match.params.username}/prints`}>Prints</Link>                    
                   </BreadcrumbItem>
-
-                  <BreadcrumbItem className="title is-4" > &nbsp; {this.state.slice.attributes && this.state.slice.attributes.name}</BreadcrumbItem>
+                  <BreadcrumbItem className="title is-4" > &nbsp;&nbsp; {this.state.print.attributes && this.state.print.attributes.job}</BreadcrumbItem>
                 </ul>
               </Breadcrumb>
+                <p style={{whiteSpace: 'pre'}}>
+                  {this.state.print.attributes && this.state.print.attributes.description}
+                </p>
             </Column>
             <Column className="has-text-right"><Link className="button" to={`${this.props.match.url}/edit`}>Edit</Link></Column>
           </Columns>
           {this.renderContent()}
-          {this.renderPrintsContainer()}
         </Container>
         <br/>
       </div>
@@ -345,4 +338,4 @@ export class SliceDetails extends React.Component {
   }   
 }
 
-export default SliceDetails;
+export default PrintDetails;

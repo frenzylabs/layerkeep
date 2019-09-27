@@ -31,15 +31,11 @@ export class Nav extends React.Component {
     return(
       <Navbar className="is-fixed-top is-light is-flex" style={{justifyContent: "space-between", borderBottom: '1px solid #d3d3d3'}}>
         
-          <NavbarBrand >
-          
+        <NavbarBrand >          
           <Link to={`/${currentUser.username}/projects/`} className="navbar-logo navbar-item">LayerKeep</Link>
-          <Link to={`/${currentUser.username}/profiles/`} className="navbar-item is-hidden-desktop">Profiles</Link>
           <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
-          <Link to={`/${currentUser.username}/slices`} className="navbar-item is-hidden-desktop">Slices</Link>
           <NavbarBurger isActive={this.state.isActive} onClick={this.onClickNav} />
-
-          </NavbarBrand>
+        </NavbarBrand>
           
         
 
@@ -48,6 +44,7 @@ export class Nav extends React.Component {
             <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
             <Link to={`/${currentUser.username}/projects/`} className="navbar-item">Projects</Link>
             <Link to={`/${currentUser.username}/slices`} className="navbar-item">Slices</Link>
+            <Link to={`/${currentUser.username}/prints`} className="navbar-item">Prints</Link>
           </NavbarStart>
           <NavbarEnd>
             <UserNavMenu />            

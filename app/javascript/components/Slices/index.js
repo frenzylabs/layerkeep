@@ -9,8 +9,6 @@
 import React                from 'react';
 import { Switch, Route, Link } from "react-router-dom";
 
-
-
 import { SliceNew }   from './new';
 import { SliceDetails }   from './details';
 import { SliceEdit }   from './edit';

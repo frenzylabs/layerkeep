@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_31_141525) do
+ActiveRecord::Schema.define(version: 2019_09_23_181436) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
   create_table "assets", force: :cascade do |t|
     t.string "name", null: false
     t.string "filepath"
-    t.string "content_type"
+    t.string "content_type"44
     t.string "kind"
     t.jsonb "metadata", default: {}
     t.jsonb "file_data"
@@ -44,6 +44,20 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
     t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id"], name: "index_assets_on_owner_type_and_owner_id"
     t.index ["user_id"], name: "index_assets_on_user_id"
+  end
+
+  create_table "metadata", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "value", null: false
+    t.string "description"
+    t.bigint "owner_id"
+    t.string "owner_type"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_type", "owner_id"], name: "index_metadata_on_owner_type_and_owner_id"
+    t.index ["user_id", "name", "value"], name: "index_metadata_on_user_id_and_name_and_value"
+    t.index ["user_id"], name: "index_metadata_on_user_id"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -105,7 +119,7 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
     t.boolean "is_private", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["lookup_name"], name: "index_packages_on_lookup_name", unique: true
+    t.index ["name"], name: "index_packages_on_name", unique: true
   end
 
   create_table "plans", force: :cascade do |t|
@@ -118,25 +132,35 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
     t.integer "trial_period", default: 0
     t.string "description", default: ""
     t.jsonb "metadata", default: {}
-    t.jsonb "features", default: {}
     t.boolean "active", default: true
     t.boolean "is_private", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "features", default: {}
     t.jsonb "feature_details"
-    t.index ["nickname"], name: "index_plans_on_nickname"
     t.index ["product_id"], name: "index_plans_on_product_id"
+  end
+
+  create_table "prints", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "status", default: "created"
+    t.bigint "job", default: 0
+    t.bigint "user_id"
+    t.bigint "slice_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_prints_on_user_id"
   end
 
   create_table "products", force: :cascade do |t|
     t.string "stripe_id"
     t.string "name"
-    t.string "lookup_name"
     t.string "status"
     t.boolean "active", default: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["lookup_name"], name: "index_products_on_lookup_name", unique: true
+    t.string "lookup_name"
   end
 
   create_table "remote_sources", force: :cascade do |t|
@@ -149,7 +173,6 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
   end
 
   create_table "repos", force: :cascade do |t|
-    t.citext "name", null: false
     t.string "description"
     t.string "oid"
     t.string "latest_commit_id"
@@ -161,6 +184,7 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
     t.datetime "updated_at", null: false
     t.bigint "remote_source_id"
     t.string "remote_src_url"
+    t.citext "name"
     t.index ["remote_source_id"], name: "index_repos_on_remote_source_id"
     t.index ["user_id", "kind", "name"], name: "index_repos_on_user_id_and_kind_and_name"
     t.index ["user_id"], name: "index_repos_on_user_id"
@@ -227,12 +251,11 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
     t.bigint "package_id"
     t.integer "current_period_end"
     t.string "status"
-    t.string "reason", default: ""
-    t.string "failure_code", default: ""
     t.boolean "is_trial", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["current_period_end"], name: "index_subscriptions_on_current_period_end"
+    t.string "reason", default: "", null: false
+    t.string "failure_code", default: "", null: false
     t.index ["package_id"], name: "index_subscriptions_on_package_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
@@ -281,6 +304,7 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
   end
 
   add_foreign_key "assets", "users"
+  add_foreign_key "metadata", "users"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_grants", "users", column: "resource_owner_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
@@ -288,6 +312,7 @@ ActiveRecord::Schema.define(version: 2019_08_31_141525) do
   add_foreign_key "package_plans", "packages", on_delete: :cascade
   add_foreign_key "package_plans", "plans", on_delete: :cascade
   add_foreign_key "plans", "products"
+  add_foreign_key "prints", "users"
   add_foreign_key "repos", "users"
   add_foreign_key "slice_files", "repos"
   add_foreign_key "slice_files", "slices"

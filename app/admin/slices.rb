@@ -1,4 +1,5 @@
 ActiveAdmin.register Slice do
+  json_editor
 # See permitted parameters documentation:
 # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
 #
@@ -13,6 +14,12 @@ ActiveAdmin.register Slice do
 # end
 includes :project_files
 includes :slicer_engine
+
+controller do
+  def permitted_params
+    params.permit!
+  end
+end
 # sidebar "Slice Details", only: [:show, :edit] do
 #   ul do
 #     li link_to "Tickets",    admin_slice_slice_files_path(resource)

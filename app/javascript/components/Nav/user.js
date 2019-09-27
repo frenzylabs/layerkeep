@@ -33,8 +33,21 @@ export class UserNavMenu extends React.Component {
               <p>{currentUser.username}</p>              
             </NavbarItem>
 
-            <NavbarDivider />
-            
+            <NavbarDivider className="is-visible" />
+            <NavbarItem className="is-hidden-desktop">
+              <Link to={`/${currentUser.username}/profiles/`} className="navbar-item is-hidden-desktop">Profiles</Link>
+            </NavbarItem>
+            <NavbarItem className="is-hidden-desktop">
+              <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
+            </NavbarItem>
+          
+            <NavbarItem className="is-hidden-desktop">
+              <Link to={`/${currentUser.username}/slices`} className="navbar-item is-hidden-desktop">Slices</Link>
+            </NavbarItem>
+            <NavbarItem className="is-hidden-desktop">
+              <Link to={`/${currentUser.username}/prints`} className="navbar-item is-hidden-desktop">Prints</Link>
+            </NavbarItem>
+
             <NavbarItem >
               <Link to={`/${currentUser.username}/settings/account`}> Settings </Link>
             </NavbarItem>
