@@ -31,7 +31,7 @@ class VideoViewer extends Component {
         <div className="video-container">
           {this.renderLoading()}
           <video
-            style={{ visibility, outline: 'none' }}
+            style={{ visibility, outline: 'none', maxHeight: "calc(100vh - 75px)" }}
             controls
             type={`video/${this.props.fileType}`}
             onCanPlay={e => this.onCanPlay(e)}

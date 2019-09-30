@@ -37,7 +37,6 @@ export default class PhotoViewerWrapper extends Component {
       this.props.filePath,
       // Function when resource is   loaded
       (texture) => {
-        console.log(texture)
         this.setState({
           originalWidth: texture.image.width,
           originalHeight: texture.image.height,

@@ -8,11 +8,12 @@
 
 import React              from 'react';
 import { Link }           from 'react-router-dom';
-import ImageGallery       from 'react-image-gallery';
 
 import { PrintHandler }   from '../../handlers';
 import SpinnerModal       from '../Modal/spinner';
 import { PrintAssetItem } from './asset_item'
+
+import Gallery   from '../Utils/gallery';
 
 import { 
   Container,
@@ -142,22 +143,33 @@ export class PrintDetails extends React.Component {
       <div className={`card`}>
         <div className="card-header">
           <div className="card-header-title level">
-            <p className="level-left">Gcode</p>          
+            <p className="level-left">Slice Details</p>          
           </div>
         </div>
 
         <div className="card-content">
-            <div className="level">
-              <div className="level-left">
-                <div className="level-item">
-                  <Link to={url}>{this.state.print.attributes.slices.attributes.name}</Link>
+          <div className={`card`}>
+            <div className="card-header">
+              <p className="card-header-title">
+                GCode File
+              </p>
+            </div>
+
+            <div className="card-content">
+              <div className="level">
+                <div className="level-left">
+                  <div className="level-item">
+                    <Link to={url}>{this.state.print.attributes.slices.attributes.name}</Link>
+                  </div>
+                </div>
+                <div className="level-right">
+                  {this.renderDownloadLink()}
+                  {this.renderLogfileLink()}                
                 </div>
               </div>
-              <div className="level-right">
-                {this.renderDownloadLink()}
-                {this.renderLogfileLink()}                
-              </div>
             </div>
+          </div>
+            
             {this.renderProjectSection()}
             {this.renderProfileSection()}
         </div>
@@ -262,21 +274,10 @@ export class PrintDetails extends React.Component {
     }, [])
 
     if (images.length == 0) return null;
-    
 
-    return(
-      <div className="column">
-        <ImageGallery
-          items={images}
-          showPlayButton={false}
-          showFullscreenButton={true}
-          useBrowserFullscreen={false}
-          showBullets={false}
-          infinite={true}
-          lazyLoad={false}
-          showThumbnails={images.length > 1}
-          // renderLeftNav={this.renderLeftNav}
-        />
+    return (
+      <div className="column"> 
+      <Gallery images={images} />
       </div>
     )
   }
@@ -333,6 +334,7 @@ export class PrintDetails extends React.Component {
           {this.renderContent()}
         </Container>
         <br/>
+        
       </div>
     )
   }   
