@@ -79,9 +79,9 @@ class ApplicationController < ActionController::Base
       serializer = DefaultSerializer
     end
 
-    if options[:meta].blank? 
+    if options[:meta].blank?
       options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }
-    end
+    end    
     serializer.new(items, options)
   end
   
@@ -105,24 +105,24 @@ class ApplicationController < ActionController::Base
   end
   
 
-  def paginate(items, serializer = nil, options = {})    
-    serializer_name = ""
-    if serializer.nil?
-      serializer_name = "#{controller_name}_serializer".camelize      
-    elsif serializer.is_a? String 
-      serializer_name = serializer
-    end
+  # def paginate(items, serializer = nil, options = {})    
+  #   serializer_name = ""
+  #   if serializer.nil?
+  #     serializer_name = "#{controller_name}_serializer".camelize      
+  #   elsif serializer.is_a? String 
+  #     serializer_name = serializer
+  #   end
 
-    begin
-      serializer =  serializer_name.constantize
-    rescue
-      serializer = DefaultSerializer
-    end
+  #   begin
+  #     serializer =  serializer_name.constantize
+  #   rescue
+  #     serializer = DefaultSerializer
+  #   end
 
-    if options[:meta].blank? 
-      options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }
-    end
-    serializer.new(items, options)
-  end
+  #   if options[:meta].blank? 
+  #     options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }
+  #   end
+  #   serializer.new(items, options)
+  # end
 
 end

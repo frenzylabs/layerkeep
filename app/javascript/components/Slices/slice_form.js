@@ -130,7 +130,6 @@ export class SliceForm extends React.Component {
     }
     handler
     .then((response) => {
-      console.log(response)
       this.setState({
         makingRequest: false,
         redirect:     true,
@@ -141,7 +140,6 @@ export class SliceForm extends React.Component {
       }
     })
     .catch((error) => {
-      console.log(error);
       this.setState({
         makingRequest: false,
         requestError: error

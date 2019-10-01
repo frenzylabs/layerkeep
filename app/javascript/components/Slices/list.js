@@ -149,19 +149,19 @@ export class SliceList extends React.Component {
   selectProject(item, id) {
     var search = this.state.search
     if (item["id"]) {
-      if (search.q["repo_id"] != item["id"]) {
-        this.setState({ search: {...search, page: 1, q: {...search.q, repo_id: item["id"]} }})
+      if (search.q["project_id"] != item["id"]) {
+        this.setState({ search: {...search, page: 1, q: {...search.q, project_id: item["id"]} }})
       }
     } else {
       var q = Object.assign({}, search.q)
-      delete q["repo_id"]
+      delete q["project_id"]
       this.setState({ search: {...search, page: 1, q: q }})
     }
   }
 
   renderRepos() {
     if (!this.state.projects) return null;
-    var selectedRepo =  this.state.projects.find((x) => x["id"] == this.state.search.q["repo_id"])
+    var selectedRepo =  this.state.projects.find((x) => x["id"] == this.state.search.q["project_id"])
     return (
       <div className="level" >  
           <div className="level-left">

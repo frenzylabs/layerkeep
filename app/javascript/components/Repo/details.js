@@ -22,7 +22,7 @@ import { RepoHandler }      from '../../handlers';
 import { RevisionPathTrail }  from './revision_path_trail'
 import { FileViewer }       from '../FileViewer';
 
-import ImageGallery from 'react-image-gallery';
+import Gallery   from '../Utils/gallery';
 
 import {
   Error404,
@@ -221,17 +221,7 @@ class Details extends React.Component {
 
     return(
       <div className="column">
-        <ImageGallery
-          items={this.state.image_paths}
-          showPlayButton={false}
-          showFullscreenButton={true}
-          useBrowserFullscreen={false}
-          showBullets={false}
-          infinite={true}
-          lazyLoad={false}
-          showThumbnails={this.state.image_paths.length > 1}
-          renderLeftNav={this.renderLeftNav}
-        />
+        <Gallery images={this.state.image_paths} />        
       </div>
     )
   }

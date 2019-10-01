@@ -29,7 +29,8 @@ import {
   Profile,
   ProfileNew,
   Settings,
-  SliceIndex
+  SliceIndex,
+  PrintIndex
 } from './components';
 
 
@@ -96,6 +97,7 @@ class AppContainer extends React.Component {
        ],
 
        sidebarLayoutRoutes: [
+        {path: '/:username/:kind(prints)', exact: false, component: PrintIndex},
         {path: '/:username/:kind(slices)', exact: false, component: SliceIndex},
         {path: '/:username/:kind(settings)', exact: false, component: Settings},
         {path: '/:username/:kind(projects)/new', component: ProjectNew},

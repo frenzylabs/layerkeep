@@ -40,7 +40,7 @@ export default class PackageSelectModal extends React.Component {
     .catch((err) => {
       console.error("err: ", err)
       var errMessage = "There was an error saving your card."
-      if (err.response.data && err.response.data.error) {
+      if (err.response && err.response.data && err.response.data.error) {
         console.log(err.response.data)
         var error = err.response.data.error
         if (error.message) {

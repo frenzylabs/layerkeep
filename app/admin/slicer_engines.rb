@@ -13,13 +13,13 @@ ActiveAdmin.register SlicerEngine do
 #   permitted
 # end
 
-form do |f|
-  f.inputs do
-    f.input :name
-    f.input :version
-    f.input :options
-    f.input :active
+  form do |f|
+    f.inputs do
+      f.input :name
+      f.input :version
+      f.input :options
+      f.input :active
+    end
+    f.actions
   end
-  f.actions
-end
 end

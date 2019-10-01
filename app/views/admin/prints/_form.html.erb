@@ -1,0 +1,8 @@
+<%= semantic_form_for [:admin, @print], builder: ActiveAdmin::FormBuilder do |f| %>
+    <%= f.inputs "Print" do -%>
+      <%= f.inputs %>
+
+    <% end %>
+
+    <%= f.actions %>
+<% end %>

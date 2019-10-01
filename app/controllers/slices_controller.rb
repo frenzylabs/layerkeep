@@ -10,16 +10,22 @@ class SlicesController < AuthController
       request.format = :json
     end
     slices = Slice.where(user_id: @user.id)    
-    filter_params = (params[:q] && params.permit([q: [:repo_id, :repo_filepath]])[:q]) || {} 
+    filter_params = (params[:q] && params.permit([q: [:project_id, :profile_id, :repo_filepath]])[:q]) || {} 
 
-    if filter_params["repo_id"]
-      slices = slices.joins(:project_files).where(slice_files: {repo_id: filter_params["repo_id"]})
+    if filter_params["project_id"] || filter_params["profile_id"]
+      repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
+      slices = slices.joins(:files).where("slice_files.repo_id IN (?)", repos).group("slices.id").having("COUNT(slice_files.id) = #{repos.count}") # =>  filter_params["project_id"])
       slices = slices.where(slice_files: {filepath: filter_params["repo_filepath"]}) if (filter_params["repo_filepath"]) 
     end
-    if params["repo_id"] 
-      slices = slices.joins(:project_files).where(slice_files: {repo_id: params["repo_id"]})
-      slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
-    end
+
+    # if filter_params["project_id"]
+    #   slices = slices.joins(:project_files).where(slice_files: {repo_id: filter_params["repo_id"]})
+    #   slices = slices.where(slice_files: {filepath: filter_params["repo_filepath"]}) if (filter_params["repo_filepath"]) 
+    # end
+    # if params["repo_id"] 
+    #   slices = slices.joins(:project_files).where(slice_files: {repo_id: params["repo_id"]})
+    #   slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
+    # end
 
     slices = slices.includes(:slicer_engine)
               .order("slices.updated_at desc")

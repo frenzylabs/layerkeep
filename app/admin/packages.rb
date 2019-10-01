@@ -71,7 +71,6 @@ end
         column(:nickname) { |pp| link_to pp.plan.nickname, [ :admin, pp.plan ] }
         column(:amount) { |pp| pp.plan.amount }
       end
-      
     end
   end
 
