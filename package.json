@@ -30,6 +30,7 @@
     "react-gh-like-diff": "^1.0.6-beta.1",
     "react-image-gallery": "^0.8.17",
     "react-markdown": "^4.0.8",
+    "react-modal-image": "^2.4.0",
     "react-redux": "^7.0.3",
     "react-router-dom": "^5.0.0",
     "react-stripe-elements": "^4.0.0",

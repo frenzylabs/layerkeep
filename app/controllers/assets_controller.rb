@@ -17,9 +17,21 @@ class AssetsController < AuthController
 
   def show
     authorize(@user)
+    asset = Asset.includes(:owner).find_by!(id: params[:id], user_id: @user.id)
+    # binding.pry
+    asset = AssetsSerializer.new(asset, { params: { owner: true }}).serializable_hash
+    respond_with(asset)
+    # respond_with asset, json: asset  
+  end
+
+  def download
+    authorize(@user, :show?)
     asset = Asset.find_by!(id: params[:id], user_id: @user.id)
-    
-    respond_with asset, json: asset  
+    fileurl = asset.file_url(response_content_disposition: "attachment; filename=\"#{asset.name}\"")
+    # fileurl = asset.file_url
+    $tracker.track(current_user.id, "Download Asset file")    
+    Rails.logger.info(fileurl)
+    redirect_to fileurl
   end
 
   def destroy

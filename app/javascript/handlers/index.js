@@ -14,3 +14,5 @@ export { default as RepoHandler }     from './repo_handler';
 export { default as SliceHandler }    from './slice_handler';
 export { default as UserHandler }     from './user_handler';
 export { default as GcodeHandler }     from './slice_handler';
+export { default as PrintHandler }     from './print_handler';
+export { default as AssetHandler }     from './asset_handler';

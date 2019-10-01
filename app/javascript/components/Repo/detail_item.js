@@ -33,7 +33,7 @@ export class RepoDetailItem extends React.Component {
       } else {
         path = url + "/" + path
       }
-      return (<Link to={path}>{item.name}</Link>)
+      return (<Link to={path} title="View Directory">{item.name}</Link>)
     } else {
       let urlParams = this.props.match.params
       if (!urlParams.revisionPath) {
@@ -42,7 +42,7 @@ export class RepoDetailItem extends React.Component {
       urlParams.revisionPath = urlParams.revisionPath.replace(/(\/)$/, "");      
       const filepath = "/" + [urlParams.username, urlParams.kind, urlParams.name, "files", urlParams.revisionPath, path].join("/")
 
-      return (<Link to={{pathname: filepath, state: {repo: this.props.repo}}} >{item.name}</Link>) 
+      return (<Link to={{pathname: filepath, state: {repo: this.props.repo}}} title="View File">{item.name}</Link>) 
     }
   }
 
@@ -51,9 +51,13 @@ export class RepoDetailItem extends React.Component {
     if (!urlParams.revisionPath) {
       urlParams.revisionPath = "master"
     }
+    var title="Download File"
+    if (item.type == "tree") {
+      title = "Download Zip Directory"
+    }
     return (
       <p className="control">
-          <a className="button is-small" href={`/${urlParams.username}/${urlParams.kind}/${urlParams.name}/content/${urlParams.revisionPath}/${item.name}?download=true`}>
+          <a title={title} className="button is-small" href={`/${urlParams.username}/${urlParams.kind}/${urlParams.name}/content/${urlParams.revisionPath}/${item.name}?download=true`}>
                 <span className="icon is-small">
                   <i className="far fa-download"></i>
                 </span>
@@ -68,7 +72,7 @@ export class RepoDetailItem extends React.Component {
     }
     return (
       <p className="control">
-        <Button className="button is-small" onClick={() => { this.props.deleteFile(item.name)} }>
+        <Button title="Delete File" className="button is-small" onClick={() => { this.props.deleteFile(item.name)} }>
           <span className="icon is-small">
             <i className="far fa-trash"></i>
           </span>

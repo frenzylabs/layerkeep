@@ -153,8 +153,10 @@ export class Project extends React.Component {
             <Column className="has-text-right">
               <Link className="button" to={`/${this.props.match.params.username}/projects/${this.state.project.name}/revisions`}>Revisions</Link>
               { currentUser.username == this.props.match.params.username ? 
-              <Link className="button" to={`/${this.props.match.params.username}/slices?q[repo_id]=${this.state.project.id}`}>Slices</Link>
-              : "" }
+              <span><Link className="button" to={`/${this.props.match.params.username}/slices?q[project_id]=${this.state.project.id}`}>Slices</Link>
+              <Link className="button" to={`/${this.props.match.params.username}/prints?q[project_id]=${this.state.project.id}`}>Prints</Link>
+              </span>
+              : "" }              
             </Column>
           </Columns>
         </Container>

@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import PhotoViewer from './photo-viewer';
 import Photo360Viewer from './photo360-viewer';
 import Loading from '../loading';
+import { FileLoader, ImageLoader } from 'three';
 
 function getPhotoDriver(width, height, fileType) {
   if (fileType === 'jpg' && window.Math.abs((width / height) - 2) <= 0.01) {
@@ -28,7 +29,8 @@ export default class PhotoViewerWrapper extends Component {
   componentDidMount() {
     // spike on using promises and a different loader or adding three js loading manager
     const loader = new THREE.TextureLoader();
-    loader.crossOrigin = '';
+    // loader.setCrossOrigin('anonymous')
+    loader.crossOrigin = undefined;
     // load a resource
     loader.load(
       // resource URL

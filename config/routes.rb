@@ -94,12 +94,25 @@ Rails.application.routes.draw do
       patch 'subscription_items/:item_id', to: 'subscription_items#update'
       resources :cards, controller: 'user_cards'
     end
-    post 'assets/:owner/presign', to: 'assets#presign'
-    post 'assets/:owner/:owner_id/presign', to: 'assets#presign'
+    # post 'assets/:owner/presign', to: 'assets#presign'
+    # post 'assets/:owner/:owner_id/presign', to: 'assets#presign'
+
+    post ':owner/assets/presign', to: 'assets#presign', constraints: { owner: /(slices|prints)/ }
+    get ':owner/:owner_id/assets/:id/download', to: 'assets#download', constraints: { owner: /(slices|prints)/ }
 
     get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
     post 'slices/generate', to: 'slices#generate'    
-    resources :slices, constraints: lambda { |req| req.format == :json }
+    resources :slices, constraints: lambda { |req| req.format == :json } do
+      resources :assets do
+        member do
+          get "download", to: 'assets#download'
+        end
+      end
+    end
+
+    resources :prints, constraints: lambda { |req| req.format == :json } do
+      resources :assets
+    end
 
     # resources :gcodes, controller: 'gcodes', constraints: lambda { |req| req.format == :json }
     # post 'gcodes/presign', to: 'gcodes#presign'

@@ -11,13 +11,16 @@ import React               from 'react';
 import { Container } from 'bloomer';
 import { FileLoader }     from 'three';
 import { SceneManager }  from '../../Repo/scene_manager';
-
+import Loading from '../loading';
 
 class SceneViewer extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {contentType: null, localUrl: null, extension: ''}
+    this.state = {contentType: null, localUrl: null, extension: '', loading: true}
+    
+  }
+  componentDidMount() {
     this.loadFile();
   }
 
@@ -31,7 +34,7 @@ class SceneViewer extends React.Component {
       var binaryResponse = self.ensureBinary(resp);
       var blob = new Blob( [ binaryResponse ], { type: contentType } );
       var localUrl = window.URL.createObjectURL(blob);
-      self.setState({ contentType: contentType, localUrl: localUrl }) //, extension: ext })
+      self.setState({ contentType: contentType, localUrl: localUrl, loading: false }) //, extension: ext })
     })
   }
 
@@ -61,11 +64,20 @@ class SceneViewer extends React.Component {
       return (<SceneManager file={this.state} {...this.props} />)
     }
   }
+
+  renderLoading() {
+    if (this.state.loading) {
+      return <Loading />;
+    }
+    return null;
+  }
+
   
   render() {
 
     return (
       <div className="" style={{height: '100%'}}>
+          {this.renderLoading()}
           {this.renderCanvas()}
       </div>
     );

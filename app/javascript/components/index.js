@@ -23,3 +23,4 @@ export { Revisions }        from './Repo/revisions';
 export { Revision }         from './Repo/revision';
 export { StatusError }      from './ErrorViews';
 export { Loader }           from './Loader';
+export { PrintIndex }       from './Prints';

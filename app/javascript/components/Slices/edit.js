@@ -86,7 +86,7 @@ export class SliceEdit extends React.Component {
   uploadStorageConfig() {
     var slicepath = `/${this.props.match.params.username}/slices`
     return {
-      directUploadPath: `/${this.props.match.params.username}/assets/slices/presign`,
+      directUploadPath: `/${this.props.match.params.username}/slices/assets/presign`,
       endpoint: {
         path: `${slicepath}/${this.props.match.params.sliceId}`,
         model: 'Slice',
