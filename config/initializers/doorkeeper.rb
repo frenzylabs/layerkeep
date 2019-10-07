@@ -14,6 +14,17 @@ Doorkeeper.configure do
       current_user || warden.authenticate!(scope: :user)
   end
 
+  resource_owner_from_credentials do |tok|
+    # binding.pry
+    # user = User.find_for_database_authentication(email: params[:username])
+    user = User.where(["lower(username) = :value OR lower(email) = :value", {value: params[:username].strip.downcase}]).first
+    if user&.valid_for_authentication? { user.valid_password?(params[:password]) } && user&.active_for_authentication?
+      request.env['warden'].set_user(user, scope: :user, store: false)
+      user
+    end
+
+  end
+
   # If you didn't skip applications controller from Doorkeeper routes in your application routes.rb
   # file then you need to declare this block in order to restrict access to the web interface for
   # adding oauth authorized applications. In other case it will return 403 Forbidden response
@@ -65,11 +76,19 @@ Doorkeeper.configure do
   # custom_access_token_expires_in do |context|
   #   context.client.application.additional_settings.implicit_oauth_expiration
   # end
+  custom_access_token_expires_in do |context|
+    # context.grant_type for grant_type, context.client for client, context.scopes for scopes
+    if context.client && context.client.name.downcase == "ancilla" #context.grant_type == Doorkeeper::OAuth::CLIENT_CREDENTIALS # see Doorkeeper::OAuth::GRANT_TYPES for other types
+      Float::INFINITY
+    else 
+      15.minutes.to_i
+    end
+  end
 
   # Use a custom class for generating the access token.
   # See https://github.com/doorkeeper-gem/doorkeeper#custom-access-token-generator
   #
-  # access_token_generator '::Doorkeeper::JWT'
+  access_token_generator '::Doorkeeper::JWT'
 
   # The controller Doorkeeper::ApplicationController inherits from.
   # Defaults to ActionController::Base.
@@ -290,7 +309,7 @@ Doorkeeper.configure do
   #   http://tools.ietf.org/html/rfc6819#section-4.4.2
   #   http://tools.ietf.org/html/rfc6819#section-4.4.3
   #
-  # grant_flows %w[authorization_code client_credentials]
+  grant_flows %w[authorization_code client_credentials password]
 
   # Hook into the strategies' request & response life-cycle in case your
   # application needs advanced customization or logging:
@@ -298,7 +317,7 @@ Doorkeeper.configure do
   # before_successful_strategy_response do |request|
   #   puts "BEFORE HOOK FIRED! #{request}"
   # end
-  #
+  
   # after_successful_strategy_response do |request, response|
   #   puts "AFTER HOOK FIRED! #{request}, #{response}"
   # end
@@ -311,21 +330,70 @@ Doorkeeper.configure do
   # end
   #
   # after_successful_authorization do |controller|
-  #   controller.session[:logout_urls] <<
-  #     Doorkeeper::Application
-  #       .find_by(controller.request.params.slice(:redirect_uri))
-  #       .logout_uri
+    # controller.session[:logout_urls] <<
+    #   Doorkeeper::Application
+    #     .find_by(controller.request.params.slice(:redirect_uri))
+    #     .logout_uri
   # end
 
   # Under some circumstances you might want to have applications auto-approved,
   # so that the user skips the authorization step.
   # For example if dealing with a trusted application.
   #
-  # skip_authorization do |resource_owner, client|
-  #   client.superapp? or resource_owner.admin?
-  # end
+  skip_authorization do |resource_owner, client|
+    true
+    # client.superapp? or resource_owner.admin?
+  end
 
   # WWW-Authenticate Realm (default "Doorkeeper").
   #
   # realm "Doorkeeper"
+end
+
+
+
+Doorkeeper::JWT.configure do
+  # Set the payload for the JWT token. This should contain unique information
+  # about the user. Defaults to a randomly generated token in a hash:
+  #     { token: "RANDOM-TOKEN" }
+  token_payload do |opts|
+    user = User.find(opts[:resource_owner_id])
+
+    {
+      iss: 'Layerkeep',
+      iat: Time.current.utc.to_i,
+
+      # @see JWT reserved claims - https://tools.ietf.org/html/draft-jones-json-web-token-07#page-7
+      jti: SecureRandom.uuid,
+
+      user: {
+        username: user.username,
+        email: user.email
+      }
+    }
+  end
+
+  # Optionally set additional headers for the JWT. See
+  # https://tools.ietf.org/html/rfc7515#section-4.1
+  token_headers do |opts|
+    { kid: opts[:application][:uid] }
+  end
+
+  # Use the application secret specified in the access grant token. Defaults to
+  # `false`. If you specify `use_application_secret true`, both `secret_key` and
+  # `secret_key_path` will be ignored.
+  use_application_secret true
+
+  # Set the encryption secret. This would be shared with any other applications
+  # that should be able to read the payload of the token. Defaults to "secret".
+  # secret_key ENV['JWT_SECRET']
+
+  # If you want to use RS* encoding specify the path to the RSA key to use for
+  # signing. If you specify a `secret_key_path` it will be used instead of
+  # `secret_key`.
+  # secret_key_path File.join('path', 'to', 'file.pem')
+
+  # Specify encryption type (https://github.com/progrium/ruby-jwt). Defaults to
+  # `nil`.
+  encryption_method :hs512
 end

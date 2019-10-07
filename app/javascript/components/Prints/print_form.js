@@ -263,7 +263,7 @@ export class PrintForm extends React.Component {
                   <div className="level-item" >
                     <SearchDropdown id={"slices"} options={this.state.slices} selected={selectedSlice} onSelected={this.selectSlice} promptText={`Select Slice`} placeholder={`Slice Name`} />
                   </div>
-                  <div className="level-item"> <Link style={{fontSize: "14px"}} to={`/${this.props.match.params.username}/slices/new`}> &nbsp; [create a new one]</Link> </div>
+                  <div className="level-item"> <Link style={{fontSize: "14px"}} to={`/${this.props.match.params.username}/slices/new`}> &nbsp; [add a new one]</Link> </div>
                 </div>
             </div>
           </Container>

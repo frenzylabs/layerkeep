@@ -9,7 +9,9 @@
 
 Rails.application.routes.draw do
   mount StripeEvent::Engine, at: '/stripe' # provide a custom path
-  use_doorkeeper
+  use_doorkeeper do
+    controllers :tokens => 'oauth_tokens'
+  end
   
   devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }
 
@@ -35,7 +37,19 @@ Rails.application.routes.draw do
     match '*path', to: redirect('/'), via: :all
   end
 
+  unauthenticated :user do
+    get '/projects/new', to: redirect {|params, req|
+      req.session[:redirect_uri] = req.fullpath
+      '/users/sign_in'
+    }
+  end
+
   authenticated :user do
+    get '/projects/new', to: redirect {|params, req|
+      current_user = req.env["warden"].user(:user)
+      current_user ? "/#{current_user.username}#{req.fullpath}" : '/'
+    }
+
     root to: redirect {|params, request| 
       current_user = request.env["warden"].user(:user)
       current_user ? "/#{current_user.username}/projects/" : '/'
@@ -60,6 +74,7 @@ Rails.application.routes.draw do
   get '/packages', to: 'packages#index'
   get '/plans', to: 'plans#index'
   get '/products', to: 'products#index'
+  
   
 
   concern :repo_files do |options|

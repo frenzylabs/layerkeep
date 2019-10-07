@@ -36,6 +36,15 @@ class RepoFilesHandler
         next unless f.file?
         name = removeTopDir ? f.name.split("/")[1..-1].join("/") : f.name
         oid = @repo.write(f.get_input_stream.read(), :blob)
+      when Array
+        if f.length > 1 
+          name = f[0]
+          fp = f[1]
+          oid = @repo.write(fp.read(), :blob)
+        else
+          next
+        end
+
       else
         name = f.original_filename
         if  (f.content_type =~ /image\//) != nil

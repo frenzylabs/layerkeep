@@ -7,7 +7,7 @@
 #
 
 class AuthController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate!
   before_action :get_user
   skip_before_action :get_user, only: :access_token
 
@@ -23,6 +23,14 @@ class AuthController < ApplicationController
 
   def get_user()
     @user ||= (current_user && current_user.username == params["user"]) ? current_user : User.find_by!(username: params["user"] || "")
+  end
+
+  def authenticate!
+    if doorkeeper_token
+      doorkeeper_authorize!
+    else
+      authenticate_user!
+    end
   end
 
   def authorize_user 

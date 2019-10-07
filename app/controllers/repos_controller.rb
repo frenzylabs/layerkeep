@@ -9,6 +9,11 @@ require 'zip'
 
 class ReposController < AuthController
   respond_to :json
+  skip_before_action :authenticate!, :get_user, only: :new
+
+  def new
+
+  end
 
   def index
     repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).order("updated_at desc").
@@ -39,11 +44,8 @@ class ReposController < AuthController
     repo_params[:description] ||= ""
     
     @repo.assign_attributes(repo_params)
-    
-    
+
     post_params = params["repo"]
-    
-    
 
     repo_path = "#{@user.username}/#{params["kind"]}/#{@repo.name.downcase}" if @repo.name
     @repo.path = repo_path
@@ -124,11 +126,13 @@ class ReposController < AuthController
       req.headers['Authorization'] = "Bearer #{Rails.application.config.settings["thingiverse_api_token"]}"
     end
 
-    logger.info(resp.body)
-
     error_msg = "Error Retrieving From Thingiverse"
     error_msg += ": #{resp.body['error']}" if resp.body["error"]
     error_msg += ": #{resp.headers["x-error"]}" if resp.headers["x-error"]
+    if resp.body["error"] || resp.headers["x-error"]
+      # binding.pry
+      return create_thingiverse_files(params) 
+    end
     if resp.body["public_url"]
       uri = URI(resp.body["public_url"])
       code, tmpfilepath = download_to_tmp_path(uri)        
@@ -147,6 +151,46 @@ class ReposController < AuthController
     
   end
 
+  def create_thingiverse_files(params) 
+    conn = Faraday.new(:url => "https://api.thingiverse.com") do |con|
+      con.response :json, :content_type => /\bjson$/
+      con.adapter  Faraday.default_adapter  # make requests with Net::HTTP
+    end
+    
+    resp = conn.get do |req|
+      req.url "/things/#{params[:thing_id]}/files"
+      req.headers['Authorization'] = "Bearer #{Rails.application.config.settings["thingiverse_api_token"]}"
+    end
+
+    error_msg = "Error Retrieving From Thingiverse"
+    if resp.body.is_a?(Hash)
+      error_msg += ": #{resp.body["error"]}" if resp.body["error"]
+      error_msg += ": #{resp.headers["x-error"]}" if resp.headers["x-error"]
+      raise LayerKeepErrors::LayerKeepError.new(error_msg, resp.status) and return 
+    end
+    
+    download_errors = []
+    thingfiles = resp.body.reduce([]) do |acc, t| 
+      uri = URI(t["public_url"])
+      code, tmpfilepath = download_to_tmp_path(uri)        
+      logger.info(tmpfilepath)
+
+      if code != 200 
+        download_errors << "#{t["name"]}"
+        return acc
+      end
+      acc <<  [t["name"], File.new(tmpfilepath)]
+    end
+     
+    if thingfiles.count > 0
+      commit_message = "Created From Thingiverse #{params[:thing_id]}"
+      return thingfiles, commit_message
+    else
+      error_msg += download_errors.join(", ")
+      raise LayerKeepErrors::LayerKeepError.new(error_msg, 400) and return 
+    end
+  end
+
   def download_to_tmp_path(url, query = nil)
     uri = URI(url)
     if query
@@ -157,10 +201,13 @@ class ReposController < AuthController
       request = Net::HTTP::Get.new uri.request_uri
       http.request request do |response|
         case response
+        when Net::HTTPFound
+          return download_to_tmp_path(response["location"], query)
         when Net::HTTPForbidden 
           return response.code, "Forbidden"
         when Net::HTTPOK
-          ext = ".zip"
+          ext = "." + (uri.path.split(".").last || "zip")
+          # ext = ".zip"
           tmp = Tempfile.create([ 'repo', ext ])
           tmp_path = tmp.path
           tmp.close

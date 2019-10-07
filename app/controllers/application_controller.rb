@@ -48,7 +48,11 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    "/#{current_user.username}/projects/"
+    if session["redirect_uri"]
+      "/#{current_user.username}#{session["redirect_uri"]}"
+    else
+      "/#{current_user.username}/projects/"
+    end
   end
 
   def record_not_found
@@ -83,6 +87,22 @@ class ApplicationController < ActionController::Base
       options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }
     end    
     serializer.new(items, options)
+  end
+
+  def current_user
+    @current_user ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
+  end
+
+  def devise_current_user
+    @devise_current_user ||= warden.authenticate(scope: :user)
+  end
+  
+  def current_user
+    @current_user ||= if doorkeeper_token 
+              User.find(doorkeeper_token.resource_owner_id)
+          else
+            devise_current_user
+          end
   end
   
 
