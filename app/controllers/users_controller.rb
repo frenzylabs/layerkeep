@@ -12,6 +12,7 @@ class UsersController < AuthController
   def index
   end
 
+
   def settings
     user              = current_user
     user_params       = params[:user]

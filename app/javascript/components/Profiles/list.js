@@ -79,8 +79,6 @@ export class ProfileList extends React.Component {
     }
   }
 
-  
-
   renderPagination() {
     if (this.state.list.data.length > 0) {
       var {current_page, last_page, total} = this.state.list.meta;
@@ -101,13 +99,20 @@ export class ProfileList extends React.Component {
     return (
       <div className="section">
         <Container className="is-fluid">
-          <Breadcrumb>
-            <ul>
-              <BreadcrumbItem className="title is-4" isActive>
-                <Link to={`/${this.props.match.params.username}/profiles`}>Profiles</Link>
-              </BreadcrumbItem>
-            </ul>
-          </Breadcrumb>
+          <div className="columns is-mobile">
+            <div className="column">
+              <Breadcrumb>
+                <ul>
+                  <BreadcrumbItem className="title is-4" isActive>
+                    <Link to={`/${this.props.match.params.username}/profiles`}>Profiles</Link>
+                  </BreadcrumbItem>
+                </ul>
+              </Breadcrumb>
+            </div>
+            <div className="column is-3 has-text-right">
+              <Link className="button" to={`/${this.props.match.params.username}/profiles/new`}>New Profile</Link>
+            </div>    
+          </div>          
         </Container>
         
         <hr/>

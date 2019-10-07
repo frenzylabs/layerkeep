@@ -31,10 +31,14 @@ import { SearchDropdown } from '../Form/SearchDropdown'
 import { ProjectHandler } from '../../handlers';
 import Modal              from '../Modal';
 
+const qs = require('qs');
+
 export class ProjectNew extends React.Component {
   constructor(props) {
     super(props);
 
+    var qparams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true })
+    
     this.initialState = {
       nameLabel:        {title: "Name", caption: ""},
       canSubmit :       false, 
@@ -45,7 +49,9 @@ export class ProjectNew extends React.Component {
       fileList:         null,
       creatingRepo:     false,
       requestError:     null,
-      fileSources:      []
+      fileSources:      [],
+      thingID:          qparams["thing_id"],
+      remoteSource:     qparams["source"]
     };
     
     this.state = Object.assign({}, this.initialState);
@@ -88,7 +94,9 @@ export class ProjectNew extends React.Component {
       let sources = [{name: "Local", value: "0", id: "0"}].concat(remoteSources)
 
       this.setState({ fileSources: sources})
-      this.selectFileSource(sources[0], "sources0")
+      
+      var selectedSource = sources.find((item) => item.name.toLowerCase() == this.state.remoteSource) || sources[0]
+      this.selectFileSource(selectedSource, "sources0")
     })
     .catch((error) => {
       console.log(error);
@@ -224,6 +232,7 @@ export class ProjectNew extends React.Component {
               label="Thingiverse ThingID"
               name="thing_id"
               placeholder="Ex. https://www.thingiverse.com/thing:3746963  would be 3746963"
+              value={this.state.thingID}
             />
           </Control>
         )

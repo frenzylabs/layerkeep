@@ -27,6 +27,7 @@ gem "pundit"
 gem 'activeadmin'
 gem 'mailgun-ruby', '~>1.1.6'
 gem 'doorkeeper'
+gem 'doorkeeper-jwt'
 gem 'mixpanel-ruby'
 gem 'grack'
 gem 'faraday'
@@ -36,6 +37,7 @@ gem 'stripe'
 gem 'stripe_event'
 gem 'aws-sdk-s3'
 gem "shrine"
+gem 'rack-cors'
 
 group :development do
   gem 'listen', '>= 3.0.5', '< 3.2'
