@@ -75,7 +75,8 @@ class RepoPolicy
   end
 
   def permitted_attributes_for_create
-    if repo.user.subscription_handler.features["project"]["private_repos"]
+    features = repo.user.subscription_handler.features
+    if features && features["project"] && features["project"]["private_repos"]
       repo_create_attributes + [:is_private]
     else
       repo_create_attributes
