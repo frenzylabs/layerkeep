@@ -7,6 +7,7 @@
 //
 
 import React from 'react'
+import { Link }       from 'react-router-dom';
 import SpinnerModal from '../../../Modal/spinner'
 
 export default class Packages extends React.Component {
@@ -114,7 +115,7 @@ export default class Packages extends React.Component {
         </div>
 
         <footer className="card-footer">
-            <a className="card-footer-item" >Contact Us</a>
+          <Link className="card-footer-item" to={{pathname: '/contact-us', state: { subject: "billing" }}}>Contact Us</Link>
         </footer>
       </div>
     )

@@ -256,6 +256,7 @@ class BillingSettings extends Component {
             packageClick={this.selectPackage.bind(this)}
             subscription={this.state.subscription}
             currentPackage={this.currentPackage()}
+            user={this.props.match.params.username}
           />
 
           {this.renderStripeModal()}

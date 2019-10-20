@@ -1,0 +1,13 @@
+Hey Team,
+<%= "#{@contact.first_name} #{@contact.last_name}" %> has contacted you via web form.
+<% if @contact.user %>
+  UserId: <%= @contact.user.id %>
+<% end %>
+Subject: <%= @contact.subject %>
+Message: 
+<%= @contact.message %>
+
+Get on it!
+
+[http]  https://www.layerkeep.com
+[email] contact@layerkeep.com

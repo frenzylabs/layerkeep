@@ -89,10 +89,6 @@ class ApplicationController < ActionController::Base
     serializer.new(items, options)
   end
 
-  def current_user
-    @current_user ||= User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
-  end
-
   def devise_current_user
     @devise_current_user ||= warden.authenticate(scope: :user)
   end

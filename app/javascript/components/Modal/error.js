@@ -24,7 +24,10 @@ export default class ErrorModal extends React.Component {
         } else {
           subtext = Object.keys(data).map((key, index) => {
             var item = data[key]
-            if (Array.isArray(item)) {
+            if (typeof(item) == "object") {
+              item = JSON.stringify(item)
+            }
+            else if (Array.isArray(item)) {
               item = item.join(", ")
             } 
             return (

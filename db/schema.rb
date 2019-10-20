@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_23_181436) do
+ActiveRecord::Schema.define(version: 2019_10_20_150334) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2019_09_23_181436) do
   create_table "assets", force: :cascade do |t|
     t.string "name", null: false
     t.string "filepath"
-    t.string "content_type"44
+    t.string "content_type"
     t.string "kind"
     t.jsonb "metadata", default: {}
     t.jsonb "file_data"
@@ -44,6 +44,20 @@ ActiveRecord::Schema.define(version: 2019_09_23_181436) do
     t.datetime "updated_at", null: false
     t.index ["owner_type", "owner_id"], name: "index_assets_on_owner_type_and_owner_id"
     t.index ["user_id"], name: "index_assets_on_user_id"
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "username"
+    t.string "message"
+    t.string "subject"
+    t.string "email"
+    t.boolean "responded", default: false
+    t.boolean "active", default: true
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "metadata", force: :cascade do |t|
