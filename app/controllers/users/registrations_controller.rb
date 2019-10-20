@@ -12,9 +12,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # POST /resource
   def create
     super do |resource|
+      resource.active = true
+      resource.approved = true
+      resource.approved_on = DateTime.now.utc
+      resource.save
       $tracker.track(resource.id, "User Created", {'name' => resource.username, 'email' => resource.email})
       begin
-        UserMailer.new_user(resource).deliver
+        UserMailer.new_user(resource).deliver_now
       rescue => e
         Rails.logger.error("Could Not Email Us About New User")
       end
