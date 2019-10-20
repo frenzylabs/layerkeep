@@ -30,7 +30,8 @@ import {
   ProfileNew,
   Settings,
   SliceIndex,
-  PrintIndex
+  PrintIndex,
+  ContactUs
 } from './components';
 
 
@@ -97,6 +98,7 @@ class AppContainer extends React.Component {
        ],
 
        sidebarLayoutRoutes: [
+        {path: '/contact-us', exact: true, component: ContactUs},
         {path: '/:username/:kind(prints)', exact: false, component: PrintIndex},
         {path: '/:username/:kind(slices)', exact: false, component: SliceIndex},
         {path: '/:username/:kind(settings)', exact: false, component: Settings},

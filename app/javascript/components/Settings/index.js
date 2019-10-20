@@ -40,7 +40,7 @@ export class Settings extends React.Component {
     e.preventDefault();
   }
 
-  renderWithBilling() {
+  render() {
     return (
       <div className="section">
         <Container className="is-fluid">
@@ -71,35 +71,7 @@ export class Settings extends React.Component {
                   <Route path={`${this.props.match.url}`} exact={false} render={ props =>
                     <AccountSettings {...props} {...this.props} /> 
                   }/>
-                </Switch>
-            </Box>
-          </div>
-        </Container>
-      </div>
-    )
-  }
-
-  render() {
-    return (
-      <div className="section">
-        <Container className="is-fluid">
-          <Tabs isBoxed style={{margin: 0}}>
-            <ul>
-              <li className="tab-handle ">
-                <NavLink activeClassName="is-active" to={`/${this.props.match.params.username}/settings/account`} className="link has-text-grey-lighter">
-                  <span className="icon is-small"><i className="fas fa-user" aria-hidden="true"></i></span>
-                  Account
-                </NavLink>
-              </li>
-            </ul>
-          </Tabs>
-
-          <div style={{border: '1px solid #e0e0e0', borderTop: 'none'}}>
-            <Box style={{border: 'none', boxShadow: 'none'}}>
-                <Switch >
-                  <Route path={`${this.props.match.url}`} exact={false} render={ props =>
-                    <AccountSettings {...props} {...this.props} /> 
-                  }/>
+                  
                 </Switch>
             </Box>
           </div>

@@ -39,3 +39,10 @@ docker run -it -p 3000:3000 \
   -e PG_DATABASE=layerkeep \
 localhost/layerkeepweb:latest /bin/bash
 bundle exec rails assets:precompile
+
+
+
+
+ADMIN:
+
+rails generate active_admin:resource Contact

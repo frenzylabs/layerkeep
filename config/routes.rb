@@ -56,6 +56,9 @@ Rails.application.routes.draw do
     }
   end
 
+  post 'contact-us', to: 'contacts#create'
+  # get 'contact-us', to: 'contacts#index'
+
   post 'oauth/access_tokens', to: 'auth#access_token'
 
   root to: 'main#index'

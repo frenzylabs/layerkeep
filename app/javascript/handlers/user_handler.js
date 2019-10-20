@@ -47,6 +47,10 @@ export default {
 
   getFeatures: (user, queryParams = {}) => {
     return Request.get(`/${user}/features`, queryParams);
-  }
+  },
+
+  contactUs: (params) => {
+    return Request.post(`/contact-us`, {contact: params});
+  },
 
 }
