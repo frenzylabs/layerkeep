@@ -9,7 +9,7 @@ module AMQPConnectionManager
     self.subscribers ||= []
     status_handeler = StatusHandler.new
     self.subscribers << status_handeler
-    status_handeler.start()    
+    status_handeler.start()
   end
   
   def self.establish_connection    

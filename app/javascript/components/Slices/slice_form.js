@@ -151,7 +151,7 @@ export class SliceForm extends React.Component {
   dismissError() {
     this.setState({
       ...this.state,
-      creatingSlice: false,
+      makingRequest: false,
       requestError: null
     });
   }

@@ -31,6 +31,7 @@ import {
   Settings,
   SliceIndex,
   PrintIndex,
+  PrinterIndex,
   ContactUs
 } from './components';
 
@@ -99,6 +100,7 @@ class AppContainer extends React.Component {
 
        sidebarLayoutRoutes: [
         {path: '/contact-us', exact: true, component: ContactUs},
+        {path: '/:username/:kind(printers)', exact: false, component: PrinterIndex},
         {path: '/:username/:kind(prints)', exact: false, component: PrintIndex},
         {path: '/:username/:kind(slices)', exact: false, component: SliceIndex},
         {path: '/:username/:kind(settings)', exact: false, component: Settings},

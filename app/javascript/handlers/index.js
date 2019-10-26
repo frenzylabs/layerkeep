@@ -8,11 +8,12 @@
 
 // export { default as CsvViewer }           from './csv-viewer';
 
-export { default as ProfileHandler }  from './profile_handler';
-export { default as ProjectHandler }  from './project_handler';
-export { default as RepoHandler }     from './repo_handler';
-export { default as SliceHandler }    from './slice_handler';
-export { default as UserHandler }     from './user_handler';
+export { default as ProfileHandler }   from './profile_handler';
+export { default as ProjectHandler }   from './project_handler';
+export { default as RepoHandler }      from './repo_handler';
+export { default as SliceHandler }     from './slice_handler';
+export { default as UserHandler }      from './user_handler';
 export { default as GcodeHandler }     from './slice_handler';
 export { default as PrintHandler }     from './print_handler';
+export { default as PrinterHandler }   from './printer_handler';
 export { default as AssetHandler }     from './asset_handler';

@@ -16,6 +16,7 @@ class User < ApplicationRecord
   has_many :subscription_items
   has_many :user_cards
   has_many :slices
+  has_many :printers
   has_many :prints
   has_many :assets
 

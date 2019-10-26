@@ -10,7 +10,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'bloomer';
 import { SearchDropdown } from '../Form/SearchDropdown'
-import { ProjectHandler, ProfileHandler, SliceHandler }     from '../../handlers';
+import { ProjectHandler, ProfileHandler, SliceHandler, PrinterHandler }     from '../../handlers';
 
 const qs = require('qs');
 
@@ -20,32 +20,46 @@ export class FilterList extends React.Component {
 
      
     this.state = {     
+      printers: [],
       projects: [],
       profiles: [], 
       slices: [],
       filter: {
+        printer_id: props.search.q["printer_id"],
         project_id: props.search.q["project_id"],
         profile_id: props.search.q["profile_id"],
         slice_id: props.search.q["slice_id"]
       }
     }
-    this.selectProject = this.selectProject.bind(this)
-    this.selectProfile = this.selectProfile.bind(this)
-    this.selectSlice   = this.selectSlice.bind(this)
+    this.selectProject  = this.selectProject.bind(this)
+    this.selectProfile  = this.selectProfile.bind(this)
+    this.selectSlice    = this.selectSlice.bind(this)
+    this.selectPrinter  = this.selectPrinter.bind(this)
 
     this.cancelRequest = ProjectHandler.cancelSource();    
     window.fl = this;
   }
 
   componentDidMount() {
+    this.loadPrinters()
     this.loadProjects()
     this.loadProfiles()
     this.loadSlices()
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (JSON.stringify(prevState.filter) != JSON.stringify(this.state.filter)) {
+    // if (JSON.stringify(prevState.filter) != JSON.stringify(this.state.filter)) {
+    if (prevState.filter.project_id != this.state.filter.project_id || 
+      prevState.filter.profile_id != this.state.filter.profile_id) {
       this.loadSlices()
+    }
+  }
+
+  selectPrinter(item, id) {
+    var filter = {...this.state.filter, printer_id: item["id"]}
+    this.setState( { filter: filter} )
+    if (this.props.onFilter) {
+      this.props.onFilter(filter)
     }
   }
 
@@ -71,6 +85,21 @@ export class FilterList extends React.Component {
     if (this.props.onFilter) {
       this.props.onFilter(filter)
     }
+  }
+
+  loadPrinters() {    
+    PrinterHandler.list(this.props.match.params.username, { cancelToken: this.cancelRequest.token })
+    .then((response) => {
+      var printers = response.data.data.map((item) => {
+        return {name: item.attributes.name, value: item.attributes.path, id: item.id}
+      })
+      printers.unshift({"name": "All", value: "all"})
+
+      this.setState({ printers: printers })
+    })
+    .catch((error) => {
+      console.log(error);
+    });
   }
 
   loadProjects() {    
@@ -116,6 +145,19 @@ export class FilterList extends React.Component {
     .catch((error) => {
       console.log(error);
     });
+  }
+
+  renderPrinters() {
+    if (!this.state.printers) return null;
+    var selectedPrinter =  this.state.printers.find((x) => x["id"] == this.state.filter.printer_id)
+    return (
+          <div className="level-left">
+            <div className="" >
+              <div className="">Printer Name: </div>
+              <SearchDropdown id={"printerfilter"} options={this.state.printers} selected={selectedPrinter} onSelected={this.selectPrinter} promptText={`Filter by Printer`} placeholder={`Printer Name`} />
+            </div>                
+          </div>
+    )
   }
 
   renderProjects() {
@@ -170,6 +212,7 @@ export class FilterList extends React.Component {
 
             <div className="card-content">
               <div className="level" >  
+                {this.renderPrinters()}
                 {this.renderProjects()}
                 {this.renderProfiles()}
                 {this.renderSlices()}
