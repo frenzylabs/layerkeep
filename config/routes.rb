@@ -132,6 +132,12 @@ Rails.application.routes.draw do
       resources :assets
     end
 
+    resources :printers, constraints: lambda { |req| req.format == :json } do
+      collection do
+        get 'printer_count', to: 'printers#printer_count'
+      end
+    end
+
     # resources :gcodes, controller: 'gcodes', constraints: lambda { |req| req.format == :json }
     # post 'gcodes/presign', to: 'gcodes#presign'
 

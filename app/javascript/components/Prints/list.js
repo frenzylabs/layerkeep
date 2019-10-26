@@ -110,6 +110,9 @@ export class PrintList extends React.Component {
     var search = this.state.search
     var q = {}
     if (filter) {
+      if (filter.printer_id) {
+        q["printer_id"] = filter.printer_id
+      }
       if (filter.project_id) {
         q["project_id"] = filter.project_id
       }

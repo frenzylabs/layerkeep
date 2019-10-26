@@ -71,7 +71,7 @@ class StompSocket extends React.Component {
   }
 
   onOpen() {
-    this.connect()    
+    this.connect()
   }
 
   connect() {

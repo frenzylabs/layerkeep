@@ -41,9 +41,10 @@ export class Nav extends React.Component {
 
         <NavbarMenu className="" style={{overflow: 'unset'}} isActive={this.state.isActive}  onClick={this.onClickNav}>
           <NavbarStart className="is-hidden-touch is-flex-desktop">
-            <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
             <Link to={`/${currentUser.username}/projects/`} className="navbar-item">Projects</Link>
+            <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
             <Link to={`/${currentUser.username}/slices`} className="navbar-item">Slices</Link>
+            <Link to={`/${currentUser.username}/printers`} className="navbar-item">Printers</Link>
             <Link to={`/${currentUser.username}/prints`} className="navbar-item">Prints</Link>
           </NavbarStart>
           <NavbarEnd>

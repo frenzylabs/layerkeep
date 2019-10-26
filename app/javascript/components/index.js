@@ -24,4 +24,5 @@ export { Revision }         from './Repo/revision';
 export { StatusError }      from './ErrorViews';
 export { Loader }           from './Loader';
 export { PrintIndex }       from './Prints';
+export { PrinterIndex }     from './Printers';
 export { ContactUs }        from './contactus';

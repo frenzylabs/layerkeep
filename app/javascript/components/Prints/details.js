@@ -135,6 +135,48 @@ export class PrintDetails extends React.Component {
   }
 
 
+  renderPrinter() {
+    if (!(this.state.print.attributes.printer && this.state.print.attributes.printer.id)) return null;
+
+    const url       = `/${this.props.match.params.username}/printers/${this.state.print.attributes.printer.id}`;
+    return (
+      <div className={`card`}>
+        <div className="card-header">
+          <div className="card-header-title level">
+            <p className="level-left">Printer</p>          
+          </div>
+        </div>
+
+        <div className="card-content">
+          <div className="level">
+            <div className="level-left">
+              <div className="level-item">Name:</div>
+              <div className="level-item">
+                <Link to={url}>{this.state.print.attributes.printer.attributes.name}</Link>
+              </div>
+            </div>
+          </div>
+          <div className="level">
+            <div className="level-left">
+              <div className="level-item">Model:</div>
+              <div className="level-item">
+                {this.state.print.attributes.printer.attributes.model}
+              </div>
+            </div>
+          </div>
+          <div className="level">
+            <div className="level-left">
+              <div className="level-item">Description:</div>
+              <div className="level-item">
+                {this.state.print.attributes.printer.attributes.description}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   renderGcode() {
     if (!(this.state.print.attributes.slices && this.state.print.attributes.slices.id)) return null;
 
@@ -295,6 +337,8 @@ export class PrintDetails extends React.Component {
       )
     } else {
       return (<div>
+          {this.renderPrinter()}
+          <br/>
           {this.renderGcode()}
           <br/>
           {this.renderAssetsContainer()}

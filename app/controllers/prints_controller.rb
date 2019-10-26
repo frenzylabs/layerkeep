@@ -10,9 +10,11 @@ class PrintsController < AuthController
       request.format = :json
     end
     
-    filter_params = (params[:q] && params.permit([q: [:slice_id, :project_id, :profile_id]])[:q]) || {} 
+    filter_params = (params[:q] && params.permit([q: [:printer_id, :slice_id, :project_id, :profile_id]])[:q]) || {} 
 
     prints = @user.prints
+
+    prints = prints.where(printer_id: filter_params["printer_id"]) if filter_params["printer_id"]
 
     if filter_params["slice_id"]
       prints = prints.where(slice_id: filter_params["slice_id"])
@@ -38,6 +40,11 @@ class PrintsController < AuthController
       slice = Slice.find_by!(id: print_params[:slice_id], user_id: @user.id)
       prnt.slice_id = slice.id
     end
+    if (print_params[:printer_id])
+      printer = Printer.find_by!(id: print_params[:printer_id], user_id: @user.id)
+      prnt.printer_id = printer.id
+    end
+
     if prnt.valid? && prnt.save
       handle_print_files(prnt, print_files[:files] || [])
       prnt = PrintsSerializer.new(prnt).serializable_hash
@@ -53,6 +60,11 @@ class PrintsController < AuthController
 
     prnt = @user.prints.find_by!(id: params[:id])
     # prnt = Print.find(params[:id])
+    if (print_params[:printer_id])
+      printer = Printer.find_by!(id: print_params[:printer_id], user_id: @user.id)
+      prnt.printer_id = printer.id
+    end
+
     if (print_params[:slice_id])
       slice = Slice.find_by!(id: print_params[:slice_id], user_id: @user.id)
       prnt.slice_id = slice.id
@@ -63,7 +75,7 @@ class PrintsController < AuthController
     handle_print_files(prnt, print_files[:files] || [])
 
     
-    prnt = PrintsSerializer.new(prnt, { params: { assets: true }}).serializable_hash
+    prnt = PrintsSerializer.new(prnt, { params: { printer: true, assets: true }}).serializable_hash
     respond_with prnt, json: prnt  
     # respond_with(prnt)
   end
@@ -73,7 +85,7 @@ class PrintsController < AuthController
     prnt = @user.prints.find_by!(id: params[:id])
     # prnt = Print.find_by!(id: params[:id], user_id: @user.id)
     
-    prnt = PrintsSerializer.new(prnt, { params: { assets: true, slice_details: true }}).serializable_hash
+    prnt = PrintsSerializer.new(prnt, { params: { printer: true, assets: true, slice_details: true }}).serializable_hash
     respond_with(prnt)
   end
 
@@ -153,7 +165,7 @@ class PrintsController < AuthController
   # end
 
   def print_post_params
-    params.require(:print).permit(:name, :description, :slice_id)
+    params.require(:print).permit(:name, :description, :printer_id, :slice_id)
   end
 
   def print_files

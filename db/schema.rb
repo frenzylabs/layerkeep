@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_20_174915) do
+ActiveRecord::Schema.define(version: 2019_10_25_172929) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -155,6 +155,18 @@ ActiveRecord::Schema.define(version: 2019_10_20_174915) do
     t.index ["product_id"], name: "index_plans_on_product_id"
   end
 
+  create_table "printers", force: :cascade do |t|
+    t.citext "name"
+    t.citext "model"
+    t.string "uuid"
+    t.string "description"
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "name"], name: "index_printers_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_printers_on_user_id"
+  end
+
   create_table "prints", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -164,6 +176,8 @@ ActiveRecord::Schema.define(version: 2019_10_20_174915) do
     t.bigint "slice_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "printer_id"
+    t.index ["printer_id"], name: "index_prints_on_printer_id"
     t.index ["user_id"], name: "index_prints_on_user_id"
   end
 
@@ -326,6 +340,8 @@ ActiveRecord::Schema.define(version: 2019_10_20_174915) do
   add_foreign_key "package_plans", "packages", on_delete: :cascade
   add_foreign_key "package_plans", "plans", on_delete: :cascade
   add_foreign_key "plans", "products"
+  add_foreign_key "printers", "users"
+  add_foreign_key "prints", "printers", on_delete: :nullify
   add_foreign_key "prints", "users"
   add_foreign_key "repos", "users"
   add_foreign_key "slice_files", "repos"

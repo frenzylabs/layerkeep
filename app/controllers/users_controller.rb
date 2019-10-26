@@ -44,8 +44,7 @@ class UsersController < AuthController
         render json: {'success' => {username: username, email: email}}
       else
         render json: {'error' => user.errors.full_messages}, status: 400
-      end
-  
+      end  
     end
   end
 

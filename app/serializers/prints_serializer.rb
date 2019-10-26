@@ -4,7 +4,14 @@ class PrintsSerializer
   set_id :id # optional  
   
   attributes :name, :description, :job, :status, :created_at, :updated_at
-  
+
+  attribute :printer, if: Proc.new { |record, params|
+    # The assets will be serialized only if the :assets key of params is true
+    params && params[:printer] == true
+  } do |object|
+    PrintersSerializer.new(object.printer).as_json["data"]
+  end
+
   attribute :assets, if: Proc.new { |record, params|
     # The assets will be serialized only if the :assets key of params is true
     params && params[:assets] == true

@@ -12,7 +12,7 @@ import InputField         from '../Form/InputField';
 import Formsy             from 'formsy-react';
 import TextField          from '../Form/TextField';
 import UploadField        from '../Form/UploadField';
-import { ProjectHandler, SliceHandler, PrintHandler } from '../../handlers';
+import { ProjectHandler, SliceHandler, PrintHandler, PrinterHandler } from '../../handlers';
 import Modal              from '../Modal';
 import { UploadForm }   from './upload_form';
 import { RepoForm }      from '../Form/repo_form';
@@ -44,11 +44,17 @@ export class PrintForm extends React.Component {
     if (qparams["slice_id"])
       selectedSlice = qparams["slice_id"]
 
+    var selectedPrinter = ""
+      if (qparams["printer_id"])
+        selectedPrinter = qparams["printer_id"]      
+
     this.state = { 
       printAttrs: { files:[]},
       selectedSlice: selectedSlice,
+      selectedPrinter: selectedPrinter,
       canSubmit :  true,       
       slices: [], 
+      printers: [],
       profiles: [], 
       currentProfiles: [],
       currentProjects: [],
@@ -67,6 +73,7 @@ export class PrintForm extends React.Component {
     this.fileDeleted        = this.fileDeleted.bind(this);
     this.fileUploaded       = this.fileUploaded.bind(this);
     this.selectSlice        = this.selectSlice.bind(this)
+    this.selectPrinter      = this.selectPrinter.bind(this)
     this.descriptionChanged = this.descriptionChanged.bind(this)
 
     this.cancelRequest      = PrintHandler.cancelSource()
@@ -74,9 +81,15 @@ export class PrintForm extends React.Component {
 
   componentDidMount() {
     this.loadSlices()
+    this.loadPrinters()
 
-    if (this.props.print && this.props.print.attributes.slices) {
-      this.setState({selectedSlice: this.props.print.attributes.slices.id })
+    if (this.props.print) {
+      if (this.props.print.attributes.slices) {
+        this.setState({selectedSlice: this.props.print.attributes.slices.id })
+      }
+      if (this.props.print.attributes.printer) {
+        this.setState({selectedPrinter: this.props.print.attributes.printer.id })
+      }
     }
   }
 
@@ -93,7 +106,7 @@ export class PrintForm extends React.Component {
       var selectedSlice = this.state.selectedSlice
       if (qparams["slice_id"])
         selectedSlice = qparams["slice_id"]
-      this.setState({search: search, selectSlice: selectedSlice})
+      this.setState({search: search, selectedSlice: selectedSlice})
     }
   }
 
@@ -112,6 +125,20 @@ export class PrintForm extends React.Component {
       })
       
       this.setState({ slices: slices})
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  loadPrinters() {    
+    PrinterHandler.list(this.props.match.params.username, {cancelToken: this.cancelRequest.token})
+    .then((response) => {
+      var printers = response.data.data.map((item) => {
+        return {name: item.attributes.name, value: item.attributes.id, id: item.id}
+      })
+      
+      this.setState({ printers: printers})
     })
     .catch((error) => {
       console.log(error);
@@ -195,6 +222,10 @@ export class PrintForm extends React.Component {
     this.setState({selectedSlice: item.id, printAttrs: {...this.state.printAttrs, "slice_id": item.id}})
   }
 
+  selectPrinter(item, id) {
+    this.setState({selectedPrinter: item.id, printAttrs: {...this.state.printAttrs, "printer_id": item.id}})
+  }
+
   onSliceSelected(kind, repos) {
     var selectedRepos = Object.keys(repos).reduce((acc, key) => {
       var item = repos[key];
@@ -272,6 +303,34 @@ export class PrintForm extends React.Component {
     )
   }
 
+  renderPrinterSection() {
+
+    var selectedPrinter =  this.state.printers.find((x) => x["id"] == this.state.selectedPrinter)
+    return (
+      <div className={`card package`}>
+        <div className="card-header">
+          <p className="card-header-title">
+            Select Your Printer
+          </p>
+        </div>
+
+        <div className="card-content">
+          <Container className="is-fluid">      
+            <div className="level" >  
+                <div className="level-left">
+                  <div className="level-item">Printer Name: </div>
+                  <div className="level-item" >
+                    <SearchDropdown id={"printers"} options={this.state.printers} selected={selectedPrinter} onSelected={this.selectPrinter} promptText={`Select Printer`} placeholder={`Printer Name`} />
+                  </div>
+                  <div className="level-item"> <Link style={{fontSize: "14px"}} to={{pathname: `/${this.props.match.params.username}/printers/new`, state: {redirect: this.props.match.url}}}> &nbsp; [add a new one]</Link> </div>
+                </div>
+            </div>
+          </Container>
+        </div>
+      </div>
+    )
+  }
+
   renderModal() {
     if (this.state.makingRequest) {
       var caption = "Creating Print..."
@@ -316,8 +375,12 @@ export class PrintForm extends React.Component {
     return (
       <div>
         <Formsy onValidSubmit={this.submit} onValid={this.enableButton} onInvalid={this.disableButton}>
-          {this.renderDescription()}
+          
+          {this.renderPrinterSection()}
+          <br/>          
           {this.renderSliceSection()}
+          <br/>
+          {this.renderDescription()}
           <br/>
           {this.renderAssetsContainer()}
           

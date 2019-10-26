@@ -154,7 +154,6 @@ export class PrintEdit extends React.Component {
     )
   }
 
-
   renderAssets() {
     if (!this.state.print.attributes) return;
     if (this.state.print.attributes.assets.length > 0) {      
