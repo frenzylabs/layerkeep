@@ -134,7 +134,7 @@ class ReposController < AuthController
       return create_thingiverse_files(params) 
     end
     if resp.body["public_url"]
-      uri = URI(resp.body["public_url"])
+      uri = URI(URI.escape(resp.body["public_url"]))
       code, tmpfilepath = download_to_tmp_path(uri)        
       logger.info(tmpfilepath)
 
