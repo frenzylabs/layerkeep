@@ -117,10 +117,7 @@ export default class UploadModal extends React.Component {
         isUploading: false,
         errors: error.message
       });
-  
-      
     });
-
   }
 
   render() {
@@ -154,7 +151,7 @@ export default class UploadModal extends React.Component {
           <p className="has-text-centered" style={{color: 'red', marginBottom: '10px'}}>{this.state.errors}</p>
         )}
 
-        <Box style={{margin:0, padding:0}}>
+        <Box style={{margin:0, padding:0}} >
           <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
             <Section>
               <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>

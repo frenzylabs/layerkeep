@@ -26,7 +26,7 @@ class RepoFilesHandler
         removeTopDir = true
       end
     end
-        
+
 
     files.each do |f|
       name = ""
