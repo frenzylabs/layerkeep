@@ -19,13 +19,36 @@ export class UserNavMenu extends React.Component {
     super(props);
   }
 
-  render() {
-    return(
-        <NavbarItem hasDropdown isHoverable >
-          <NavbarLink href="#"  className="is-hidden-touch is-flex-desktop">
-            <Icon isSize="small" className="far fa-robot" />
-          </NavbarLink>
+  renderSignUpNav() {
+    return (
+      <NavbarDropdown isBoxed className="is-right">
+            {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
 
+            <NavbarItem href="/users/sign_in">Sign In</NavbarItem>            
+          </NavbarDropdown>
+    )
+  }
+
+  renderTools() {
+    return (
+        <NavbarItem hasDropdown isHoverable className="is-hidden-desktop">
+          <NavbarDivider />
+          <p>Tools</p>
+          <NavbarItem className="is-right">
+            <a href="https://pluck.io" className="navbar-item">Pluck &nbsp;<small> (find 3D models)</small></a>
+            {currentUser.id ?
+              <Link to={`/${currentUser.username}/slices/create`} className="navbar-item">Slicer &nbsp;<sup><small>alpha</small></sup></Link>
+            : 
+            <a href="/users/sign_up" className="navbar-item">Slicer &nbsp;<sup><small>alpha</small></sup></a>
+            }
+          </NavbarItem>
+          
+        </NavbarItem>
+    )
+  }
+
+  renderSignedInNav() {
+    return (
           <NavbarDropdown isBoxed className="is-right">
             {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
 
@@ -33,7 +56,8 @@ export class UserNavMenu extends React.Component {
               <p>{currentUser.username}</p>              
             </NavbarItem>
 
-            <NavbarDivider className="is-visible" />            
+            <NavbarDivider className="is-visible is-hidden-desktop" />   
+                     
             <NavbarItem className="is-hidden-desktop">
               <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
             </NavbarItem>
@@ -50,6 +74,11 @@ export class UserNavMenu extends React.Component {
               <Link to={`/${currentUser.username}/prints`} className="navbar-item is-hidden-desktop">Prints</Link>
             </NavbarItem>
 
+            
+
+            {this.renderTools()}
+            <NavbarDivider />
+
             <NavbarItem >
               <Link to={`/${currentUser.username}/settings/account`}> Settings </Link>
             </NavbarItem>
@@ -58,6 +87,25 @@ export class UserNavMenu extends React.Component {
 
             <NavbarItem href="/users/sign_out">Sign out.</NavbarItem>
           </NavbarDropdown>
+    )
+  }
+
+  renderNavMenu() {
+    if (currentUser.id) {
+      return this.renderSignedInNav()
+    } else {
+      return this.renderSignUpNav()
+    }
+  }
+
+  render() {
+    return(
+        <NavbarItem hasDropdown isHoverable >
+          <NavbarLink href="#"  className="is-hidden-touch is-flex-desktop">
+            <Icon isSize="small" className="far fa-robot" />
+          </NavbarLink>
+          {this.renderNavMenu()}
+          
         </NavbarItem>
     );
   }

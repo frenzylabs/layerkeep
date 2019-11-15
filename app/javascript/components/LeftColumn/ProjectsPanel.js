@@ -41,7 +41,7 @@ export class ProjectsPanel extends React.Component {
       return (
         <PanelBlock key={'project-' + project.id}>
           <PanelIcon className={"far " + ( project.attributes.is_private ? 'fa-lock' : 'fa-layer-group' )}/>
-          <a href={"/" + project.attributes.path}>{project.attributes.name}</a>
+          <Link to={"/" + project.attributes.path}>{project.attributes.name}</Link>
         </PanelBlock>  
       )
     });

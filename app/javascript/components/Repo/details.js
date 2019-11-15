@@ -226,6 +226,22 @@ class Details extends React.Component {
     )
   }
 
+  renderUploadButton() {
+    if (this.props.item.user_permissions && this.props.item.user_permissions.canManage == true) {
+      return (
+        <p className="control">
+        <a className="button is-small" onClick={this.props.uploadAction}>
+          <span className="icon is-small">
+            <i className="fas fa-upload"></i>
+          </span>
+          <span>Upload</span>
+        </a>
+      </p>
+      )
+    }
+    return null
+  }
+
   render() {
     if(this.state.hasError > 0) {
 
@@ -258,14 +274,8 @@ class Details extends React.Component {
 
             <Column >
               <div className="buttons has-addons is-right">
-                <p className="control">
-                  <a className="button is-small" onClick={this.props.uploadAction}>
-                    <span className="icon is-small">
-                      <i className="fas fa-upload"></i>
-                    </span>
-                    <span>Upload</span>
-                  </a>
-                </p>
+                {this.renderUploadButton()}
+                
                 <p className="control">
                   <a className="button is-small" href={url} target="_blank">
                     <span className="icon is-small">

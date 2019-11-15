@@ -9,6 +9,6 @@
 import {StatusError}  from './status';
 
 export class Error404 extends StatusError {
-  title   = "404 : Not found.";
-  caption = "Unable to find what you are looking for";
+  title   = "Not found.";
+  caption = "So certain were you. Go back and closer you must look";
 }

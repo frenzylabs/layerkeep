@@ -7,7 +7,7 @@
  */
 
 import React              from 'react';
-import { Redirect }       from 'react-router-dom';
+import { Link, Redirect }       from 'react-router-dom';
 import InputField         from '../Form/InputField';
 import Formsy             from 'formsy-react';
 import TextField          from '../Form/TextField';
@@ -36,6 +36,7 @@ export class ProfileNew extends React.Component {
       nameLabel:        {title: "Name", caption: ""},
       canSubmit :       false, 
       name:             null,
+      isPrivate:        false,
       description:      "",
       files:            [],
       fileList:         null,
@@ -48,6 +49,7 @@ export class ProfileNew extends React.Component {
     this.enableButton       = this.enableButton.bind(this);
     this.nameChanged        = this.nameChanged.bind(this);
     this.descriptionChanged = this.descriptionChanged.bind(this);
+    this.privateChanged     = this.privateChanged.bind(this);
     this.filesChanged       = this.filesChanged.bind(this);
     this.deleteFile         = this.deleteFile.bind(this);
     this.renderFiles        = this.renderFiles.bind(this);
@@ -107,12 +109,14 @@ export class ProfileNew extends React.Component {
     this.setState({...this.state, canSubmit: true});
   }
 
-  submit(model) {
+  submit(formData) {
+    var repoData = Object.assign(formData, {name: this.state.name, is_private: this.state.isPrivate})
     this.setState({
       ...this.state,
       creatingRepo: true
     });
-    ProfileHandler.create({name: this.state.name, description: this.state.description}, this.state.files)
+
+    ProfileHandler.create(this.props.match.params.username, repoData, this.state.files)
     .then((response) => {
       this.setState({
         ...this.state,
@@ -139,11 +143,42 @@ export class ProfileNew extends React.Component {
     });
   }
 
-  renderFiles() {
-    if(this.state.redirect) { 
-      return (<Redirect to={`/${currentUser.username}/profiles/${this.state.profileName}/`}/>);
-    }
+  privateChanged(e) {
+    this.setState({isPrivate: e.currentTarget.checked});
+  }
 
+  renderPrivateOption() {
+    if (!this.props.app.features || !this.props.app.features.project) return;
+
+    if (this.props.app.features && this.props.app.features.project.private_repos) {
+      return (
+        <div className="control is-expanded">
+          <label className="checkbox">
+            <input 
+              type='checkbox' 
+              name="private" 
+              value='is_private' 
+              checked={this.state.isPrivate} 
+              onChange={this.privateChanged} 
+            />
+
+            &nbsp; Make this profile private
+          </label>
+        </div>
+      )
+    } else {
+      return (
+        <div className="control is-expanded">
+          <p>
+            <Link style={{fontWeight: 'bold'}} to={`/${this.props.match.params.username}/settings/billing`}>Update Subscription</Link> to 
+            enable private profiles.
+          </p>          
+        </div>
+      )
+    }
+  }
+
+  renderFiles() {  
     if(this.state.files == null) { return }
 
     return this.state.files.map((entry, index) => {
@@ -180,6 +215,9 @@ export class ProfileNew extends React.Component {
   }
 
   render() {
+    if(this.state.redirect) { 
+      return (<Redirect to={`/${this.props.match.params.username}/profiles/${this.state.profileName}`}/>);
+    }
     return (
       <div>
         <div>
@@ -210,6 +248,9 @@ export class ProfileNew extends React.Component {
                     />
 
                     <Field isGrouped>
+                      {this.renderPrivateOption()}
+                    </Field>
+                    <Field isGrouped>                      
                       <Control>
                         <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
                       </Control>

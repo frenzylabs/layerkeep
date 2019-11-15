@@ -10,6 +10,7 @@ require 'zip'
 class ReposController < AuthController
   respond_to :json
   skip_before_action :authenticate!, :get_user, only: :new
+  skip_before_action :authenticate!, only: [:show, :index]
 
   def new
 
@@ -24,13 +25,14 @@ class ReposController < AuthController
   end
 
   def show
+    
     repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
     authorize repo
 
     git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
-    branches = git_repo.branches.collect {|branch| { name: branch.name, commit: branch.target_id } } 
-    
-    reposerializer = ReposSerializer.new(repo, {params: {branches: branches}})
+    branches = git_repo.branches.collect {|branch| { name: branch.name, commit: branch.target_id } }     
+    branches = ["master"] if branches.blank?
+    reposerializer = ReposSerializer.new(repo, {params: {branches: branches, current_user: current_user}})
     
     render json: reposerializer #repo.to_hash.merge({branches: branches})
   end

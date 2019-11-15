@@ -20,20 +20,20 @@ export default {
   cancelSource: () => {
     return CancelToken.source();
   },
-  list: (user, opts = {}) => {
-    return Request.get(user_project(user), opts);
+  list: (username, opts = {}) => {
+    return Request.get(user_project(username), opts);
   },
 
-  get: (user, name, opts = {}) => {
-    return Request.get(user_project(user, name), opts);
+  get: (username, name, opts = {}) => {
+    return Request.get(user_project(username, name), opts);
   },
 
-  create: (user, project, files = null) => {
+  create: (username, project, files = null) => {
     var params = {'repo' : project};
 
 
     if(files == null) {
-      return Request.post(user_project(user), params);
+      return Request.post(user_project(username), params);
     }
 
     var data = new FormData();
@@ -48,7 +48,7 @@ export default {
       }
     }
 
-    return Request.post(user_project(user), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+    return Request.post(user_project(username), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
 
   commit: (project, files, message) => {

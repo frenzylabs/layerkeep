@@ -53,7 +53,7 @@ export class ProfileList extends React.Component {
       cancelToken: this.cancelRequest.token
     };
 
-    ProfileHandler.list(opts)
+    ProfileHandler.list(this.props.match.params.username, opts)
     .then((response) => {
       this.setState({ 
         ...this.state,
