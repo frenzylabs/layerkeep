@@ -81,7 +81,7 @@ Doorkeeper.configure do
     if context.client && context.client.name.downcase == "ancilla" #context.grant_type == Doorkeeper::OAuth::CLIENT_CREDENTIALS # see Doorkeeper::OAuth::GRANT_TYPES for other types
       Float::INFINITY
     else 
-      15.minutes.to_i
+      60.minutes.to_i
     end
   end
 

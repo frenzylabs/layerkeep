@@ -37,7 +37,8 @@ class ContentController < RepoAuthController
     response.headers['X-File-Name'] = download_name
     
     if params[:download]
-      $tracker.track(current_user.id, "Download Files", {command: git_command, filepath: @repo_handler.filepath})
+      userid = (current_user and current_user.id) || "anonymous"
+      $tracker.track(userid, "Download Files", {command: git_command, filepath: @repo_handler.filepath})
     end
     head :ok and return
   end

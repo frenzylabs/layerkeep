@@ -28,7 +28,7 @@ class _ProfilesPanel extends React.Component {
     this.state = {profiles: []}
 
     this.cancelRequest = ProfileHandler.cancelSource();
-    ProfileHandler.list({params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
+    ProfileHandler.list(null, {params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({ profiles: response.data.data})
     })
@@ -46,7 +46,7 @@ class _ProfilesPanel extends React.Component {
       return (
         <PanelBlock key={'profile-' + profile.id}>
           <PanelIcon className={"far " + ( profile.attributes.is_private ? 'fa-lock' : 'fa-layer-group' )}/>
-          <a href={"/" + profile.attributes.path}>{profile.attributes.name}</a>
+          <Link to={"/" + profile.attributes.path}>{profile.attributes.name}</Link>
         </PanelBlock>  
       )
     });

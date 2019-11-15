@@ -42,7 +42,7 @@ class RemoteMessage extends React.Component {
   constructor(props) {
     super(props);
     var topics = []
-    if (currentUser) {
+    if (currentUser.id) {
       topics = ['/topic/LK.#', '/topic/'+currentUser.username]
     }    
     this.state = {token: null, topics: topics}

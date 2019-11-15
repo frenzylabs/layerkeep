@@ -18,7 +18,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       resource.save
       $tracker.track(resource.id, "User Created", {'name' => resource.username, 'email' => resource.email})
       begin
-        UserMailer.new_user(resource).deliver_now
+        UserMailer.new_user(resource).deliver
       rescue => e
         Rails.logger.error("Could Not Email Us About New User")
       end

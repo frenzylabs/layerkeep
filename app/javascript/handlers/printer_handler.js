@@ -12,7 +12,7 @@ import {Request, CancelToken} from './request_client';
 const QS = require('qs');
 
 function userPath(username, endpoint) {
-  return `/${(username || currentUser.endpoint)}/printers/${endpoint || ''}`
+  return `/${(username || currentUser.username)}/printers/${endpoint || ''}`
 }
 
 export default {
@@ -27,22 +27,22 @@ export default {
     // return Request.get(userPath(username), opts);
   },
 
-  get: (user, printerID, opts = {}) => {
-    return Request.get(userPath(user, printerID), opts);
+  get: (username, printerID, opts = {}) => {
+    return Request.get(userPath(username, printerID), opts);
   },
 
   show: (username, printerID, params = {}) => {
     return Request.get(userPath(username, printerID), params);
   },
 
-  update: (user, printerID, printAttrs, opts = {}) => {
+  update: (username, printerID, printAttrs, opts = {}) => {
     var params = {'printer' : printAttrs};
-    return Request.patch(userPath(user, printerID), params, opts);
+    return Request.patch(userPath(username, printerID), params, opts);
   },
 
-  create: (user, printerAttrs, opts = {}) => {
+  create: (username, printerAttrs, opts = {}) => {
     var params = {'printer' : printerAttrs};
-    return Request.post(userPath(user), params, opts);
+    return Request.post(userPath(username), params, opts);
   },
 
   delete: (user, printerID, opts = {}) => {

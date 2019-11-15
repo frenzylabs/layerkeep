@@ -57,14 +57,22 @@ class SideLayout extends React.Component {
     }
   }
 
+  renderLeftColumn() {
+    if (currentUser.id) {
+      return (
+        <Column isSize={2} className="is-hidden-mobile" >
+            <LeftColumn />
+          </Column>
+      )
+    }
+  }
+
   render() {
     const Component = this.props.component;
     return (
       <div className="has-navbar-fixed-top" style={{flex: '1'}}>
         <Columns id="layout-column" isGapless >
-          <Column isSize={2} className="is-hidden-mobile" >
-            <LeftColumn />
-          </Column>
+          {this.renderLeftColumn()}
           <Column>
             <Component {...this.props}  />
           </Column>

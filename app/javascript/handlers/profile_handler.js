@@ -13,23 +13,27 @@ function path(endpoint) {
   return `/${currentUser.username}/profiles/${(endpoint || '')}`;
 }
 
+function user_profile(username, endpoint) {
+  return `/${username || currentUser.username}/profiles/${(endpoint || '')}`;
+}
+
 export default {
   cancelSource: () => {
     return CancelToken.source();
   },
-  list: (opts = {}) => {
-    return Request.get(path(), opts);
+  list: (username, opts = {}) => {
+    return Request.get(user_profile(username), opts);
   },
 
-  get: (name, opts = {}) => {
-    return Request.get(path(name), opts);
+  get: (username, name, opts = {}) => {
+    return Request.get(user_profile(username, name), opts);
   },
 
-  create: (profile, files = null) => {
+  create: (username, profile, files = null) => {
     var params = {'repo' : profile};
 
     if(files == null) {
-      return Request.post(path(), params);
+      return Request.post(user_profile(username), params);
     }
 
     var data = new FormData();
@@ -38,10 +42,13 @@ export default {
       data.append(`files[]`, file);
     });
 
-    data.append('repo[name]', profile.name);
-    data.append('repo[description]', profile.description);
+    for ( var key in profile ) {
+      if (profile[key]) {
+        data.append(`repo[${key}]`, profile[key]);
+      }
+    }
 
-    return Request.post(path(), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+    return Request.post(user_profile(username), data, {headers: {'Content-Type' : 'multipart/form-data'}});
   },
 
   commit: (project, files, message) => {
