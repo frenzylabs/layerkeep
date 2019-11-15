@@ -307,7 +307,7 @@ export class ProjectNew extends React.Component {
 
   render() {
     if(this.state.redirect) { 
-      return (<Redirect to={`/${currentUser.username}/projects/${this.state.projectName}/`}/>);
+      return (<Redirect to={`/${this.props.match.params.username}/projects/${this.state.projectName}`}/>);
     }
     return (
       
@@ -357,7 +357,8 @@ export class ProjectNew extends React.Component {
                     
                     <Field isGrouped>
                       {this.renderPrivateOption()}
-
+                    </Field>
+                    <Field isGrouped>
                       <Control>
                         <Button type="submit" disabled={this.state.canSubmit == false}>Save</Button>
                       </Control>

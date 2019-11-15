@@ -9,4 +9,12 @@ class ReposSerializer
     params[:branches] || {}
   end
 
+  attribute :user_permissions do |object, params|
+    if params[:current_user]
+      policy = RepoPolicy.new(params[:current_user], object)
+      {canManage: policy.create?, canView: true}
+    else
+      {canView: true}
+    end
+  end
 end

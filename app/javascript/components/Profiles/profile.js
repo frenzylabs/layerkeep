@@ -52,7 +52,7 @@ export class Profile extends React.Component {
   }
 
   loadRepoDetails() {    
-    ProfileHandler.get(this.props.match.params.name, {cancelToken: this.cancelRequest.token})
+    ProfileHandler.get(this.props.match.params.username, this.props.match.params.name, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({
         ...this.state,

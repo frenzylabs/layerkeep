@@ -32,7 +32,6 @@ export class SearchDropdown extends React.Component {
     this.onMouseDown     = this.onMouseDown.bind(this)
     this.onMouseUp       = this.onMouseUp.bind(this)
     this.handleKeyEvent  = this.handleKeyEvent.bind(this)
-    
   }
 
   componentDidUpdate(prevProps) {
@@ -118,7 +117,11 @@ export class SearchDropdown extends React.Component {
     }
     else {
       let optValue = this.optionValue(item)
-      let option = this.state.dropdownOptions ? this.state.dropdownOptions.find((x) => this.optionValue(x) == optValue) : null
+      let option = this.state.dropdownOptions ? this.state.dropdownOptions.find((x) => this.optionValue(x) == optValue) : optValue
+      if (!option) {
+        option = optValue
+      }
+      
       return this.optionName(option)
     }
   }

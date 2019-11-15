@@ -22,11 +22,15 @@ export class RevisionPathTrail extends React.Component {
   selectBranch(item) {
     var revision = item
     if (typeof(item) != "string") {
-      revision = item.value
+      revision = item.value || item.name
     }
 
     var params = this.props.match.params;
-    var newloc = "/" + [params.username, params.kind, params.name, (params.resource || 'tree'), revision, this.props.meta.filepath].join("/")
+    var pathComponents = [params.username, params.kind, params.name, (params.resource || 'tree'), revision]  
+    if (this.props.meta.filepath.length > 1)
+      pathComponents = pathComponents.concat(this.props.meta.filepath)
+
+    var newloc = "/" + pathComponents.join("/")    
     document.location.href = newloc;
   }
 

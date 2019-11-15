@@ -14,11 +14,11 @@ function path(endpoint) {
 }
 
 function userPath(username, endpoint) {
-  return `/${(username || currentUser.endpoint)}/prints/${endpoint || ''}`
+  return `/${(username || currentUser.username)}/prints/${endpoint || ''}`
 }
 
 function ownerPath(username, owner, ownerID, endpoint) {
-  return `/${(username || currentUser.endpoint)}/${owner}/${ownerID}/assets/${endpoint || ''}`
+  return `/${(username || currentUser.username)}/${owner}/${ownerID}/assets/${endpoint || ''}`
 }
 
 export default {

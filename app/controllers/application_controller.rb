@@ -100,7 +100,6 @@ class ApplicationController < ActionController::Base
             devise_current_user
           end
   end
-  
 
   protected
   def configure_permitted_parameters
@@ -111,12 +110,10 @@ class ApplicationController < ActionController::Base
 
   private 
   def layout_by_resource
-    if user_signed_in?
-      "application"
-    elsif devise_controller?
+    if devise_controller?
       "onboarding"
     else
-      "landing"
+      "application"
     end
   end
   

@@ -12,6 +12,7 @@ import { ProfilesPanel } from './ProfilesPanel';
 import { ProjectsPanel } from './ProjectsPanel';
 
 export class LeftColumn extends React.Component {
+
   render() {
     return (
       <div id="left-column">
