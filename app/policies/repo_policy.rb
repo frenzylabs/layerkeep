@@ -64,6 +64,9 @@ class RepoPolicy
     user && repo.user_id == user.id
   end
 
+  def upload?
+    create?
+  end
   
 
   def permitted_attributes_for_update

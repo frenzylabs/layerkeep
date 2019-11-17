@@ -53,8 +53,10 @@ export class UploadForm extends React.Component {
     this.renderFileUploadState  = this.renderFileUploadState.bind(this);
     this.deleteFile             = this.deleteFile.bind(this);
     this.renderFiles            = this.renderFiles.bind(this);
+    this.onFileChange           = this.onFileChange.bind(this)
+    this.deleteUploadFile       = this.deleteUploadFile.bind(this)
 
-    this.uploads = {}
+    this.uploadProviderRef = null
   }
 
   componentWillUnmount() {
@@ -68,20 +70,30 @@ export class UploadForm extends React.Component {
   }
 
   deleteFile(key) {
-    var uploads = this.state.uploads
+    
+    var uploads = Object.assign({}, this.state.uploads)
     var ufile = uploads[key]
-    if (!ufile) return 
 
     delete uploads[key]
     this.uploadFieldRef.clearFiles();
     this.setState({uploads: uploads});
+
     if (this.props.onFileDeleted) {
-      this.props.onFileDeleted(this.props.name, ufile.file)
+      if (ufile)
+        this.props.onFileDeleted(this.props.name, ufile.file)
+    }
+  }
+
+  deleteUploadFile(key) {
+    var fileUploads = Object.assign({}, this.uploadProviderRef.state.fileUploads)
+    if (fileUploads[key]) {
+      delete fileUploads[key]
+      this.uploadProviderRef.setState({fileUploads: fileUploads})
     }
   }
 
   fileUploaded(signedIds) {
-    this.setState({uploads: this.uploads})
+    this.setState({uploads: this.state.uploads})
     if (this.props.onFileUpload) {
       this.props.onFileUpload(this.props.name, signedIds)
     }
@@ -111,25 +123,29 @@ export class UploadForm extends React.Component {
         case 'uploading':
           return (
             <tr key={upload.id}><td><p>
-              Uploading {upload.file.name}: {upload.progress}%
+              Uploading {upload.file.name}: {upload.progress.toFixed(2)}%
             </p></td></tr>
           )
         case 'error':
-          var uploads = this.uploads
+          var uploads = this.state.uploads
           if (!uploads[upload.file.name]) {
-            uploads[upload.id] = upload
-            // this.setState({uploads: uploads})
+            // uploads[upload.file.name] = upload
           }
           return (
             <tr key={upload.id}><td><p>
               Error uploading {upload.file.name}: {upload.error}
-            </p></td></tr>
+            </p></td>
+              <td className="has-text-right" width={2}>
+                <a onClick={() => this.deleteUploadFile(upload.id) } id={'upload-file-' + upload.id}>
+                <Icon isSize='small' className='fa fa-trash' />
+              </a>
+            </td>
+            </tr>
           )
         case 'finished':
-            var uploads = this.uploads
+            var uploads = this.state.uploads
             if (!uploads[upload.file.name]) {
               uploads[upload.file.name] = upload
-              // this.setState({uploads: uploads})
             }
           return (
             <tr key={upload.id}><td><p>Finished uploading {upload.file.name}</p></td></tr>
@@ -138,12 +154,28 @@ export class UploadForm extends React.Component {
     })
   }
 
-  onFileChange(files, handleUpload) {
-    if (files.length > 0 && !this.props.multiple) {
-      this.uploads = {}
-      this.setState({ uploads: {} })
+  onFileChange(filewrapper, handleUpload) {
+    var files = filewrapper.map((item) => {
+      // this.state.uploads[item.name] = item.file
+      item.file.fullpath = item.name
+      return item.file
+    })
+    if (filewrapper.length > 0 && !this.props.multiple) {
+      Object.keys(this.state.uploads).forEach((key) => {
+        var ufile = this.state.uploads[key]
+        if (this.props.onFileDeleted) {
+          if (ufile)
+            this.props.onFileDeleted(this.props.name, ufile.file)
+        }
+      })
+      this.state.uploads = {}
+      
     }
-    handleUpload(files)
+    var res = handleUpload(files)
+    res.catch((error) => {
+      this.uploadProviderRef.setState({uploading: false})
+      this.uploadFieldRef.clearFiles()
+    });
   }
 
   renderControl({handleUpload, uploads, ready}) {
@@ -151,7 +183,7 @@ export class UploadForm extends React.Component {
     return (
       <Control>
         <Box style={{margin:0, padding:0}}>
-        <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onChange={e => this.onFileChange(e.currentTarget.files, handleUpload)} uploadProps={uploadProps}>
+          <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onFiles={files => this.onFileChange(files, handleUpload)} uploadProps={uploadProps}>
             <Section>
               <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag file here to upload.</Box>
             </Section>
@@ -169,6 +201,7 @@ export class UploadForm extends React.Component {
   }
 
   renderFiles() {
+    
     let files = this.state.uploads
     return Object.keys(files).map((key, index) => {
       var entry = files[key]
@@ -190,6 +223,7 @@ export class UploadForm extends React.Component {
 
     return (
       <DirectUploadProvider
+        ref={(el) => this.uploadProviderRef = el }
         directUploadsPath={this.props.directUploadPath}
         endpoint={this.props.endpoint}          
         multiple={multiple}

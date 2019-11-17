@@ -11,7 +11,6 @@ import { Link, Redirect }       from 'react-router-dom';
 import InputField         from '../Form/InputField';
 import Formsy             from 'formsy-react';
 import TextField          from '../Form/TextField';
-import UploadField        from '../Form/UploadField';
 import { ProjectHandler, ProfileHandler, SliceHandler } from '../../handlers';
 import Modal              from '../Modal';
 import { SliceForm }   from './slice_form';

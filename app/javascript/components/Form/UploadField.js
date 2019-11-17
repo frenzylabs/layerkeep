@@ -24,16 +24,9 @@ export default class UploadField extends React.Component {
     this.fileInputRef.value = "";
   }
 
-  onFileChange(e) {
-    console.log("ON FILE CHANGE")
-    console.log(e.target.files)
-    // console.log(e.dataTransfer.items)
-    // var res = this.getAllFileEntries(e.target)
-    // console.log(res)
-    // window.ef = e.target
-    
-    if (e.target.files && this.props.onFiles) this.props.onFiles(e.target.files);
-    if (this.props.onChange) onChange(e);
+  onFileChange(e) {        
+    var files = Array.from(e.target.files).map((f) => { return {name: f.name, file: f} })
+    if (e.target.files && this.props.onFiles) this.props.onFiles(files);
   }
 
   async getFile(fileEntry) {
@@ -41,6 +34,7 @@ export default class UploadField extends React.Component {
       return await new Promise((resolve, reject) => fileEntry.file(resolve, reject));
     } catch (err) {
       console.log(err);
+      return null
     }
   }
 
@@ -56,13 +50,23 @@ export default class UploadField extends React.Component {
       let entry = queue.shift();
       if (entry.isFile) {
         var file = await this.getFile(entry);
-        console.log(file)
-        fileEntries.push(file);
-        this.props.onFiles([file]);
-      } else if (entry.isDirectory) {
+        if (file) {
+          var name = entry.fullPath
+          if (!name)
+            name = file.name
+
+          var fhash = {name: name, file: file}
+          fileEntries.push(fhash);
+        }
+        // if (this.props.onChange) this.props.onChange(e);
+
+        // this.props.onFiles([fhash]);
+      } else if (entry.isDirectory) {        
         queue.push(...await this.readAllDirectoryEntries(entry.createReader()));
+        
       }
     }
+    if (this.props.onFiles) this.props.onFiles(fileEntries);
     return fileEntries;
   }
   
@@ -92,16 +96,11 @@ export default class UploadField extends React.Component {
   }
 
   handleDrop(e) {
-    console.log("HANDLE DROP")
-    console.log(e)
-    console.log(e.dataTransfer.items)
-    var res = this.getAllFileEntries(e.dataTransfer.items)
-    console.log(res)
-    window.res = res
-    window.ef = e.target
-    
-    // if (e.target.files && onFiles) onFiles(e.target.files);
-    // if (onChange) onChange(e);
+    if (this.props.uploadProps.multiple) {
+      var res = this.getAllFileEntries(e.dataTransfer.items)
+      e.stopPropagation()
+      e.preventDefault()
+    }
   }
 
   render() {

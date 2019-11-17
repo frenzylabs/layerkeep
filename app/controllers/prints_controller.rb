@@ -107,13 +107,17 @@ class PrintsController < AuthController
   def handle_print_files(prnt, files)
     files.each do |f| 
       asset = @user.assets.where(filepath: f, owner_type: "Print").last
-      if asset
+      if asset 
         filepath = "users/#{@user.id}/prints/#{prnt.id}/#{asset.name}"
         af = asset.file
-        asset.file_attacher._promote(location: filepath)
-        asset.file_attacher.cache.delete(af)
-        asset.owner_id = prnt.id
-        asset.save
+        begin
+          asset.file_attacher._promote(location: filepath)
+          asset.file_attacher.cache.delete(af)
+          asset.owner_id = prnt.id
+          asset.save
+        rescue Exception => e
+          Rails.logger.error("Could Not Save Print asset #{prnt.id}, #{f}")
+        end
       end
     end
   end
