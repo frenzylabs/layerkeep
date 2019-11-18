@@ -129,10 +129,12 @@ class RepoFilesHandler
       end
     end
 
+    
     Dir.glob(dirpath + "/*").each { |d| 
       k, t = d.split(dirpath + "/")
-      FileUtils.rm_rf(d) if (DateTime.now() - 1.hour) < Time.at(t.to_i)
+      FileUtils.rm_rf(d) if (Time.at(t.to_i).utc + 1.hour) < DateTime.now.utc
     }
+
     Dir.glob(dirpath + "/**/*").select { |d|
       File.directory?(d)
     }.reverse_each { |d| 

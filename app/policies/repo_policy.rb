@@ -67,6 +67,10 @@ class RepoPolicy
   def upload?
     create?
   end
+
+  def clear_uploads?
+    create?
+  end
   
 
   def permitted_attributes_for_update

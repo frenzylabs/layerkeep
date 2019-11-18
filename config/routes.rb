@@ -92,6 +92,7 @@ Rails.application.routes.draw do
     post ':repo_name/tree/:revision', {action: 'create', to: 'files#create', as: "create_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
 
     post ':repo_name/upload', {action: 'create', to: 'files#upload', as: "upload_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}}.merge(options)
+    post ':repo_name/clear_uploads', {action: 'destroy', to: 'files#clear_uploads', as: "clear_upload_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}}.merge(options)
 
     get ':repo_name', {action: 'show', to: 'repos#show', as: "edit_#{options[:as_kind]}"}.merge(options)
     patch ':repo_name', {action: 'update', to: 'repos#update', as: "update_#{options[:as_kind]}"}.merge(options)

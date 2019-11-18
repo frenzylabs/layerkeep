@@ -54,6 +54,19 @@ export default {
     return Request.post(url, data, options);
   },
 
+  clearUploads: (url, files, options = {}) => {
+   
+    options["headers"] = Object.assign({'Content-Type' : 'multipart/form-data'}, options["headers"] || {})
+  
+    var data = new FormData();
+
+    files.forEach(filepath => {
+      data.append(`files[]`, filepath);
+    });
+
+    return Request.post(url, data, options);
+  },
+
   deleteFile: (pathParams = {}, file) => {
     var filepath = `${pathParams.name}/files/${pathParams.revisionPath}/${file}`
     var path = repoPath(pathParams.username, pathParams.kind, filepath)

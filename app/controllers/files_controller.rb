@@ -143,6 +143,13 @@ class FilesController < RepoAuthController
 
   end
 
+  def clear_uploads
+    files  = params.require(:files)
+    @repo_handler.cleanup_tmp_files(files)
+
+    render json: {'deleted': "ok"}
+  end
+
 
   def destroy
     if @repo_handler.current_branch.target_id != @repo_handler.current_commit.oid
