@@ -24,6 +24,7 @@ import {
 import { Loader } from 'three';
 import { Section } from 'bloomer/lib/layout/Section';
 
+
 export default class UploadModal extends React.Component {
   title = "Upload files";
   
@@ -34,6 +35,8 @@ export default class UploadModal extends React.Component {
       files:        null,
       isUploading:  false,
       errors:       null,
+      canSubmit: false,
+      message: ""
     };
 
     this.messageChanged = this.messageChanged.bind(this);
@@ -41,12 +44,63 @@ export default class UploadModal extends React.Component {
     this.deleteFile     = this.deleteFile.bind(this);
     this.renderFiles    = this.renderFiles.bind(this);
     this.submitAction   = this.submitAction.bind(this);
+
+    this.updateFileState = this.updateFileState.bind(this)
+    this.filesReady      = this.filesReady.bind(this)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+
   }
 
   filesChanged(files) {
+    var filelist = Array.from(files)
+    filelist.forEach((f) => { f.state = "uploading"; f.progress = 0; this.uploadToTemp(f) })
     this.setState({
       ...this.state,
-      files: Array.from(files).concat((this.state.files || []))
+      files: filelist.concat((this.state.files || []))
+    });
+  }
+
+  updateFileState(file, attrs = {}) {
+    var files = this.state.files.map((item) => {
+      if (item.name == file.name) {
+        item = Object.assign(item, attrs)
+      }
+      return item
+    })
+    this.setState({files: files})
+  }
+
+  uploadToTemp(file) {
+    var self = this
+    const config = {
+      onUploadProgress: (progressEvent) => {
+        var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        this.updateFileState(file, {state: "uploading", progress: percentCompleted})        
+      },
+      headers: {'Content-Type' : 'multipart/form-data'}
+    }
+
+    var urlParams = this.props.urlParams
+    var commitUrl = "/" + [urlParams.username, urlParams.kind, urlParams.name, "upload"].join("/")
+
+    RepoHandler.uploadTemp(commitUrl, file, config)
+    .then((response) => {
+      this.updateFileState(file, {state: "complete", progress: 100, path: response.data.path})
+    })
+    .catch((error) => {
+      var msg = ""
+      if (error.response && error.response.data) {
+        var data = error.response.data
+        msg = data.error
+      }
+      this.updateFileState(file, {state: "failed", reason: msg})
+      this.setState({
+        ...this.state,
+        isTmpUploading: false,
+        errors: error.message
+      });
     });
   }
 
@@ -66,7 +120,15 @@ export default class UploadModal extends React.Component {
         index = parseInt($(e.currentTarget).attr('id').replace('upload-file-', ''));
 
 
-    files.splice(index, 1);
+    var farr = files.splice(index, 1);
+    if (farr.length > 0) {
+      var fpaths = farr.reduce((acc, f) => {
+        if (f.path) return acc.concat(f.path)
+        return acc
+      }, [])
+      if (fpaths.length > 0)
+        this.clearTemp(fpaths)
+    }
     
     this.setState({
       ...this.state, 
@@ -76,20 +138,16 @@ export default class UploadModal extends React.Component {
     this.uploadFieldRef.fileInputRef.value = "";
   }
 
-  renderFiles() {
-    if(this.state.files == null) { return }
+  clearTemp(files) {
+    var self = this
 
-    return this.state.files.map((entry, index) => {
-      return (
-        <tr key={index}>
-          <td>{entry.name}</td>
-          <td className="has-text-right" width={2}>
-            <a onClick={this.deleteFile} id={'upload-file-' + index}>
-              <Icon isSize='small' className='fa fa-trash' />
-            </a>
-          </td>
-        </tr>
-      )
+    var urlParams = this.props.urlParams
+    var commitUrl = "/" + [urlParams.username, urlParams.kind, urlParams.name, "clear_uploads"].join("/")
+
+    RepoHandler.clearUploads(commitUrl, files)
+    .then((response) => {
+    })
+    .catch((error) => {     
     });
   }
 
@@ -107,20 +165,86 @@ export default class UploadModal extends React.Component {
       isUploading: true
     });
 
-    RepoHandler.commit(this.props.urlParams.username, this.props.urlParams.kind, this.props.repoName, this.state.files, this.state.message)
+    var urlParams = this.props.urlParams
+    var revisionPath = urlParams.revisionPath
+    if (!revisionPath) revisionPath = "master"
+    var commitUrl = "/" + [urlParams.username, urlParams.kind, urlParams.name, "tree", revisionPath].join("/")
+
+    var completedFiles = this.state.files.reduce((acc, item) => { 
+      if (item.state == "complete") return acc.concat(item)
+      return acc
+    }, [])
+
+    RepoHandler.commit(commitUrl, completedFiles, this.state.message)
     .then((response) => {
       window.location.href = window.location.href;
     })
-    .catch((error) => {
+    .catch((err) => {
+      var errMessage = "There was an error uploading the files."
+      if (err.response.data && err.response.data.error) {
+        var error = err.response.data.error
+        if (error.message) {
+          errMessage = error.message
+        } else {
+          errMessage = JSON.stringify(error)
+        }
+      }
+
       this.setState({
         ...this.state,
         isUploading: false,
-        errors: error.message
+        errors: errMessage
       });
-  
-      
     });
+  }
 
+  cancelUpload() {
+    var files = (this.state.files || []).reduce((acc, f) => {
+      if (f.path) return acc.concat(f.path)
+      return acc
+    }, [])
+    if (files.length > 0)
+      this.clearTemp(files)
+    this.setState({files: null, isUploading: false, errors: null, message: ""})
+    if (this.props.dismissAction) {
+      this.props.dismissAction()
+    }
+  }
+
+  filesReady() {
+    if (!this.state.files || this.state.files.find((item) => { item.state != "complete" && item.state != "failed" })) {
+      return false
+    }
+    return true
+  }
+
+  renderFileState(entry) {
+    switch (entry.state) {
+      case 'waiting':
+        return <td><p>Waiting to upload {entry.name}</p></td>
+      case 'uploading':
+          return <td><p>Uploading {entry.name}: {entry.progress}%</p></td>
+      case 'complete':
+          return <td><p>{entry.name} </p></td>
+      case 'failed':
+          return <td><p>Failed {entry.name} </p></td>
+    }
+  }
+  renderFiles() {
+    if(this.state.files == null) { return }
+
+    return this.state.files.map((entry, index) => {
+      return (
+        <tr key={index}>
+          {this.renderFileState(entry)}
+          <td className="has-text-right" width={2}>
+            <a onClick={this.deleteFile} id={'upload-file-' + index}>
+              <Icon isSize='small' className='fa fa-trash' />
+            </a>
+          </td>
+        </tr>
+      )
+    });
   }
 
   render() {
@@ -154,25 +278,26 @@ export default class UploadModal extends React.Component {
           <p className="has-text-centered" style={{color: 'red', marginBottom: '10px'}}>{this.state.errors}</p>
         )}
 
-        <Box style={{margin:0, padding:0}}>
+        <Box style={{margin:0, padding:0}} >
           <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onFiles={this.filesChanged} uploadProps={{multiple: 'multiple'}}>
             <Section>
               <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag files here to upload.</Box>
             </Section>
           </UploadField>
 
-
+          <Box style={{margin:0, padding:0, overflowX: "scroll"}} >
           <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
             <tbody>
               {this.renderFiles()}
             </tbody>
           </Table>
+          </Box>
 
         </Box>
 
         <Field style={{marginTop: '2em'}}>
           <Control>
-            <Input type="text" placeholder="Description of uploads." onChange={this.messageChanged} />
+            <Input type="text" value={this.state.message} placeholder="Description of uploads." onChange={this.messageChanged} />
           </Control>
         </Field>
 
@@ -185,8 +310,8 @@ export default class UploadModal extends React.Component {
 
           <Column>
             <div className="buttons is-right">
-              <Button isColor="success" onClick={this.submitAction}>Submit</Button>
-              <Button onClick={this.props.dismissAction}>Cancel</Button>
+              <Button isColor="success" disabled={this.filesReady() == false} onClick={this.submitAction}>Submit</Button>
+              <Button onClick={this.cancelUpload.bind(this)}>Cancel</Button>
             </div>
           </Column>
         </Columns>

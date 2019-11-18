@@ -44,11 +44,22 @@ export class Profile extends React.Component {
     this.loadRepoDetails  = this.loadRepoDetails.bind(this);
     
     this.cancelRequest = ProfileHandler.cancelSource();
-    this.loadRepoDetails();
+    
   }
 
   componentWillUnmount() {
     this.cancelRequest.cancel("Left Page");
+  }
+
+  componentDidMount() {
+    this.loadRepoDetails();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params.username != this.props.match.params.username ||
+        prevProps.match.params.name != this.props.match.params.name) {
+          this.loadRepoDetails();
+    }
   }
 
   loadRepoDetails() {    

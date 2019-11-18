@@ -20,7 +20,12 @@ class ReposController < AuthController
     repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).order("updated_at desc").
                         page(params["page"]).per(params["per_page"])
     
-    serializer = paginate(repos)
+    meta = {canView: true}
+    if current_user
+      policy = UserPolicy.new(current_user, @user)
+      meta[:canManage] = policy.create?
+    end
+    serializer = paginate(repos, nil, {meta: meta})
     render json: serializer
   end
 

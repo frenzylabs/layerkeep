@@ -15,12 +15,92 @@ export default class UploadField extends React.Component {
     this.state = {};
   }
 
+
   fileList() {
     return this.fileInputRef.files;
   }
 
   clearFiles(files) {
     this.fileInputRef.value = "";
+  }
+
+  onFileChange(e) {        
+    var files = Array.from(e.target.files).map((f) => { return {name: f.name, file: f} })
+    if (e.target.files && this.props.onFiles) this.props.onFiles(files);
+  }
+
+  async getFile(fileEntry) {
+    try {
+      return await new Promise((resolve, reject) => fileEntry.file(resolve, reject));
+    } catch (err) {
+      console.log(err);
+      return null
+    }
+  }
+
+  async getAllFileEntries(dataTransferItemList) {
+    let fileEntries = [];
+    // Use BFS to traverse entire directory/file structure
+    let queue = [];
+    // Unfortunately dataTransferItemList is not iterable i.e. no forEach
+    for (let i = 0; i < dataTransferItemList.length; i++) {
+      queue.push(dataTransferItemList[i].webkitGetAsEntry());
+    }
+    while (queue.length > 0) {
+      let entry = queue.shift();
+      if (entry.isFile) {
+        var file = await this.getFile(entry);
+        if (file) {
+          var name = entry.fullPath
+          if (!name)
+            name = file.name
+
+          var fhash = {name: name, file: file}
+          fileEntries.push(fhash);
+        }
+        // if (this.props.onChange) this.props.onChange(e);
+
+        // this.props.onFiles([fhash]);
+      } else if (entry.isDirectory) {        
+        queue.push(...await this.readAllDirectoryEntries(entry.createReader()));
+        
+      }
+    }
+    if (this.props.onFiles) this.props.onFiles(fileEntries);
+    return fileEntries;
+  }
+  
+  // Get all the entries (files or sub-directories) in a directory 
+  // by calling readEntries until it returns empty array
+  async readAllDirectoryEntries(directoryReader) {
+    let entries = [];
+    let readEntries = await this.readEntriesPromise(directoryReader);
+    while (readEntries.length > 0) {
+      entries.push(...readEntries);
+      readEntries = await this.readEntriesPromise(directoryReader);
+    }
+    return entries;
+  }
+  
+  // Wrap readEntries in a promise to make working with readEntries easier
+  // readEntries will return only some of the entries in a directory
+  // e.g. Chrome returns at most 100 entries at a time
+  async readEntriesPromise(directoryReader) {
+    try {
+      return await new Promise((resolve, reject) => {
+        directoryReader.readEntries(resolve, reject);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  handleDrop(e) {
+    if (this.props.uploadProps.multiple) {
+      var res = this.getAllFileEntries(e.dataTransfer.items)
+      e.stopPropagation()
+      e.preventDefault()
+    }
   }
 
   render() {
@@ -42,16 +122,14 @@ export default class UploadField extends React.Component {
         onMouseEnter={() => handleHover ? this.setState({ hover: true }) : null}
         onMouseLeave={() =>
           handleHover ? this.setState({ hover: false }) : null}
+        onDrop={this.handleDrop.bind(this)}
       >
         {handleHover ? children(hover) : children}
         <input
           ref={(el) => { this.fileInputRef = el }}
           type="file"
           style={styles.input}
-          onChange={e => {
-            if (e.target.files && onFiles) onFiles(e.target.files);
-            if (onChange) onChange(e);
-          }}
+          onChange={this.onFileChange.bind(this)}
           {...uploadProps}
         />
       </div>

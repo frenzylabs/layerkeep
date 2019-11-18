@@ -36,8 +36,7 @@ export class FilterList extends React.Component {
     this.selectSlice    = this.selectSlice.bind(this)
     this.selectPrinter  = this.selectPrinter.bind(this)
 
-    this.cancelRequest = ProjectHandler.cancelSource();    
-    window.fl = this;
+    this.cancelRequest = ProjectHandler.cancelSource();
   }
 
   componentDidMount() {

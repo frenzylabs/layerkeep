@@ -28,7 +28,6 @@ import {
 
 import InputField         from '../Form/InputField';
 import TextField          from '../Form/TextField';
-import UploadField        from '../Form/UploadField';
 import { SearchDropdown } from '../Form/SearchDropdown'
 import { PrinterHandler } from '../../handlers';
 import Modal              from '../Modal';
@@ -53,7 +52,6 @@ export class PrinterNew extends React.Component {
 
     // this.dismissError       = this.dismissError.bind(this);
     this.cancelRequest      = PrinterHandler.cancelSource();
-    window.pn = this;
   }
 
   componentDidMount() {

@@ -49,12 +49,12 @@ export class UploadForm extends React.Component {
     this.state = Object.assign({}, this.initialState);
 
 
-    this.renderControl          = this.renderControl.bind(this);
-    this.renderFileUploadState  = this.renderFileUploadState.bind(this);
-    this.deleteFile             = this.deleteFile.bind(this);
-    this.renderFiles            = this.renderFiles.bind(this);
+    this.renderControl          = this.renderControl.bind(this)
+    this.renderFileUploadState  = this.renderFileUploadState.bind(this)
+    this.deleteFile             = this.deleteFile.bind(this)
+    this.renderFiles            = this.renderFiles.bind(this)
 
-    this.uploads = {}
+    this.uploadProviderRef = null
   }
 
   componentWillUnmount() {
@@ -70,18 +70,18 @@ export class UploadForm extends React.Component {
   deleteFile(key) {
     var uploads = this.state.uploads
     var ufile = uploads[key]
-    if (!ufile) return 
-
+    
     delete uploads[key]
     this.uploadFieldRef.clearFiles();
     this.setState({uploads: uploads});
     if (this.props.onFileDeleted) {
-      this.props.onFileDeleted(this.props.name, ufile.file)
+      if (ufile)
+        this.props.onFileDeleted(this.props.name, ufile.file)
     }
   }
 
   fileUploaded(signedIds) {
-    this.setState({uploads: this.uploads})
+    this.setState({uploads: this.state.uploads})
     if (this.props.onFileUpload) {
       this.props.onFileUpload(this.props.name, signedIds)
     }
@@ -94,7 +94,7 @@ export class UploadForm extends React.Component {
   }
 
   myHandleUploads({id, file, xhr}) {
-    var self = this;    
+    var self = this;
     xhr.addEventListener("load", function() { self.blobListener(file, this) } );
   }
 
@@ -105,45 +105,60 @@ export class UploadForm extends React.Component {
   renderFileUploadState(uploads) {
     if (!uploads) return;
     return uploads.map(upload => {
+      var name = upload.file.name     
+      if (upload.file.fullpath) {
+        name = upload.file.fullpath
+      }
       switch (upload.state) {
         case 'waiting':
-          return <tr key={upload.id}><td><p>Waiting to upload {upload.file.name}</p></td></tr>
+          return <tr key={upload.id}><td><p>Waiting to upload {name}</p></td></tr>
         case 'uploading':
           return (
             <tr key={upload.id}><td><p>
-              Uploading {upload.file.name}: {upload.progress}%
+              Uploading {name}: {upload.progress}%
             </p></td></tr>
           )
         case 'error':
-          var uploads = this.uploads
+          var uploads = this.state.uploads
           if (!uploads[upload.file.name]) {
-            uploads[upload.id] = upload
+            // uploads[upload.id] = upload
             // this.setState({uploads: uploads})
           }
           return (
             <tr key={upload.id}><td><p>
-              Error uploading {upload.file.name}: {upload.error}
+              Error uploading {name}: {upload.error}
             </p></td></tr>
           )
         case 'finished':
-            var uploads = this.uploads
-            if (!uploads[upload.file.name]) {
-              uploads[upload.file.name] = upload
+            var uploads = this.state.uploads
+            // if (!uploads[upload.file.name]) {
+              if (upload.file.fullpath) {
+                uploads[upload.file.fullpath] = upload
+              } else {
+                uploads[upload.file.name] = upload
+              }
+                
               // this.setState({uploads: uploads})
-            }
-          return (
-            <tr key={upload.id}><td><p>Finished uploading {upload.file.name}</p></td></tr>
-          )
+            // }
+          return null          
+          // return (
+          //   <tr key={upload.id}><td><p>Finished uploading {name}</p></td></tr>
+          // )
       }
     })
   }
 
-  onFileChange(files, handleUpload) {
-    if (files.length > 0 && !this.props.multiple) {
-      this.uploads = {}
-      this.setState({ uploads: {} })
-    }
-    handleUpload(files)
+  onFileChange(filewrapper, handleUpload) {
+    var files = filewrapper.map((item) => {
+      // this.state.uploads[item.name] = item.file
+      item.file.fullpath = item.name
+      return item.file
+    })
+    var res = handleUpload(files)
+    res.catch((error) => {
+      this.uploadProviderRef.setState({uploading: false})
+      this.uploadFieldRef.clearFiles()
+    });
   }
 
   renderControl({handleUpload, uploads, ready}) {
@@ -151,7 +166,7 @@ export class UploadForm extends React.Component {
     return (
       <Control>
         <Box style={{margin:0, padding:0}}>
-        <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onChange={e => this.onFileChange(e.currentTarget.files, handleUpload)} uploadProps={uploadProps}>
+        <UploadField ref={(el) => this.uploadFieldRef = el } name="uploads" onFiles={fs => this.onFileChange(fs, handleUpload)} uploadProps={uploadProps}>
             <Section>
               <Box className="has-text-centered" style={{border: 'none', boxShadow: 'none'}}>Click here or drag file here to upload.</Box>
             </Section>
@@ -172,16 +187,19 @@ export class UploadForm extends React.Component {
     let files = this.state.uploads
     return Object.keys(files).map((key, index) => {
       var entry = files[key]
-      return (
-        <tr key={key}>
-          <td>{entry.file.name}</td>
-          <td className="has-text-right" width={2}>
-            <a onClick={() => this.deleteFile(key) } id={'upload-file-' + index}>
-              <Icon isSize='small' className='fa fa-trash' />
-            </a>
-          </td>
-        </tr>
-      )
+      if (entry.state == "finished" || entry.state == "error") {
+        return (
+          <tr key={key}>
+            <td>{entry.file.name}</td>
+            <td className="has-text-right" width={2}>
+              <a onClick={() => this.deleteFile(key) } id={'upload-file-' + index}>
+                <Icon isSize='small' className='fa fa-trash' />
+              </a>
+            </td>
+          </tr>
+        )
+      }
+      return null
     });
   }
 
@@ -190,6 +208,7 @@ export class UploadForm extends React.Component {
 
     return (
       <DirectUploadProvider
+        ref={(el) => this.uploadProviderRef = el }
         directUploadsPath={this.props.directUploadPath}
         endpoint={this.props.endpoint}          
         multiple={multiple}

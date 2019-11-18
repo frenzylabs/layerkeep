@@ -37,7 +37,6 @@ export class PrintDetails extends React.Component {
 
     this.cancelRequest      = PrintHandler.cancelSource()
     this.loadPrintDetails   = this.loadPrintDetails.bind(this);
-    window.pd = this;
   }
 
   componentDidMount() {

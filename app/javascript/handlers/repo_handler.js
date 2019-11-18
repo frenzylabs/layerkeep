@@ -22,18 +22,49 @@ export default {
     return Request.get(repoPath(pathParams.username, pathParams.kind), queryParams);
   },
 
-  commit: (user, kind, repo, files, message) => {
+  commit: (url, files, message) => {
     var data = new FormData();
 
+    // files.forEach(file => {
+    //   data.append(`files[${file.name}]`, file.file);
+    // });
+
     files.forEach(file => {
-      data.append(`files[]`, file);
+      data.append(`files[]`, file.path);
     });
 
     if (message) {
       data.append('message', message);
     }
 
-    return Request.post(repoPath(user, kind, `${repo}/tree/master`), data, {headers: {'Content-Type' : 'multipart/form-data'}});
+    return Request.post(url, data, {headers: {'Content-Type' : 'multipart/form-data'}});
+  },
+
+  uploadTemp: (url, file, options = {}) => {
+   
+    options["headers"] = Object.assign({'Content-Type' : 'multipart/form-data'}, options["headers"] || {})
+  
+    var data = new FormData();
+    data.append(`file[${file.name}]`, file.file);
+
+    // files.forEach(file => {
+    //   data.append(`files[${file.name}]`, file.file);
+    // });
+
+    return Request.post(url, data, options);
+  },
+
+  clearUploads: (url, files, options = {}) => {
+   
+    options["headers"] = Object.assign({'Content-Type' : 'multipart/form-data'}, options["headers"] || {})
+  
+    var data = new FormData();
+
+    files.forEach(filepath => {
+      data.append(`files[]`, filepath);
+    });
+
+    return Request.post(url, data, options);
   },
 
   deleteFile: (pathParams = {}, file) => {
