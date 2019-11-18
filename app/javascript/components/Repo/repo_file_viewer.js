@@ -7,6 +7,7 @@
  */
 
 import React                from 'react';
+import { Link } from 'react-router-dom';
 import { RevisionPathTrail }  from './revision_path_trail'
 import { FileViewer }       from '../FileViewer'
 import { RepoHandler }      from '../../handlers';
@@ -70,6 +71,7 @@ export class RepoFileViewer extends React.Component {
               <div className="column">
                 <div className="buttons has-addons is-right">
                   <a className="button is-small" href={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/content/${urlparams.revisionPath}?download=true`}>Download</a>
+                  &nbsp; <Link className="button is-small" to={`/${urlparams.username}/${urlparams.kind}/${urlparams.name}/revisions/${urlparams.revisionPath}`}>Revisions</Link>
                 </div>
               </div>
             </div>

@@ -23,6 +23,7 @@ import { RevisionPathTrail }  from './revision_path_trail'
 import { FileViewer }       from '../FileViewer';
 
 import Gallery   from '../Utils/gallery';
+import Modal              from '../Modal';
 
 import {
   Error404,
@@ -43,7 +44,8 @@ class Details extends React.Component {
       currentRevision:  "", 
       message:          '', 
       lastUpdate:       '',
-      hasError:         0
+      hasError:         0,
+      requestError:     null
     };
 
     this.updateRepoFiles    = this.updateRepoFiles.bind(this);
@@ -88,7 +90,17 @@ class Details extends React.Component {
       this.updateRepoFileList()
     })
     .catch((error) => {
-      console.error(error);
+      this.setState({
+        requestError:  error,
+      })
+    });
+  }
+
+
+  dismissAction() {
+    this.setState({
+      ...this.state,
+      requestError: null
     });
   }
 
@@ -108,13 +120,14 @@ class Details extends React.Component {
     RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       const images = response.data.data.map((item) => {
+        if (item.type == "tree") return null
         const imagePath = (url.replace('tree', 'content') + '/' + item.name);
 
         return {
           original: imagePath,
           thumbnail: imagePath,  
         };
-      });
+      }).filter((el) => { return el != null; });
 
       this.setState({
         ...this.state,
@@ -151,7 +164,7 @@ class Details extends React.Component {
   items() {
     if (this.state.repo_files.length > 0) {      
       return this.state.repo_files.map((item) => {
-        return (<RepoDetailItem kind={this.props.kind} item={item} repo={this.props.item} key={item.name} match={this.props.match} deleteFile={this.deleteFile} />)
+        return (<RepoDetailItem kind={this.props.kind} item={item} meta={this.state.meta} repo={this.props.item} key={item.name} match={this.props.match} deleteFile={this.deleteFile} />)
       });
     } else {
       return (<tr><td>No Files</td></tr>)
@@ -167,7 +180,7 @@ class Details extends React.Component {
         return (
           <article className="message is-info" style={{border: '1px solid #d1d5da'}}>
             <div className="level" style={{padding: '15px'}}>
-              <div className="level-left">
+              <div className="level-left" style={{marginRight: "10px"}}>
                 <p className="control">
                   <a className="button is-small" onClick={this.props.uploadAction}>
                     <span className="icon is-small">
@@ -177,7 +190,7 @@ class Details extends React.Component {
                   </a>
                 </p>
               </div>
-              <div className="level-right">
+              <div className="level-right" style={{flex: 1}}>
                 <p>Add a README with any instructions or information to help others this project. </p>
               </div>
             </div>
@@ -227,7 +240,9 @@ class Details extends React.Component {
   }
 
   renderUploadButton() {
-    if (this.props.item.user_permissions && this.props.item.user_permissions.canManage == true) {
+    if (this.props.item.user_permissions && 
+        this.props.item.user_permissions.canManage == true &&
+        this.state.meta.head == true) {
       return (
         <p className="control">
         <a className="button is-small" onClick={this.props.uploadAction}>
@@ -326,6 +341,13 @@ class Details extends React.Component {
             </div>
           </div>
         </div>
+
+        <Modal
+          component={Modal.error}
+          requestError={this.state.requestError}
+          isActive={this.state.requestError != null}
+          dismissAction={this.dismissAction.bind(this)}
+        />
       </div>
     )
   }

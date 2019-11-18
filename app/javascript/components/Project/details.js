@@ -35,7 +35,18 @@ export class ProjectDetails extends React.Component {
     this.dismissAction      = this.dismissAction.bind(this);
     this.loadProjectDetails = this.loadProjectDetails.bind(this);
 
+    
+  }
+
+  componentDidMount() {
     this.loadProjectDetails();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params.username != this.props.match.params.username ||
+        prevProps.match.params.name != this.props.match.params.name) {
+          this.loadProjectDetails()
+    }
   }
 
   loadProjectDetails() {    

@@ -11,14 +11,23 @@ import { RevisionListItem } from './revision_item';
 import { RepoEmptyList }    from './empty_list';
 import { RepoHandler }      from '../../handlers';
 import { Container }        from 'bloomer';
+import SpinnerModal       from '../Modal/spinner';
 
 export class Revisions extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { revisions: {data: [], meta: {}}}
+    this.state = { 
+      revisions: {data: [], meta: {}},
+      isLoading: true,
+      errors: null
+    }
     this.items = this.items.bind(this);
     this.cancelRequest = RepoHandler.cancelSource();
+    
+  }
+
+  componentDidMount() {
     this.updateRepoRevisionsList()
   }
 
@@ -28,6 +37,7 @@ export class Revisions extends React.Component {
 
   updateRepoRevisionsList() {
     var url = this.props.match.url
+    this.setState({isLoading: true})
 
     RepoHandler.tree(url, {cancelToken: this.cancelRequest.token})
     .then((response) => {
@@ -35,11 +45,26 @@ export class Revisions extends React.Component {
     })
     .catch((error) => {
       console.error(error);
+      var errMessage = "There was an error fetching the revisions."
+      if (err.response.data && err.response.data.error) {
+        var error = err.response.data.error
+        if (error.message) {
+          errMessage = error.message
+        } else {
+          errMessage = JSON.stringify(error)
+        }
+      }
+
+      this.setState({
+        ...this.state,
+        isLoading: false,
+        errors: errMessage
+      });
     });
   }
 
   updateRepoRevisions(data) {
-    this.setState({ revisions: data })
+    this.setState({ isLoading: false, revisions: data })
   }
 
   // componentDidUpdate(prevProps) {
@@ -54,7 +79,20 @@ export class Revisions extends React.Component {
 
   empty() {
     return (
-      <RepoEmptyList kind={this.props.kind} params={this.props.match.params}/>
+      <Box>
+        <Media>
+          <MediaLeft>
+          </MediaLeft>
+
+          <MediaContent>
+            {"You have no Revisions."}
+            <br/>
+          </MediaContent>
+
+          <MediaRight>
+          </MediaRight>
+        </Media>
+      </Box>
     );
   }
 
@@ -63,17 +101,34 @@ export class Revisions extends React.Component {
       return (<RevisionListItem kind={this.props.kind} match={this.props.match} item={item} key={item.id} />)
     });
   }
+
+  renderContent() {
+    if (this.state.isLoading) {
+      return (<SpinnerModal />)
+    } else if (this.state.errors) {
+      return (
+        <article className="message is-danger">
+          <div className="message-body">
+            {this.state.errors}
+          </div>
+        </article>
+      )
+    } else {
+      if (this.state.revisions.data.length > 0)
+        return this.items() 
+      else
+       return this.empty()
+    }
+  }
   
   render() {
-    const component = this.state.revisions.data.length > 0 ? this.items() : this.empty();
-
     return (
       <div className="section" style={{padding: 0}}>
         <hr/>
         <br/>
         <Container className="is-fluid">
           <h2 className="subtitle"> Revisions </h2>
-          {component}
+          {this.renderContent()}
         </Container>
       </div>
     );

@@ -90,6 +90,10 @@ Rails.application.routes.draw do
     delete ':repo_name/files/:revision/:filepath', {action: 'destroy', to: 'files#destroy', as: "destroy_#{options[:as_kind]}_files", constraints: { view: 'files', revision: /.*/, filepath: /.*/ }}.merge(options)
     get ':repo_name/tree/:revision', {action: 'index', to: 'files#index', as: "#{options[:as_kind]}_revision_tree", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
     post ':repo_name/tree/:revision', {action: 'create', to: 'files#create', as: "create_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}, constraints: { revision: /.*/ }}.merge(options)
+
+    post ':repo_name/upload', {action: 'create', to: 'files#upload', as: "upload_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}}.merge(options)
+    post ':repo_name/clear_uploads', {action: 'destroy', to: 'files#clear_uploads', as: "clear_upload_#{options[:as_kind]}_revision_file", defaults: {view: 'tree'}}.merge(options)
+
     get ':repo_name', {action: 'show', to: 'repos#show', as: "edit_#{options[:as_kind]}"}.merge(options)
     patch ':repo_name', {action: 'update', to: 'repos#update', as: "update_#{options[:as_kind]}"}.merge(options)
     delete ':repo_name', {action: 'destroy', to: 'repos#destroy', as: "delete_#{options[:as_kind]}"}.merge(options)

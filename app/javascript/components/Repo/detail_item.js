@@ -67,10 +67,11 @@ export class RepoDetailItem extends React.Component {
   }
 
   deleteButton(item) {    
-    if (this.props.repo.user_permissions.canManage && item.type != "tree") {
+    if (this.props.repo.user_permissions.canManage && this.props.meta.head == true) {
+      var title = item.type != "tree" ? "File" : "Directory"
       return (
         <p className="control">
-          <Button title="Delete File" className="button is-small" onClick={() => { this.props.deleteFile(item.name)} }>
+          <Button title={`Delete ${title}`} className="button is-small" onClick={() => { this.props.deleteFile(item.name)} }>
             <span className="icon is-small">
               <i className="far fa-trash"></i>
             </span>

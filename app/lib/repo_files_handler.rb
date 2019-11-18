@@ -12,7 +12,11 @@ class RepoFilesHandler
 
   def insert_files(current_user, files, message = nil)
 
-        
+    if files.is_a?(ActionController::Parameters)
+      files.permit!
+      files = files.to_h
+    end
+    
     return nil if files.nil? or files.count < 1
 
     index = @repo.index
@@ -26,12 +30,53 @@ class RepoFilesHandler
         removeTopDir = true
       end
     end
+    
+    hasKeyPath = true if files.is_a?(Hash)
+
+    files.each do |file|
+      name = ""
+      if @filepath.length > 1
+        prefix = @filepath + "/"
+      else
+        prefix = ""
+      end
+      if hasKeyPath
+        keypath, f = file
+        paths = keypath.split("/")
+        startpos = 0
+        
+        if paths.length > 1
+          startpos = 1 if paths[0] == ""
+          endpos = paths.length - 1
+          if startpos == endpos
+            keypath = ""
+          else
+            keypath = paths[startpos...endpos].join('/') + "/"
+          end
+        else
+          keypath = ""
+        end
+
+        prefix = prefix + keypath
+      else
+        f = file
+      end
         
 
-    files.each do |f|
-      name = ""
-      prefix = ""
       case f
+      when String
+        tmppath = f.split("/")
+        tmpkey = tmppath[0]
+        name = tmppath[1...].join('/')
+        
+
+        dirpath = File.join(@repo.path, ".tmpfiles", tmpkey)
+        filepath = File.join(@repo.path, ".tmpfiles", f)
+        next unless File.exist?(filepath)
+        fp = File.open(filepath)
+        oid = @repo.write(fp.read(), :blob)
+        fp.close()
+        
       when Zip::Entry
         next unless f.file?
         name = removeTopDir ? f.name.split("/")[1..-1].join("/") : f.name
@@ -70,8 +115,35 @@ class RepoFilesHandler
     options[:update_ref] = 'HEAD'
 
     commit_id = Rugged::Commit.create(@repo, options)
+
+    cleanup_tmp_files(files)
     [commit_id, @names]
   end
+
+  def cleanup_tmp_files(files)
+    dirpath = File.join(@repo.path, ".tmpfiles")
+    files.each do |f| 
+      if f.is_a?(String)
+        filepath = File.join(dirpath, f)
+        File.delete(filepath) if File.exist?(filepath)
+      end
+    end
+
+    
+    Dir.glob(dirpath + "/*").each { |d| 
+      k, t = d.split(dirpath + "/")
+      FileUtils.rm_rf(d) if (Time.at(t.to_i).utc + 1.hour) < DateTime.now.utc
+    }
+
+    Dir.glob(dirpath + "/**/*").select { |d|
+      File.directory?(d)
+    }.reverse_each { |d| 
+      if ((Dir.entries(d) - %w[ . .. ]).empty?)
+        Dir.rmdir(d)
+      end
+    } 
+  end
+
 
   def process_new_files(dbrepo, commit_id, names)
     if commit_id 

@@ -37,6 +37,10 @@ export class ProjectList extends React.Component {
     this.onChangePage = this.onChangePage.bind(this);
 
     this.cancelRequest = ProjectHandler.cancelSource();
+    
+  }
+
+  componentDidMount() {
     this.fetchProjects()
   }
 
@@ -83,6 +87,17 @@ export class ProjectList extends React.Component {
     }
   }
 
+  renderNewProjectButton() {
+    if (this.state.list.meta.canManage) {
+      return (
+        <div className="column is-3 has-text-right">
+          <Link className="button" to={`/${this.props.match.params.username}/projects/new`}>New Project</Link>
+        </div>    
+      )
+    }
+    return null
+  }
+
   render() {
     if(this.state.hasLoaded == false) {
       return(
@@ -103,9 +118,7 @@ export class ProjectList extends React.Component {
                 </ul>
               </Breadcrumb>
             </div>
-            <div className="column is-3 has-text-right">
-              <Link className="button" to={`/${this.props.match.params.username}/projects/new`}>New Project</Link>
-            </div>    
+            {this.renderNewProjectButton()}
           </div>
         </Container>
         <hr/>

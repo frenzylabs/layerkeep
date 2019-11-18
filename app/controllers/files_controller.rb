@@ -59,6 +59,7 @@ class FilesController < RepoAuthController
                 last_commit_message: @repo_handler.current_commit.message,
                 commit_id:  @repo_handler.current_commit.oid,
                 current_branch: @repo_handler.current_branch.name, 
+                head: @repo_handler.current_branch.target_id == @repo_handler.current_commit.oid,
                 revision: @repo_handler.revision, 
                 filepath: @repo_handler.filepath}
     render json: {data: @files, meta: metadata}
@@ -89,10 +90,6 @@ class FilesController < RepoAuthController
   end
 
   def create
-    if @repo_handler.current_branch.name != @repo_handler.revision
-      render status: 400, json: {'error': 'You must be on a branch to upload'} and return
-    end
-
     files   = params.require(:files)
     message = params[:message]
 
@@ -108,15 +105,62 @@ class FilesController < RepoAuthController
   end
 
 
-  def destroy
-    if @repo_handler.current_branch.name != @repo_handler.revision
-      render status: 400, json: {'error': 'You must be on a branch to upload'} and return
+  def upload
+    if @repo_handler.current_branch.target_id != @repo_handler.current_commit.oid
+      render status: 400, json: {'error': 'You must be on the latest revision to upload'} and return
     end
+
+    file   = params.require(:file)
+    file.permit!
+    fparam = file.to_h
+    filepath = fparam.keys.first
+    fileobj = fparam[filepath]
+
+    tmppath = nil
+    errormsg = ""
+    begin
+      dt = "#{DateTime.now.utc.to_i}"
+      paths = filepath.split("/")
+      fname = paths.pop()
+      dirpath = File.join(@repo_handler.repo.path, ".tmpfiles", dt)
+
+      nesteddirpath = File.join(dirpath, *paths)
+      FileUtils.mkdir_p(nesteddirpath) unless Dir.exist?(nesteddirpath)
+
+      path = File.join(dirpath, filepath)
+      File.open(path, "wb") { |f| f.write(fileobj.read) }
+      tmppath = File.join(dt, filepath)
+    rescue => e
+      errormsg = "Could not upload file: #{e.inspect}"
+      logger.error(errormsg)
+    end
+
+    if tmppath
+      render json: {'path': tmppath, 'name': filepath}
+    else
+      render status: 400, json: {'error': 'Error uploading files', 'reason': errormsg}
+    end
+
+  end
+
+  def clear_uploads
+    files  = params.require(:files)
+    @repo_handler.cleanup_tmp_files(files)
+
+    render json: {'deleted': "ok"}
+  end
+
+
+  def destroy
+    if @repo_handler.current_branch.target_id != @repo_handler.current_commit.oid
+      render status: 400, json: {'error': 'You must be on the latest revision to delete'} and return
+    end
+
     current_repo = @repo_handler.repo
     index = current_repo.index
     index.read_tree(@repo_handler.current_branch.target.tree)
-    index.remove(@repo_handler.filepath)
-
+    
+    index.remove_all(@repo_handler.filepath)
 
     options = {}
     options[:tree] = index.write_tree(current_repo)

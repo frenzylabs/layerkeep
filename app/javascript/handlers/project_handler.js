@@ -39,7 +39,7 @@ export default {
     var data = new FormData();
 
     files.forEach(file => {
-      data.append(`files[]`, file);
+      data.append(`files[${file.name}]`, file.file);
     });
 
     for ( var key in project ) {

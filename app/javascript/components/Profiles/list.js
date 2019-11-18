@@ -36,10 +36,11 @@ export class ProfileList extends React.Component {
     this.onChangePage = this.onChangePage.bind(this);
 
     this.cancelRequest = ProfileHandler.cancelSource();
-    this.fetchProfiles()
-    
   }
 
+  componentDidMount() {
+    this.fetchProfiles()
+  }
 
   componentWillUnmount() {
     this.cancelRequest.cancel("Left Page");
@@ -89,6 +90,17 @@ export class ProfileList extends React.Component {
     }
   }
 
+  renderNewProfileButton() {
+    if (this.state.list.meta && this.state.list.meta.canManage) {
+      return (
+        <div className="column is-3 has-text-right">
+          <Link className="button" to={`/${this.props.match.params.username}/profiles/new`}>New Profile</Link>
+        </div>    
+      )
+    }
+    return null
+  }
+
   render() {
     if(this.state.hasLoaded == false) {
       return(
@@ -109,9 +121,7 @@ export class ProfileList extends React.Component {
                 </ul>
               </Breadcrumb>
             </div>
-            <div className="column is-3 has-text-right">
-              <Link className="button" to={`/${this.props.match.params.username}/profiles/new`}>New Profile</Link>
-            </div>    
+            {this.renderNewProfileButton()}
           </div>          
         </Container>
         
