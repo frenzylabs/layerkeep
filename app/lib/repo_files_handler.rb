@@ -72,11 +72,11 @@ class RepoFilesHandler
 
         dirpath = File.join(@repo.path, ".tmpfiles", tmpkey)
         filepath = File.join(@repo.path, ".tmpfiles", f)
+        next unless File.exist?(filepath)
         fp = File.open(filepath)
         oid = @repo.write(fp.read(), :blob)
         fp.close()
         
-        # File.delete(filepath)
       when Zip::Entry
         next unless f.file?
         name = removeTopDir ? f.name.split("/")[1..-1].join("/") : f.name
@@ -125,7 +125,7 @@ class RepoFilesHandler
     files.each do |f| 
       if f.is_a?(String)
         filepath = File.join(dirpath, f)
-        File.delete(filepath)
+        File.delete(filepath) if File.exist?(filepath)
       end
     end
 

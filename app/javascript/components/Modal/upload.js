@@ -173,7 +173,12 @@ export default class UploadModal extends React.Component {
     if (!revisionPath) revisionPath = "master"
     var commitUrl = "/" + [urlParams.username, urlParams.kind, urlParams.name, "tree", revisionPath].join("/")
 
-    RepoHandler.commit(commitUrl, this.state.files, this.state.message)
+    var completedFiles = this.state.files.reduce((acc, item) => { 
+      if (item.state == "complete") return acc.concat(item)
+      return acc
+    }, [])
+
+    RepoHandler.commit(commitUrl, completedFiles, this.state.message)
     .then((response) => {
       window.location.href = window.location.href;
     })
@@ -241,12 +246,13 @@ export default class UploadModal extends React.Component {
             </Section>
           </UploadField>
 
-
+          <Box style={{margin:0, padding:0, overflowX: "scroll"}} >
           <Table isStriped className="is-fullwidth" style={{border: '1px solid #eaeaea'}}>
             <tbody>
               {this.renderFiles()}
             </tbody>
           </Table>
+          </Box>
 
         </Box>
 

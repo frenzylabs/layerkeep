@@ -83,9 +83,7 @@ class ApplicationController < ActionController::Base
       serializer = DefaultSerializer
     end
 
-    if options[:meta].blank?
-      options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }
-    end    
+    options[:meta] = { total: items.total_count, last_page: items.total_pages, current_page: items.current_page }.merge(options[:meta] || {})    
     serializer.new(items, options)
   end
 
