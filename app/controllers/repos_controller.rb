@@ -136,17 +136,17 @@ class ReposController < AuthController
     error_msg = "Error Retrieving From Thingiverse"
     error_msg += ": #{resp.body['error']}" if resp.body["error"]
     error_msg += ": #{resp.headers["x-error"]}" if resp.headers["x-error"]
+
     if resp.body["error"] || resp.headers["x-error"]
-      # binding.pry
       return create_thingiverse_files(params) 
     end
     if resp.body["public_url"]
-      uri = URI(URI.escape(resp.body["public_url"]))
+      uri = URI(URI.decode(URI.encode_www_form_component(resp.body["public_url"])))
       code, tmpfilepath = download_to_tmp_path(uri)        
       logger.info(tmpfilepath)
 
       if code != 200 
-        raise LayerKeepErrors::LayerKeepError.new(error_msg, code) and return 
+        return create_thingiverse_files(params) 
       end
 
       files = Zip::File.open(tmpfilepath)
@@ -178,7 +178,7 @@ class ReposController < AuthController
     
     download_errors = []
     thingfiles = resp.body.reduce([]) do |acc, t| 
-      uri = URI(t["public_url"])
+      uri = URI(URI.decode(URI.encode_www_form_component(t["public_url"])))
       code, tmpfilepath = download_to_tmp_path(uri)        
       logger.info(tmpfilepath)
 
