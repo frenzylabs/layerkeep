@@ -44,7 +44,7 @@ Rails.application.routes.draw do
     }
   end
 
-  authenticated :user do
+  authenticated :user do    
     get '/projects/new', to: redirect {|params, req|
       current_user = req.env["warden"].user(:user)
       current_user ? "/#{current_user.username}#{req.fullpath}" : '/'
@@ -55,7 +55,8 @@ Rails.application.routes.draw do
       current_user ? "/#{current_user.username}/projects/" : '/'
     }
   end
-
+  get '/users/me', to: 'users#me'
+  
   post 'contact-us', to: 'contacts#create'
   # get 'contact-us', to: 'contacts#index'
 

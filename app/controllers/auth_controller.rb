@@ -21,12 +21,16 @@ class AuthController < ApplicationController
   end
 
 
-  def get_user()
-    @user ||= (current_user && current_user.username == params["user"]) ? current_user : User.find_by!(username: params["user"] || "")
+  def get_user()    
+    if params["user"].blank?
+      @user ||= current_user
+    else
+      @user ||= (current_user && current_user.username == params["user"]) ? current_user : User.find_by!(username: params["user"] || "")
+    end
   end
 
   def authenticate!
-    if doorkeeper_token
+    if doorkeeper_token      
       doorkeeper_authorize!
     else
       authenticate_user!

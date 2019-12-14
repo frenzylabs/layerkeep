@@ -10,8 +10,11 @@ class SlicesController < AuthController
       request.format = :json
     end
     slices = Slice.where(user_id: @user.id)    
-    filter_params = (params[:q] && params.permit([q: [:project_id, :profile_id, :repo_filepath]])[:q]) || {} 
+    filter_params = (params[:q] && params.permit([q: [:name, :project_id, :profile_id, :repo_filepath]])[:q]) || {} 
 
+    if !filter_params["name"].blank?
+      slices = slices.where("name LIKE ?", "%#{filter_params["name"]}%")      
+    end
     if filter_params["project_id"] || filter_params["profile_id"]
       repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
       slices = slices.joins(:files).where("slice_files.repo_id IN (?)", repos).group("slices.id").having("COUNT(slice_files.id) = #{repos.count}") # =>  filter_params["project_id"])
