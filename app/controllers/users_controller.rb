@@ -54,4 +54,10 @@ class UsersController < AuthController
     authorize(@user, :show?)
     render json: @user.subscription_handler.features
   end
+
+  def me
+    # binding.pry
+    render json: current_user.to_json(except: ["stripe_id"]) if current_user
+  end
+
 end
