@@ -13,7 +13,7 @@ class SlicesController < AuthController
     filter_params = (params[:q] && params.permit([q: [:name, :project_id, :profile_id, :repo_filepath]])[:q]) || {} 
 
     if !filter_params["name"].blank?
-      slices = slices.where("name LIKE ?", "%#{filter_params["name"]}%")      
+      slices = slices.where("name ILIKE ?", "%#{filter_params["name"]}%")      
     end
     if filter_params["project_id"] || filter_params["profile_id"]
       repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
@@ -30,14 +30,14 @@ class SlicesController < AuthController
     #   slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
     # end
 
-    slices = slices.includes(:slicer_engine)
+    slices = slices.includes(:slicer_engine).includes(:project_files)
               .order("slices.updated_at desc")
               .page(params["page"]).per(params["per_page"])
     # slices = slices.includes(:project_files, :profile_files, :slicer_engine)
     #           .order("slices.id desc")
     #           .page(params["page"]).per(params["per_page"])
     
-    serializer = paginate(slices, "SlicesSerializer")
+    serializer = paginate(slices, "SlicesSerializer", {params: { project_files: true }})
     respond_with(serializer)
   end
 

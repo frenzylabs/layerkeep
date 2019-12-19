@@ -110,6 +110,7 @@ Rails.application.routes.draw do
     mount GitHttp::Engine => '/'
   end
 
+  # defaults format: :json do
   scope ':user' do
     get 'features', to: 'users#features'
     scope 'billing' do
@@ -146,11 +147,11 @@ Rails.application.routes.draw do
     # resources :gcodes, controller: 'gcodes', constraints: lambda { |req| req.format == :json }
     # post 'gcodes/presign', to: 'gcodes#presign'
 
-    scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
+    scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.accept.match?(/json/) && req.format == :json } do
       concerns :repo_files, as_kind: 'profiles'
     end
 
-    scope 'projects', defaults: {kind: 'projects'}, constraints: lambda { |req| req.xhr? && req.format == :json } do
+    scope 'projects', defaults: {kind: 'projects'}, constraints: lambda { |req| req.accept.match?(/json/) && req.format == :json } do
       concerns :repo_files, as_kind: 'projects'
       
     end

@@ -7,9 +7,14 @@ class SlicesSerializer
   
   attributes :project_files, if: Proc.new { |record, params|
     # The files will be serialized only if the :files key of params is true
-    params && params[:files] == true
-  } do |object|
-    pfiles = object.files.select { |f| f.kind == 'project'}
+    params && (params[:files] == true || params[:project_files])
+  } do |object, params|
+    if params[:project_files]
+      pfiles = object.project_files
+    else
+      pfiles = object.files.select { |f| f.kind == 'project'}
+    end
+
     SliceFilesSerializer.new(pfiles).as_json["data"]
   end
   attributes :profile_files, if: Proc.new { |record, params|
