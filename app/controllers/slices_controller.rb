@@ -30,14 +30,14 @@ class SlicesController < AuthController
     #   slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
     # end
 
-    slices = slices.includes(:slicer_engine).includes(:project_files)
+    slices = slices.includes(:slicer_engine).includes(:files)
               .order("slices.updated_at desc")
               .page(params["page"]).per(params["per_page"])
     # slices = slices.includes(:project_files, :profile_files, :slicer_engine)
     #           .order("slices.id desc")
     #           .page(params["page"]).per(params["per_page"])
     
-    serializer = paginate(slices, "SlicesSerializer", {params: { project_files: true }})
+    serializer = paginate(slices, "SlicesSerializer", {params: { files: true }})
     respond_with(serializer)
   end
 
@@ -68,7 +68,8 @@ class SlicesController < AuthController
       path: filepath,
       status: "success",
       metadata: asset.metadata,
-      gcode_data: asset.file_data
+      gcode_data: asset.file_data,
+      description: slice_params["description"] || ""
     }
 
     projects = slice_files(slice_params["projects"] || [], "projects")
@@ -119,7 +120,8 @@ class SlicesController < AuthController
         name: asset.name,
         path: filepath,
         status: "success",
-        metadata: asset.metadata
+        metadata: asset.metadata,
+        description: slice_params["description"] || slice.description
       })
 
       slice.gcode_attacher.set(asset.file)
