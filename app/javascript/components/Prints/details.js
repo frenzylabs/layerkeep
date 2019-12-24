@@ -210,9 +210,26 @@ export class PrintDetails extends React.Component {
               </div>
             </div>
           </div>
-            
+            {this.renderDescription()}
             {this.renderProjectSection()}
             {this.renderProfileSection()}
+        </div>
+      </div>
+    )
+  }
+
+  renderDescription() {
+    if (!this.state.print.attributes.slices) return null
+    return (
+      <div className={`card`}>
+        <div className="card-header">
+          <p className="card-header-title">
+            Description
+          </p>
+        </div>
+
+        <div className="card-content">
+          {this.state.print.attributes.slices.attributes.description}
         </div>
       </div>
     )
@@ -260,7 +277,7 @@ export class PrintDetails extends React.Component {
       <div className={`card`}>
         <div className="card-header">
           <p className="card-header-title">
-            Profiles
+            Profile
           </p>
         </div>
 

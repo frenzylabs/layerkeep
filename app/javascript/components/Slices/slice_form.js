@@ -27,7 +27,8 @@ import {
   Box, 
   Control, 
   Field, 
-  Button
+  Button,
+  TextArea
 } from 'bloomer';
 
 
@@ -36,7 +37,7 @@ export class SliceForm extends React.Component {
     super(props);
 
     this.state = { 
-      sliceAttrs: {},
+      sliceAttrs: {description: ""},
       canSubmit :  false,       
       projects: [], 
       profiles: [], 
@@ -53,6 +54,7 @@ export class SliceForm extends React.Component {
     this.dismissError       = this.dismissError.bind(this);
     this.fileDeleted        = this.fileDeleted.bind(this);
     this.fileUploaded       = this.fileUploaded.bind(this);
+    this.descriptionChanged = this.descriptionChanged.bind(this);
 
     this.cancelRequest      = SliceHandler.cancelSource()
   }
@@ -62,9 +64,10 @@ export class SliceForm extends React.Component {
     this.loadProfiles()
 
     if (this.props.slice) {
+      var description = this.props.slice.attributes.description || ""
       var projectFiles = this.createSelectedRepoOptions(this.props.slice.attributes.project_files)
       var profileFiles = this.createSelectedRepoOptions(this.props.slice.attributes.profile_files)
-      this.setState({canSubmit: true, currentProjects: projectFiles, currentProfiles: profileFiles})
+      this.setState({canSubmit: true, currentProjects: projectFiles, currentProfiles: profileFiles, sliceAttrs: {...this.state.sliceAttrs, description: description}})
     }
   }
 
@@ -178,6 +181,11 @@ export class SliceForm extends React.Component {
     }
   }
 
+
+  descriptionChanged(e) {
+    this.setState({sliceAttrs: {...this.state.sliceAttrs, "description": e.currentTarget.value}})      
+  }
+
   onRepoFileSelected(kind, repos) {
     var selectedRepos = Object.keys(repos).reduce((acc, key) => {
       var item = repos[key];
@@ -222,6 +230,40 @@ export class SliceForm extends React.Component {
       </div>
     )
   }
+
+  renderDescription() {
+    return (
+      <div className={`card package`}>
+        <div className="card-header">
+          <p className="card-header-title">
+            Description
+          </p>
+        </div>
+
+        <div className="card-content">
+          <Container className="is-fluid">
+            <TextArea 
+              name="description"
+              onChange={this.descriptionChanged}
+              placeholder="Describe Your Slice"
+              value={this.state.sliceAttrs.description}
+            />
+          </Container>
+        </div>
+      </div>
+    )
+  }
+
+  // renderDescription() {
+  //   // if (!(this.props.print && this.props.print.attributes)) return null;
+  //   return (<TextField 
+  //     label="Description"
+  //     name="description"
+  //     onChange={this.descriptionChanged}
+  //     placeholder="Describe Your Print"
+  //     value={this.props.slice ? this.props.slice.attributes.description : ""}
+  //   />)
+  // }
 
   renderProjectSection() {
     return (
@@ -288,6 +330,7 @@ export class SliceForm extends React.Component {
       <div>
         <Formsy onValidSubmit={this.submit} onValid={this.enableButton} onInvalid={this.disableButton}>
           {this.renderGcode()}
+          {this.renderDescription()}
           {this.renderProjectSection()}
           {this.renderProfileSection()}
           <br/>

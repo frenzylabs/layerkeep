@@ -19,6 +19,8 @@ class SlicesController < AuthController
       repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
       slices = slices.joins(:files).where("slice_files.repo_id IN (?)", repos).group("slices.id").having("COUNT(slice_files.id) = #{repos.count}") # =>  filter_params["project_id"])
       slices = slices.where(slice_files: {filepath: filter_params["repo_filepath"]}) if (filter_params["repo_filepath"]) 
+    else
+      slices = slices.includes(:slicer_engine).includes(:files)
     end
 
     # if filter_params["project_id"]
@@ -30,7 +32,7 @@ class SlicesController < AuthController
     #   slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
     # end
 
-    slices = slices.includes(:slicer_engine).includes(:files)
+    slices = slices
               .order("slices.updated_at desc")
               .page(params["page"]).per(params["per_page"])
     # slices = slices.includes(:project_files, :profile_files, :slicer_engine)
@@ -104,7 +106,9 @@ class SlicesController < AuthController
 
     slice_params = params.require("slice")
     
-    slice_attrs = {}
+    slice_attrs = {
+      description: slice_params["description"] || slice.description
+    }
 
     gcode_path = slice_params.dig(:gcode, :file)
     if gcode_path    
@@ -120,8 +124,7 @@ class SlicesController < AuthController
         name: asset.name,
         path: filepath,
         status: "success",
-        metadata: asset.metadata,
-        description: slice_params["description"] || slice.description
+        metadata: asset.metadata
       })
 
       slice.gcode_attacher.set(asset.file)

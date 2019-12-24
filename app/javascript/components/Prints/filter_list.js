@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from 'bloomer';
+import { Icon, Button } from 'bloomer';
 import { SearchDropdown } from '../Form/SearchDropdown'
 import { ProjectHandler, ProfileHandler, SliceHandler, PrinterHandler }     from '../../handlers';
 
@@ -23,7 +23,16 @@ export class FilterList extends React.Component {
       printers: [],
       projects: [],
       profiles: [], 
-      slices: [],
+      slices: {
+        data: [],
+        meta: {},
+        search: {
+          page: 1, 
+          per_page: 20, 
+          q: {}
+        }
+      },
+      slicesLoading: false,
       filter: {
         printer_id: props.search.q["printer_id"],
         project_id: props.search.q["project_id"],
@@ -49,10 +58,12 @@ export class FilterList extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     // if (JSON.stringify(prevState.filter) != JSON.stringify(this.state.filter)) {
     if (prevState.filter.project_id != this.state.filter.project_id || 
-      prevState.filter.profile_id != this.state.filter.profile_id) {
+      prevState.filter.profile_id != this.state.filter.profile_id ||
+      prevState.slices.search != this.state.slices.search) {
       this.loadSlices()
     }
   }
+
 
   selectPrinter(item, id) {
     var filter = {...this.state.filter, printer_id: item["id"]}
@@ -132,19 +143,27 @@ export class FilterList extends React.Component {
   }
 
   loadSlices() {    
-    SliceHandler.list(this.props.match.params.username, { qs: {q: this.state.filter}, cancelToken: this.cancelRequest.token})
+    this.setState({slicesLoading: true})
+    var sliceFilter = {...this.state.slices.search.q, ...this.state.filter}
+    SliceHandler.list(this.props.match.params.username, { qs: {q: sliceFilter}, cancelToken: this.cancelRequest.token})
     .then((response) => {
       // console.log()
       var slices = response.data.data.map((item) => {
-        return {name: item.attributes.name, value: item.attributes.id, id: item.id}
+        return {name: item.attributes.name, value: item.attributes.id, id: item.id, description: item.attributes.description}
       })
       slices.unshift({"name": "All", value: "all"})
-      this.setState({ slices: slices})
+      this.setState({ slicesLoading: false, slices: {data: slices, meta: response.data.meta, search: this.state.slices.search}})
     })
     .catch((error) => {
       console.log(error);
+      this.setState({slicesLoading: false})
     });
   }
+
+  onSliceFilter(item) {
+    this.setState({slices: {...this.state.slices, search: {...this.state.slices.search, q: {name: item}}}})
+  }
+  
 
   renderPrinters() {
     if (!this.state.printers) return null;
@@ -185,14 +204,37 @@ export class FilterList extends React.Component {
     )
   }
 
+  renderSliceOptionItem(item) {
+
+    return (
+      <div className="level">
+        <div className="level-left">{item.name}</div>
+        {item.description && item.description.length > 0 && 
+          (<div className="level-right">
+            <Icon icon="angle-down" className="fas fa-info-circle" isSize="small" data-tooltip={`${item.description}`} />
+          </div>)}
+      </div>
+    )
+  }
+
   renderSlices() {
-    if (!this.state.slices) return null;
-    var selectedItem =  this.state.slices.find((x) => x["id"] == this.state.filter.slice_id)
+    if (!this.state.slices.data) return null;
+    var selectedItem =  this.state.slices.data.find((x) => x["id"] == this.state.filter.slice_id)
     return (
           <div className="level-left">            
             <div className="" >
               <div>Slice Name: </div>
-              <SearchDropdown id={"slicefilter"} options={this.state.slices} selected={selectedItem} onSelected={this.selectSlice} promptText={`Filter by Slice`} placeholder={`Slice Name`} />
+              <SearchDropdown id={"slicefilter"} 
+                promptText={`Filter by Slice`} 
+                placeholder={`Slice Name`}
+                loading={this.state.slicesLoading} 
+                options={this.state.slices.data} 
+                meta={this.state.slices.meta} 
+                selected={selectedItem} 
+                onSelected={this.selectSlice} 
+                onFilter={this.onSliceFilter.bind(this)} 
+                renderOptionItem={this.renderSliceOptionItem.bind(this)}
+                 />
             </div>                
           </div>
     )

@@ -185,6 +185,24 @@ export class SliceDetails extends React.Component {
     )
   }
 
+  renderDescription() {
+    return (
+      <div className={`card`}>
+        <div className="card-header">
+          <div className="card-header-title">
+            <p className="level-left">Description</p>
+          </div>
+        </div>
+
+        <div className="card-content">
+          <div className="level-left">
+            {this.state.slice.attributes.description}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   renderRepos(files) {
     if (!files) return null;
     return files.map((pf) => {
@@ -310,6 +328,7 @@ export class SliceDetails extends React.Component {
     } else {
       return (<div>
           {this.renderGcode()}
+          {this.renderDescription()}
           {this.renderProjectSection()}
           {this.renderProfileSection()}
         </div>

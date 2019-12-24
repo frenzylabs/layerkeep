@@ -44,7 +44,7 @@ export class PrintListItem extends React.Component {
           </MediaContent>
 
           <MediaRight>
-            <p>Created: {dayjs(this.props.item.attributes.updated_at).format('MM.DD.YYYY')}</p>
+            <p>Created: {dayjs(this.props.item.attributes.updated_at).format('MM.DD.YYYY HH:mm:ss')}</p>
             <p>Status: {this.renderStatus()}</p>
           </MediaRight>
         </Media>

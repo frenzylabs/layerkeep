@@ -53,6 +53,7 @@ export class PrintForm extends React.Component {
       selectedPrinter: selectedPrinter,
       canSubmit :  true,       
       slices: [], 
+      slicesMeta: {},
       printers: [],
       profiles: [], 
       currentProfiles: [],
@@ -60,6 +61,11 @@ export class PrintForm extends React.Component {
       requestError: null,
       search: {
         q: qparams["q"] || {}
+      },
+      sliceSearch: {
+        page: 1, 
+        per_page: 20, 
+        q: {}
       }
     }
     
@@ -107,6 +113,9 @@ export class PrintForm extends React.Component {
         selectedSlice = qparams["slice_id"]
       this.setState({search: search, selectedSlice: selectedSlice})
     }
+    if (prevState.sliceSearch != this.state.sliceSearch) {
+      this.loadSlices()
+    }
   }
 
   createSelectedRepoOptions(repos) {
@@ -117,16 +126,19 @@ export class PrintForm extends React.Component {
   }
 
   loadSlices() {    
-    SliceHandler.list(this.props.match.params.username, {cancelToken: this.cancelRequest.token})
+    this.setState({slicesLoading: true})
+    SliceHandler.list(this.props.match.params.username, {qs: this.state.sliceSearch, cancelToken: this.cancelRequest.token})
+    // SliceHandler.list(this.props.match.params.username, {cancelToken: this.cancelRequest.token})
     .then((response) => {
       var slices = response.data.data.map((item) => {
-        return {name: item.attributes.name, value: item.attributes.id, id: item.id}
+        return {name: item.attributes.name, value: item.attributes.id, id: item.id, description: item.attributes.description}
       })
       
-      this.setState({ slices: slices})
+      this.setState({ slicesLoading: false, slices: slices, slicesMeta: response.data.meta || {}})
     })
     .catch((error) => {
       console.log(error);
+      this.setState({slicesLoading: false})
     });
   }
 
@@ -217,6 +229,10 @@ export class PrintForm extends React.Component {
     }
   }
 
+  onSliceFilter(item) {
+    this.setState({sliceSearch: {...this.state.sliceSearch, q: {name: item}}})
+  }
+
   selectSlice(item, id) {
     this.setState({selectedSlice: item.id, printAttrs: {...this.state.printAttrs, "slice_id": item.id}})
   }
@@ -274,6 +290,18 @@ export class PrintForm extends React.Component {
     )
   }
 
+  renderSliceOptionItem(item) {
+    return (
+      <div className="level">
+        <div className="level-left">{item.name}</div>
+        {item.description && item.description.length > 0 && 
+          (<div className="level-right">
+            <Icon icon="angle-down" className="fas fa-info-circle" isSize="small" data-tooltip={`${item.description}`} />
+          </div>)}
+      </div>
+    )
+  }
+
   renderSliceSection() {
 
     var selectedSlice =  this.state.slices.find((x) => x["id"] == this.state.selectedSlice)
@@ -291,7 +319,17 @@ export class PrintForm extends React.Component {
                 <div className="level-left">
                   <div className="level-item">GCode Name: </div>
                   <div className="level-item" >
-                    <SearchDropdown id={"slices"} options={this.state.slices} selected={selectedSlice} onSelected={this.selectSlice} promptText={`Select Slice`} placeholder={`Slice Name`} />
+                    <SearchDropdown id={"slices"} 
+                      promptText={`Select Slice`} 
+                      placeholder={`Slice Name`}
+                      loading={this.state.slicesLoading} 
+                      options={this.state.slices} 
+                      meta={this.state.slicesMeta} 
+                      selected={selectedSlice} 
+                      onSelected={this.selectSlice} 
+                      onFilter={this.onSliceFilter.bind(this)} 
+                      renderOptionItem={this.renderSliceOptionItem.bind(this)}
+                       />
                   </div>
                   <div className="level-item"> <Link style={{fontSize: "14px"}} to={`/${this.props.match.params.username}/slices/new`}> &nbsp; [add a new one]</Link> </div>
                 </div>
