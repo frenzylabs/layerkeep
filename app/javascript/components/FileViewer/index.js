@@ -105,6 +105,7 @@ export class FileViewer extends React.Component {
       }
       case 'mpg':
       case 'webm':
+      case 'mov':
       case 'mp4': {
         return VideoViewer;
       }

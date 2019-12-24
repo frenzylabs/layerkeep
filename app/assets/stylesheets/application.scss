@@ -36,6 +36,8 @@
 @import "spinkit/scss/spinkit";
 @import "react-image-gallery/styles/scss/image-gallery";
 
+@import "bulma-tooltip/src/sass/index.sass";
+
 .image-gallery-image {
   position: relative;
 }

@@ -9,6 +9,8 @@
 import React                      from 'react';
 import { Button, Icon, Dropdown, DropdownContent, DropdownItem, DropdownDivider, DropdownMenu, DropdownTrigger } from 'bloomer';
 
+import Spinner from '../Modal/spinner';
+
 let lastId = 0;
 
 export function newID(prefix='id') {
@@ -22,7 +24,12 @@ export class SearchDropdown extends React.Component {
 
 
     var selectedOption = this.props.selected 
-    this.state = {prompText: "Select", isActive: false, dropdownOptions: this.props.options, selected: selectedOption }
+    this.state = { prompText: "Select", 
+      isActive: false, 
+      dropdownOptions: this.props.options, 
+      selected: selectedOption,
+      localFilter: "" 
+    }
 
     this.id = props.id || newID();
 
@@ -32,18 +39,45 @@ export class SearchDropdown extends React.Component {
     this.onMouseDown     = this.onMouseDown.bind(this)
     this.onMouseUp       = this.onMouseUp.bind(this)
     this.handleKeyEvent  = this.handleKeyEvent.bind(this)
+    this.localFilter     = this.localFilter.bind(this)
+    this.renderOptionItem = this.renderOptionItem.bind(this)
+    window.sd = this
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props != prevProps) {
+    if (this.props.selected != prevProps.selected || this.props.options != prevProps.options) {
       var selectedOption = this.props.selected 
-      this.setState({isActive: false, dropdownOptions: this.props.options, selected: selectedOption })
+      var localFilter = ""
+      if (this.props.meta && this.props.meta.last_page == 1) {
+        localFilter = this.searchInput.current.value
+      }
+      this.setState({dropdownOptions: this.props.options, selected: selectedOption, localFilter: localFilter })
     }
   }
   
 
   onChange = (e) => {
     const searchQuery = e.target.value
+    var tryInitialFilter = true
+    if (searchQuery == '' || (!searchQuery.startsWith(this.state.localFilter)))
+      tryInitialFilter = false
+
+    if (this.props.meta && tryInitialFilter) {
+      if (this.props.meta.last_page == 1) {
+        return this.localFilter(searchQuery)
+      }
+    }
+    if (this.props.onFilter) {
+      this.props.onFilter(searchQuery)
+    } else {
+      return this.localFilter(searchQuery)
+    }
+    
+  }
+
+  localFilter(searchQuery) {
+    // if (this.state.localFilter.length == 0)
+    //   this.state.localFilter = searchQuery
     if(searchQuery == '') {
       this.setState({dropdownOptions: this.props.options})
       return
@@ -94,7 +128,9 @@ export class SearchDropdown extends React.Component {
   }
 
   handleKeyEvent(e) {
+    var preventDefault = false
     if (e.keyCode == 13) {
+      preventDefault = true
       if (this.state.dropdownOptions.length == 1) {
         this.setSelected(this.state.dropdownOptions[0])
       } else {
@@ -103,11 +139,17 @@ export class SearchDropdown extends React.Component {
           this.setSelected({name: searchTerm, value: searchTerm})
         }
       }
-    } else if(e.keyCode == 40) {
+    } else if(e.keyCode == 40) {  // Down Arrow
+      preventDefault = true
 
-
-    } else if(e.keyCode == 38) {
-
+    } else if(e.keyCode == 38) { // Up Arrow
+      preventDefault = true
+    }
+    if (preventDefault) {
+      if (this.state.isActive) {
+        e.preventDefault()
+        e.stopPropagation()
+      }
     }
   }
 
@@ -145,10 +187,26 @@ export class SearchDropdown extends React.Component {
     }
   }
 
+  renderOptionItem(item) {
+    if (this.props.renderOptionItem) {
+      return this.props.renderOptionItem(item)
+    } 
+    return this.optionName(item)
+  }
+
   renderOptions() {
+    if (this.props.loading) {
+      return (
+        <Spinner /> 
+      )
+    }
     if (this.state.dropdownOptions.length > 0) {
+
       return this.state.dropdownOptions.map((item) => {
-        return (<DropdownItem tag="a" onMouseDown={this.onMouseDown} onMouseUp={(e) => this.onMouseUp(e, item)} key={this.optionValue(item)}>{this.optionName(item)}</DropdownItem>)
+        return (
+          <DropdownItem tag="a" isActive={(this.state.selected && this.state.selected.id == item.id)} onMouseDown={this.onMouseDown} onMouseUp={(e) => this.onMouseUp(e, item)} key={this.optionValue(item)}>
+            {this.renderOptionItem(item)}
+          </DropdownItem>)
       });
     }
   }
@@ -157,7 +215,7 @@ export class SearchDropdown extends React.Component {
     if (!this.props.hideSearch) {
       return (
         <DropdownItem>
-                  <input ref={this.searchInput} onKeyDown={this.handleKeyEvent} type="text" placeholder={this.props.placeholder || "Revision"} className="input is-transparent" />
+            <input ref={this.searchInput} type="text" placeholder={this.props.placeholder || "Revision"} className="input is-transparent" />
         </DropdownItem>
       );
     }
@@ -165,7 +223,7 @@ export class SearchDropdown extends React.Component {
 
   render() {
     return (
-      <Dropdown key={this.id} onChange={this.onChange} onBlur={this.onBlur} isActive={this.state.isActive}>
+      <Dropdown key={this.id} onChange={this.onChange} onKeyDown={this.handleKeyEvent} onBlur={this.onBlur} isActive={this.state.isActive}>
         <DropdownTrigger onClick={this.toggleIsActive}>
           <Button isOutlined aria-haspopup="true" aria-controls="dropdown-menu" isSize="small">
             <span>{this.optionNameByValue(this.state.selected)}</span>
