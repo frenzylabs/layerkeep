@@ -111,7 +111,8 @@ Rails.application.routes.draw do
   end
 
   # defaults format: :json do
-  scope ':user' do
+  concern :user_routes do |options|
+  
     get 'features', to: 'users#features'
     scope 'billing' do
       resources :subscriptions
@@ -124,9 +125,10 @@ Rails.application.routes.draw do
     post ':owner/assets/presign', to: 'assets#presign', constraints: { owner: /(slices|prints)/ }
     get ':owner/:owner_id/assets/:id/download', to: 'assets#download', constraints: { owner: /(slices|prints)/ }
 
-    get 'slices/:id/gcodes', to: 'slices#gcodes', as: "show_gcodes", constraints: { id: /\d+/ }
+    get 'slices/:id/gcodes', to: 'slices#gcodes', constraints: { id: /\d+/ }
     post 'slices/generate', to: 'slices#generate'    
-    resources :slices, constraints: lambda { |req| req.format == :json } do
+    # , constraints: lambda { |req| req.format == :json } 
+    resources :slices do
       resources :assets do
         member do
           get "download", to: 'assets#download'
@@ -134,11 +136,14 @@ Rails.application.routes.draw do
       end
     end
 
-    resources :prints, constraints: lambda { |req| req.format == :json } do
+    # resources :prints, constraints: lambda { |req| req.format == :json } do
+    #   resources :assets
+    # end
+    resources :prints do
       resources :assets
     end
 
-    resources :printers, constraints: lambda { |req| req.format == :json } do
+    resources :printers do
       collection do
         get 'printer_count', to: 'printers#printer_count'
       end
@@ -146,17 +151,26 @@ Rails.application.routes.draw do
 
     # resources :gcodes, controller: 'gcodes', constraints: lambda { |req| req.format == :json }
     # post 'gcodes/presign', to: 'gcodes#presign'
-
-    scope 'profiles', defaults: {kind: 'profiles'}, constraints: lambda { |req| req.accept.match?(/json/) && req.format == :json } do
-      concerns :repo_files, as_kind: 'profiles'
+    # constraints: lambda { |req| req.accept.match?(/json/) && req.format == :json } 
+    scope 'profiles', defaults: {kind: 'profiles'} do
+      concerns :repo_files, as_kind: "#{options[:prefix] || ""}profiles"
     end
 
-    scope 'projects', defaults: {kind: 'projects'}, constraints: lambda { |req| req.accept.match?(/json/) && req.format == :json } do
-      concerns :repo_files, as_kind: 'projects'
+    scope 'projects', defaults: {kind: 'projects'} do
+      concerns :repo_files, as_kind: "#{options[:prefix] || ""}projects"
       
     end
   end
-    
+  
+  scope "api", as: "api", defaults: {format: :json} do
+    scope ':user' do
+      concerns :user_routes, prefix: "api_"
+    end
+  end
+
+  scope ':user', as: 'user', defaults: {format: :html} do
+    concerns :user_routes
+  end
 
 #     /:username/profiles/
 # ReposController get from repos table where kind = profiles

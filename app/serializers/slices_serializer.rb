@@ -29,6 +29,15 @@ class SlicesSerializer
     SlicerEnginesSerializer.new(object.slicer_engine).as_json["data"]
   end
 
+  attribute :user_permissions do |object, params|
+    if params[:current_user]
+      policy = SlicePolicy.new(params[:current_user], object)
+      {canManage: policy.create?, canView: true}
+    else
+      {canView: true}
+    end
+  end
+
   # belongs_to :slicer_engine, serializer: SlicerEnginesSerializer
   
 

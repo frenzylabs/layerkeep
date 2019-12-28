@@ -370,6 +370,17 @@ export class PrintDetails extends React.Component {
     }
   }
 
+  renderEditButton() {
+    if (this.state.print.attributes && this.state.print.attributes.user_permissions.canManage) {
+      return (
+        <Column className="has-text-right">
+          <Link className="button" to={`${this.props.match.url}/edit`}>Edit</Link>
+        </Column>
+      )
+    }
+    return null
+  }
+
 
   render() {    
     return (
@@ -389,7 +400,8 @@ export class PrintDetails extends React.Component {
                   {this.state.print.attributes && this.state.print.attributes.description}
                 </p>
             </Column>
-            <Column className="has-text-right"><Link className="button" to={`${this.props.match.url}/edit`}>Edit</Link></Column>
+            {this.renderEditButton()}
+            
           </Columns>
           {this.renderContent()}
         </Container>

@@ -1,46 +1,51 @@
 class SlicesController < AuthController
-  respond_to :json
+  respond_to :json, :html
+  skip_before_action :authenticate!, only: [:show, :index, :gcodes]
 
   def new
   end
 
   def index
-    authorize(@user)
-    if !request.format.json?
-      request.format = :json
-    end
-    slices = Slice.where(user_id: @user.id)    
-    filter_params = (params[:q] && params.permit([q: [:name, :project_id, :profile_id, :repo_filepath]])[:q]) || {} 
-
-    if !filter_params["name"].blank?
-      slices = slices.where("name ILIKE ?", "%#{filter_params["name"]}%")      
-    end
-    if filter_params["project_id"] || filter_params["profile_id"]
-      repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
-      slices = slices.joins(:files).where("slice_files.repo_id IN (?)", repos).group("slices.id").having("COUNT(slice_files.id) = #{repos.count}") # =>  filter_params["project_id"])
-      slices = slices.where(slice_files: {filepath: filter_params["repo_filepath"]}) if (filter_params["repo_filepath"]) 
-    else
-      slices = slices.includes(:slicer_engine).includes(:files)
-    end
-
-    # if filter_params["project_id"]
-    #   slices = slices.joins(:project_files).where(slice_files: {repo_id: filter_params["repo_id"]})
-    #   slices = slices.where(slice_files: {filepath: filter_params["repo_filepath"]}) if (filter_params["repo_filepath"]) 
+    # authorize(@user)
+    # if !request.format.json?
+    #   request.format = :json
     # end
-    # if params["repo_id"] 
-    #   slices = slices.joins(:project_files).where(slice_files: {repo_id: params["repo_id"]})
-    #   slices = slices.where(slice_files: {filepath: params["repo_filepath"]}) if (params["repo_filepath"]) 
-    # end
+    respond_to do |format|
+      format.html { }
+      format.json {
+        slices = policy_scope(@user, policy_scope_class: SlicePolicy::Scope)
 
-    slices = slices
-              .order("slices.updated_at desc")
-              .page(params["page"]).per(params["per_page"])
-    # slices = slices.includes(:project_files, :profile_files, :slicer_engine)
-    #           .order("slices.id desc")
-    #           .page(params["page"]).per(params["per_page"])
-    
-    serializer = paginate(slices, "SlicesSerializer", {params: { files: true }})
-    respond_with(serializer)
+        # slices = Slice.where(user_id: @user.id)    
+        filter_params = (params[:q] && params.permit([q: [:name, :project_id, :profile_id, :repo_filepath]])[:q]) || {} 
+
+        if !filter_params["name"].blank?
+          slices = slices.where("name ILIKE ?", "%#{filter_params["name"]}%")      
+        end
+        if filter_params["project_id"] || filter_params["profile_id"]
+          repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
+          slices = slices.joins(:files).where("slice_files.repo_id IN (?)", repos).group("slices.id").having("COUNT(slice_files.id) = #{repos.count}") # =>  filter_params["project_id"])
+          slices = slices.where(slice_files: {filepath: filter_params["repo_filepath"]}) if (filter_params["repo_filepath"]) 
+        else
+          slices = slices.includes(:slicer_engine).includes(:files)
+        end
+
+        slices = slices
+                  .order("slices.updated_at desc")
+                  .page(params["page"]).per(params["per_page"])
+        # slices = slices.includes(:project_files, :profile_files, :slicer_engine)
+        #           .order("slices.id desc")
+        #           .page(params["page"]).per(params["per_page"])
+        
+        meta = {canView: true}
+        if current_user
+          policy = UserPolicy.new(current_user, @user)
+          meta[:canManage] = policy.create?
+        end
+
+        @slices = paginate(slices, "SlicesSerializer", {params: { files: true }, meta: meta})
+        respond_with(@slices)
+      }
+    end
   end
 
   # {
@@ -101,8 +106,9 @@ class SlicesController < AuthController
   end
 
   def update
-    authorize(@user)
+    
     slice = Slice.includes(:files).find_by!(id: params[:id], user_id: @user.id)
+    authorize(slice)
 
     slice_params = params.require("slice")
     
@@ -207,12 +213,16 @@ class SlicesController < AuthController
     end
   end
 
-  def show
-    authorize(@user)
-    slice = Slice.includes([files: [:repo]]).find_by!(id: params[:id], user_id: @user.id)
-    
-    slice = SlicesSerializer.new(slice, {params: { files: true }}).serializable_hash
-    respond_with(slice)
+  def show    
+    @slice = Slice.includes([files: [:repo]]).find_by!(id: params[:id], user_id: @user.id)
+    authorize(@slice)
+    @slicehash = SlicesSerializer.new(@slice, {params: { files: true, current_user: current_user }}).serializable_hash
+    respond_to do |format|
+      format.json {        
+        respond_with(@slicehash)
+      }
+      format.any {}
+    end
   end
 
   def destroy
@@ -230,15 +240,16 @@ class SlicesController < AuthController
   end
 
   def gcodes 
-    authorize(@user)
+    
     @slice = Slice.find_by!(id: params[:id], user_id: @user.id)
+    authorize(@slice)
 
     if params[:logpath]
       fileurl = @slice.log_url(response_content_disposition: "attachment; filename=\"#{@slice.name}.log\"")
-      $tracker.track(current_user.id, "Download Gcodes Logfile")
+      $tracker.track((current_user ? current_user.id : "Anonymous"), "Download Gcodes Logfile")
     else
       fileurl = @slice.gcode_url(response_content_disposition: "attachment; filename=\"#{@slice.name}\"")
-      $tracker.track(current_user.id, "Download Gcodes")
+      $tracker.track((current_user ? current_user.id : "Anonymous"), "Download Gcodes")
     end
     redirect_to fileurl
   end

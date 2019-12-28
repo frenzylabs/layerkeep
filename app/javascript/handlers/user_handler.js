@@ -46,7 +46,7 @@ export default {
   },
 
   getFeatures: (user, queryParams = {}) => {
-    return Request.get(`/${user}/features`, queryParams);
+    return Request.get(`/api/${user}/features`, queryParams);
   },
 
   contactUs: (params) => {

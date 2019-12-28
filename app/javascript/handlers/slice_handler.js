@@ -16,7 +16,7 @@ function path(endpoint) {
 }
 
 function userPath(username, endpoint) {
-  return `/${(username || currentUser.endpoint)}/slices/${endpoint || ''}`
+  return `/api/${(username || currentUser.endpoint)}/slices/${endpoint || ''}`
 }
 
 export default {

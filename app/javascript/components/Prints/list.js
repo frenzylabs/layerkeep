@@ -130,6 +130,17 @@ export class PrintList extends React.Component {
     }
   }
 
+  renderNewPrintButton() {
+    if (this.state.list.meta && this.state.list.meta.canManage) {
+      return (
+        <div className="column is-3 has-text-right">
+          <Link className="button" to={`/${this.props.match.params.username}/prints/new`}>New Print</Link>
+        </div>    
+      )
+    }
+    return null
+  }
+
   renderPagination() {
     if (this.state.list.data.length > 0) {
       var {current_page, last_page, total} = this.state.list.meta;
@@ -182,10 +193,8 @@ export class PrintList extends React.Component {
                 <h2 className="title is-4">Prints</h2>
             </Column>
 
-            <Column isSize={3} className="has-text-right">
-            <Link className="button" to={`/${params.username}/prints/new`}>New Print</Link>
-          </Column>
-        </Columns>
+            {this.renderNewPrintButton()}
+          </Columns>
 
         <div> 
           <FilterList {...this.props} search={this.state.search} onFilter={this.onFilter.bind(this)}/>

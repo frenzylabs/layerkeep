@@ -336,6 +336,17 @@ export class SliceDetails extends React.Component {
     }
   }
 
+  renderEditButton() {
+    if (this.state.slice.attributes && this.state.slice.attributes.user_permissions.canManage) {
+      return (
+        <Column className="has-text-right">          
+          <Link className="button" to={`${this.props.match.url}/edit`}>Edit</Link>
+        </Column>
+      )
+    }
+    return null
+  }
+
 
   render() {    
     return (
@@ -353,7 +364,8 @@ export class SliceDetails extends React.Component {
                 </ul>
               </Breadcrumb>
             </Column>
-            <Column className="has-text-right"><Link className="button" to={`${this.props.match.url}/edit`}>Edit</Link></Column>
+            {this.renderEditButton()}
+            
           </Columns>
           {this.renderContent()}
           {this.renderPrintsContainer()}

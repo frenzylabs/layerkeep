@@ -212,4 +212,92 @@ class RepoFilesHandler
   def sanitize_filepath(filepath)
     filepath.gsub(/[^0-9A-z.\-\/\s\(\)]/, "")
   end
+
+  def list_files(params = {})
+    recursive = params[:recursive] || false
+    start_commit = self.current_commit
+    @filepath = self.filepath.chomp("/")
+    rootpath = @filepath.blank? ? "" : @filepath + "/"
+    pathmatch = Regexp.new("(?:#{@filepath}(?:\/))?([^\/]+)", "m")
+    file_paths = file_list(start_commit, @filepath, nil, recursive)
+
+    @files = []
+
+    walker = Rugged::Walker.new(self.repo)
+    walker.sorting(Rugged::SORT_DATE)
+    walker.push(start_commit)    
+    walker.inject(@files) do |a, c|
+      break if file_paths.empty?
+      if c.parents.first 
+        c.parents.first.diff(c, paths: file_paths).deltas.each do |d|
+          if recursive
+            filename = filepath = d.new_file[:path]
+            filetype = :blob
+          else
+            filename, filetype = build_filepath(d.new_file[:path], pathmatch)          
+            filepath = rootpath + filename
+          end
+          if file_paths.delete(filepath)
+            a << {name: filename, path: filepath, type: filetype, author: c.author, date: c.time, commit: c.oid, subject: c.message.split("\n").first, message: c.message}
+          end
+        end
+      else
+        c.diff(paths: file_paths).deltas.each do |d| 
+          if recursive
+            filepath = d.new_file[:path]
+            filetype = :blob
+          else
+            filename, filetype = build_filepath(d.old_file[:path], pathmatch)          
+            filepath = rootpath + filename
+          end
+
+          if file_paths.delete(filepath) 
+            a << {name: filename, path: filepath, type: filetype, author: c.author, date: c.time, commit: c.oid, subject: c.message.split("\n").first, message: c.message}
+          end
+        end
+      end
+      a
+    end
+    
+    @metadata = {last_committed_at: self.current_commit.time, 
+                last_commit_message: self.current_commit.message,
+                commit_id:  self.current_commit.oid,
+                current_branch: self.current_branch.name, 
+                head: self.current_branch.target_id == self.current_commit.oid,
+                revision: self.revision, 
+                filepath: self.filepath}
+    {data: @files, meta: @metadata}
+  end
+
+  def build_filepath(filepath, pathmatch)
+    filetype = :blob
+    matches = filepath.scan(pathmatch)
+    filename = matches[0].first || filepath
+    if matches.count > 1
+      filetype = :tree
+    end
+    [filename, filetype]
+  end
+
+  def file_list(start_commit, filepath, pathmatch = nil, recursive = true)
+    filepath = filepath.chomp("/")
+    pathmatch ||= Regexp.new("(?:#{filepath}(?:\/))?([^\/]+)", "m")
+    current_files = []
+    start_commit.tree.walk(:postorder).inject(current_files) do |a, (rootpath, f)| 
+
+      fullname = rootpath + f[:name]
+      if fullname.starts_with?(filepath) && (recursive || fullname.scan(pathmatch).count < 2)
+        if recursive
+          if f[:type] != :tree 
+            a.push(fullname) 
+          end
+        else
+          a.push(fullname) 
+        end
+      end
+      a
+    end
+
+    current_files
+  end
 end
