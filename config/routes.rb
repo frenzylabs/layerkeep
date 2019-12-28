@@ -72,12 +72,8 @@ Rails.application.routes.draw do
 
   post 'user/settings', to: 'users#settings'
 
-  get '/slicer_engines', to: 'slicer_engines#index'
-  get '/remote_sources', to: 'remote_sources#index'
 
-  get '/packages', to: 'packages#index'
-  get '/plans', to: 'plans#index'
-  get '/products', to: 'products#index'
+
   
   
 
@@ -163,6 +159,12 @@ Rails.application.routes.draw do
   end
   
   scope "api", as: "api", defaults: {format: :json} do
+    get '/slicer_engines', to: 'slicer_engines#index'
+    get '/remote_sources', to: 'remote_sources#index'
+  
+    get '/packages', to: 'packages#index'
+    get '/plans', to: 'plans#index'
+    get '/products', to: 'products#index'
     scope ':user' do
       concerns :user_routes, prefix: "api_"
     end
