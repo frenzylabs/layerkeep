@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html >
   <head>
-    <title>LayerKeep</title>
+    <title> <%= if content_for?(:title) then yield(:title) + ' | ' else 'LayerKeep' end %></title>
+    <meta name='description' content='<%= yield_meta_tag(:description, "Manage and Share Your 3D Projects and Prints") %>' />
+    <meta name='keywords' content='<%= yield_meta_tag(:keywords, "3D,printing,project management,print management") %>' />
+
+<%# og:url, og:type, og:title, og:image, og:description, fb:app_id %>
+    <meta name='og:url' content='<%= request.url %>' />
+    <meta name='og:type' content='website' />
+    <meta name='og:title' content='<%= if content_for?(:title) then yield(:title) + ' | ' else 'LayerKeep' end %>' />
+    <meta name='og:description' content='<%= yield_meta_tag(:description, "") %>' />
+    <meta name='og:image' content='<%= yield_meta_tag("og:image", "") %>' />
+    <meta name='og:video' content='<%= yield_meta_tag("og:video", "") %>' />
+    
      <meta name="viewport" content="width=device-width">
       <%= favicon_link_tag asset_path('favicon.ico') %>
       <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -36,7 +47,39 @@
   </head>
 
   <body >
-    <%= yield %>
+    <div id="app">
+      <div id="dashboard" style="height: 100%;">
+        <% if content_for?(:nav) then %>          
+          <%= content_for(:nav) %>
+        <% else %> 
+          <% if current_user then %>
+            <%= render "shared/loggedin_nav" %>
+          <% else %>
+            <%= render "shared/nav" %>
+          <% end %>
+        <% end %>
+        <% if content_for?(:content) then %>
+          <%= content_for(:content) %>
+        <% else %>
+        
+          <div class="has-navbar-fixed-top" style="flex: 1 1 0%;">
+            <div id="layout-column" class="columns is-gapless">
+              <% if current_user then %>
+                <div class="column is-2 is-hidden-mobile">
+                  <%= content_for?(:side_nav) ? content_for(:side_nav) : render("shared/side_nav") %>
+                </div>
+              <% end %>
+              <div class="column">
+                <%= content_for?(:main_content) ? content_for(:main_content) : "" %>
+              </div>
+            </div>
+          </div>
+
+        <% end %>
+
+        <% # <%= yield %> 
+      </div>
+    </div>
 
     <script>
       if (window.mixpanel) {

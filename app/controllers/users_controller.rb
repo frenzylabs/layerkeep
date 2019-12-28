@@ -7,7 +7,7 @@
 #
 
 class UsersController < AuthController
-  skip_before_action :get_user, only: [:index, :settings]
+  # skip_before_action :get_user, only: [:index, :settings]
   skip_before_action :authenticate!, only: :index
   
   def index

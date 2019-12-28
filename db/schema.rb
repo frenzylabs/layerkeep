@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_25_172929) do
+ActiveRecord::Schema.define(version: 2019_12_26_143818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
@@ -163,6 +163,7 @@ ActiveRecord::Schema.define(version: 2019_10_25_172929) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_private", default: false
     t.index ["user_id", "name"], name: "index_printers_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_printers_on_user_id"
   end
@@ -177,6 +178,7 @@ ActiveRecord::Schema.define(version: 2019_10_25_172929) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "printer_id"
+    t.boolean "is_private", default: false
     t.index ["printer_id"], name: "index_prints_on_printer_id"
     t.index ["user_id"], name: "index_prints_on_user_id"
   end
@@ -254,6 +256,7 @@ ActiveRecord::Schema.define(version: 2019_10_25_172929) do
     t.jsonb "log_data"
     t.jsonb "gcode_data"
     t.text "description", default: ""
+    t.boolean "is_private", default: false
     t.index ["slicer_engine_id"], name: "index_slices_on_slicer_engine_id"
     t.index ["user_id"], name: "index_slices_on_user_id"
   end

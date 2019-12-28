@@ -1,28 +1,28 @@
 class PrinterPolicy
-  attr_reader :user, :repo, :error_reason
+  attr_reader :user, :record, :error_reason
 
-  # class Scope
-  #   attr_reader :user, :scope
+  class Scope
+    attr_reader :user, :scope
 
-  #   def initialize(user, scope)
-  #     @user = user
-  #     @scope = scope
-  #   end
+    def initialize(user, scope)
+      @user = user
+      @scope = scope
+    end
 
-  #   def resolve
-  #     if user && (user.id == scope.id || user.admin)
-  #       scope.repos
-  #     else
-  #       scope.repos.where(is_private: false)
-  #     end
-  #   end
-  # end
+    def resolve
+      if user && (user.id == scope.id || user.admin)
+        scope.printers
+      else
+        scope.printers.where(is_private: false)
+      end
+    end
+  end
 
 
 
   def initialize(user, record)
     @user = user
-    @printer = record
+    @record = record
     @error_reason = nil
   end
 
@@ -48,12 +48,22 @@ class PrinterPolicy
     end
   end
 
+  def private_repo_enabled
+    if record.user.subscription_handler.features["project"]["private_repos"] 
+      true
+    else
+      Rails.logger.info("Private Printers are not enabled")
+      @error_reason = {feature_disabled: 'Private Printers'}
+      false
+    end
+  end
+
   def index?
-    !repo.is_private || (user && repo.user_id == user.id)
+    !record.is_private || (user && repo.user_id == user.id)
   end
 
   def show?
-    !repo.is_private || (user && repo.user_id == user.id && private_repo_enabled)
+    !record.is_private || (user && repo.user_id == user.id && private_repo_enabled)
   end
 
   def create?
@@ -73,13 +83,13 @@ class PrinterPolicy
   end
 
   def destroy?
-    user && repo.user_id == user.id
+    user && record.user_id == user.id
   end
 
   
 
   def permitted_attributes_for_update
-    if repo.user.subscription_handler.features["project"]["private_repos"]
+    if record.user.subscription_handler.features["project"]["private_repos"]
       [:description, :is_private]
     else
       [:description]

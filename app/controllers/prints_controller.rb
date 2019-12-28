@@ -1,32 +1,45 @@
 class PrintsController < AuthController
-  respond_to :json
+  respond_to :json, :html
+  # respond_to :html, only: :show
+  skip_before_action :authenticate!, only: [:show, :index]
 
   def new
   end
 
   def index
-    authorize(@user)
-    if !request.format.json?
-      request.format = :json
+    # authorize(@user)
+    # if !request.format.json?
+    #   request.format = :json
+    # end
+    respond_to do |format|
+      format.html { }
+      format.json {
+
+        filter_params = (params[:q] && params.permit([q: [:printer_id, :slice_id, :project_id, :profile_id]])[:q]) || {} 
+
+        prints = policy_scope(@user, policy_scope_class: PrintPolicy::Scope)
+
+        prints = prints.where(printer_id: filter_params["printer_id"]) if filter_params["printer_id"]
+
+        if filter_params["slice_id"]
+          prints = prints.where(slice_id: filter_params["slice_id"])
+        elsif filter_params["project_id"] || filter_params["profile_id"]
+          repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
+          prints = prints.joins(slices: :files).where("slice_files.repo_id IN (?)", repos).group("prints.id, slices.id").having("COUNT(slice_files.id) = #{repos.count}") 
+        end
+
+        prints = prints.page(params["page"]).per(params["per_page"]).order("prints.job desc") 
+
+        meta = {canView: true}
+        if current_user
+          policy = UserPolicy.new(current_user, @user)
+          meta[:canManage] = policy.create?
+        end
+
+        @prints = paginate(prints, nil, {meta: meta})
+        respond_with(@prints)
+      }
     end
-    
-    filter_params = (params[:q] && params.permit([q: [:printer_id, :slice_id, :project_id, :profile_id]])[:q]) || {} 
-
-    prints = @user.prints
-
-    prints = prints.where(printer_id: filter_params["printer_id"]) if filter_params["printer_id"]
-
-    if filter_params["slice_id"]
-      prints = prints.where(slice_id: filter_params["slice_id"])
-    elsif filter_params["project_id"] || filter_params["profile_id"]
-      repos = [filter_params["project_id"], filter_params["profile_id"]].compact      
-      prints = prints.joins(slices: :files).where("slice_files.repo_id IN (?)", repos).group("prints.id, slices.id").having("COUNT(slice_files.id) = #{repos.count}") 
-    end
-
-    prints = prints.page(params["page"]).per(params["per_page"]).order("prints.job desc") 
-
-    serializer = paginate(prints)
-    respond_with(serializer)    
   end
 
   def create
@@ -55,10 +68,11 @@ class PrintsController < AuthController
   end
 
   def update
-    authorize(@user)
+    # authorize(@user)
     print_params = print_post_params
 
     prnt = @user.prints.find_by!(id: params[:id])
+    authorize(prnt)
     # prnt = Print.find(params[:id])
     if (print_params[:printer_id])
       printer = Printer.find_by!(id: print_params[:printer_id], user_id: @user.id)
@@ -81,17 +95,19 @@ class PrintsController < AuthController
   end
 
   def show
-    authorize(@user)
-    prnt = @user.prints.find_by!(id: params[:id])
+    
+    @prnt = @user.prints.find_by!(id: params[:id])
+    authorize(@prnt)
     # prnt = Print.find_by!(id: params[:id], user_id: @user.id)
     
-    prnt = PrintsSerializer.new(prnt, { params: { printer: true, assets: true, slice_details: true }}).serializable_hash
-    respond_with(prnt)
+    @prnthash = PrintsSerializer.new(@prnt, { params: { printer: true, assets: true, slice_details: true, current_user: current_user }}).serializable_hash
+    respond_with(@prnthash)
   end
 
   def destroy
-    authorize(@user)
+    # authorize(@user)
     prnt = @user.prints.find_by!(id: params[:id])
+    authorize(prnt)
     # prnt = Print.find_by!(id: params[:id], user_id: @user.id)
     throw not_found unless prnt
 

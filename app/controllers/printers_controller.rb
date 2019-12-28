@@ -1,30 +1,42 @@
 class PrintersController < AuthController
   respond_to :json
+  skip_before_action :authenticate!, only: [:show, :index]
 
   def new
   end
 
   def index
-    authorize(@user)
-    if !request.format.json?
-      request.format = :json
+    respond_to do |format|
+      format.html {}
+      format.json {
+        # authorize(@user)
+        # if !request.format.json?
+        #   request.format = :json
+        # end
+        
+        filter_params = (params[:q] && params.permit([q: [:name, :model]])[:q]) || {} 
+
+        printers = policy_scope(@user, policy_scope_class: PrinterPolicy::Scope)
+
+        if filter_params["name"]
+          printers = prints.where(name: filter_params["name"])
+        elsif filter_params["model"]
+          printers = prints.where(model: filter_params["model"])
+        end
+        
+
+        printers = printers.page(params["page"]).per(params["per_page"])
+
+        meta = {canView: true}
+        if current_user
+          policy = UserPolicy.new(current_user, @user)
+          meta[:canManage] = policy.create?
+        end
+
+        serializer = paginate(printers, nil, {meta: meta})
+        respond_with(serializer)    
+      }
     end
-    
-    filter_params = (params[:q] && params.permit([q: [:name, :model]])[:q]) || {} 
-
-    printers = @user.printers
-
-    if filter_params["name"]
-      printers = prints.where(name: filter_params["name"])
-    elsif filter_params["model"]
-      printers = prints.where(model: filter_params["model"])
-    end
-    
-
-    printers = printers.page(params["page"]).per(params["per_page"])
-
-    serializer = paginate(printers)
-    respond_with(serializer)    
   end
 
   def create
@@ -57,11 +69,16 @@ class PrintersController < AuthController
   end
 
   def show
-    authorize(@user)
-    printer = @user.printers.find_by!(id: params[:id])
-
-    printer = PrintersSerializer.new(printer, { params: { prints: true }}).serializable_hash
-    respond_with printer, json: printer  
+    # authorize(@user)
+    @printer = @user.printers.find_by!(id: params[:id])
+    authorize(@printer)
+    respond_to do |format|
+      format.html {}
+      format.json {
+        @printerhash = PrintersSerializer.new(@printer, { params: { prints: true, current_user: current_user }}).serializable_hash
+        respond_with @printerhash #, json: printer  
+      }
+    end
   end
 
   def destroy

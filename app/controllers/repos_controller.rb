@@ -8,7 +8,7 @@
 require 'zip'
 
 class ReposController < AuthController
-  respond_to :json
+  respond_to :json, :html
   skip_before_action :authenticate!, :get_user, only: :new
   skip_before_action :authenticate!, only: [:show, :index]
 
@@ -17,29 +17,44 @@ class ReposController < AuthController
   end
 
   def index
-    repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).order("updated_at desc").
-                        page(params["page"]).per(params["per_page"])
-    
-    meta = {canView: true}
-    if current_user
-      policy = UserPolicy.new(current_user, @user)
-      meta[:canManage] = policy.create?
+    respond_to do |format|
+      format.html {}
+      format.json {
+        repos = policy_scope(@user, policy_scope_class: RepoPolicy::Scope).where(kind: params["kind"]).order("updated_at desc").
+                            page(params["page"]).per(params["per_page"])
+        
+        meta = {canView: true}
+        if current_user
+          policy = UserPolicy.new(current_user, @user)
+          meta[:canManage] = policy.create?
+        end
+        serializer = paginate(repos, nil, {meta: meta})
+        render json: serializer
+      }
     end
-    serializer = paginate(repos, nil, {meta: meta})
-    render json: serializer
   end
 
   def show
+    @repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
+    authorize @repo
     
-    repo = @user.repos.find_by!(kind: params["kind"], name: params["repo_name"])
-    authorize repo
-
-    git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{repo.path}/.", :bare)
-    branches = git_repo.branches.collect {|branch| { name: branch.name, commit: branch.target_id } }     
+    @git_repo = Rugged::Repository.init_at("#{Rails.application.config.settings["repo_mount_path"]}/#{@repo.path}/.", :bare)
+    @repo_handler = RepoFilesHandler.new(@git_repo, params)    
+    branches = @git_repo.branches.collect {|branch| { name: branch.name, commit: branch.target_id } }     
     branches = ["master"] if branches.blank?
-    reposerializer = ReposSerializer.new(repo, {params: {branches: branches, current_user: current_user}})
-    
-    render json: reposerializer #repo.to_hash.merge({branches: branches})
+    @repohash = ReposSerializer.new(@repo, {params: {branches: branches, current_user: current_user}}).serializable_hash
+
+    respond_to do |format|
+      format.html {
+        @filedata = @repo_handler.list_files(params)
+        @repo_handler.filepath = "images"
+        imagedata = @repo_handler.list_files({recursive: true})
+        @images = imagedata[:data] || []
+      }
+      format.json {
+        render json: @repohash 
+      }
+    end
   end
 
   def create

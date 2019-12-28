@@ -195,6 +195,16 @@ export class SliceList extends React.Component {
     )
   }
   
+  renderNewSlicesButton() {
+    if (this.state.list.meta && this.state.list.meta.canManage) {
+      return (
+        <div className="level-item">
+          <Link className="button" to={`/${this.props.match.params.username}/slices/new`}>New Slice</Link>
+        </div>
+      )
+    }
+    return null
+  }
 
   renderPagination() {
     if (this.state.list.data.length > 0) {
@@ -255,9 +265,7 @@ export class SliceList extends React.Component {
             </div>
             <div className="column is-3 has-text-right">
               <div className="level">
-                <div className="level-item">
-                  <Link className="button" to={`/${params.username}/slices/new`}>New Slice</Link>
-                </div>
+                {this.renderNewSlicesButton()}
                 <div className="level-right">
                   <div className="level-item">
                     <Link to={`/${params.username}/slices/create/`} className="button">Slicer <sup>Alpha</sup></Link>

@@ -13,7 +13,7 @@ function path(endpoint) {
   return `/${currentUser.username}/projects/${(endpoint || '')}`;
 }
 function user_project(user, endpoint) {
-  return `/${user || currentUser.username}/projects/${(endpoint || '')}`;
+  return `/api/${user || currentUser.username}/projects/${(endpoint || '')}`;
 }
 
 export default {

@@ -117,6 +117,17 @@ export class PrinterList extends React.Component {
 
   
 
+  renderNewPrinterButton() {
+    if (this.state.list.meta && this.state.list.meta.canManage) {
+      return (
+        <div className="column is-3 has-text-right">
+          <Link className="button" to={`/${this.props.match.params.username}/printers/new`}>New Printer</Link>
+        </div>    
+      )
+    }
+    return null
+  }
+
   renderPagination() {
     if (this.state.list.data.length > 0) {
       var {current_page, last_page, total} = this.state.list.meta;
@@ -160,6 +171,7 @@ export class PrinterList extends React.Component {
     }
   }
 
+
   render() {
     return (
       <div className="section">
@@ -174,9 +186,7 @@ export class PrinterList extends React.Component {
                 </ul>
               </Breadcrumb>
             </div>
-            <div className="column is-3 has-text-right">
-              <Link className="button" to={`/${this.props.match.params.username}/printers/new`}>New Printer</Link>
-            </div>    
+            {this.renderNewPrinterButton()}
           </div>
         </Container>
         <hr/>
