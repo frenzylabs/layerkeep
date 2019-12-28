@@ -1,4 +1,4 @@
-<% content_for :title, (@prnt.name ? "3D Print #{@prnt.name}" : "3D Print #{@prnt.id}") %>
+<% content_for :title, (@prnt.name ? "3D Print #{@prnt.name}" : (@prnt.slices && @prnt.slices.name ? "3D Print #{@prnt.slices.name}" : "3D Print #{@prnt.id}")) %>
 <% meta_tag(:description, "3D Print #{@prnt.description}") %>
 
 <% @images = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /image/ } %>
