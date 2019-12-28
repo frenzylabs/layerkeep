@@ -88,6 +88,6 @@ export default {
   },
 
   raw: (url, opts = {}) => {
-    return Request.get(url, opts);
+    return Request.get("/api" + url, opts);
   }
 }

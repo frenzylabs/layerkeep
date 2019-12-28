@@ -1,0 +1,209 @@
+<% content_for :title, (@prnt.name ? "3D Print #{@prnt.name}" : "3D Print #{@prnt.id}") %>
+<% meta_tag(:description, "3D Print #{@prnt.description}") %>
+
+<% @images = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /image/ } %>
+<% @videos = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /video/ } %>
+<% meta_tag("og:image", (@images.first ? "#{request.protocol}#{request.host_with_port}/prints/#{@prnt.id}/assets/#{@images.first[:id]}/download" : "")) %>
+<% meta_tag("og:video", (@videos.first ? "#{request.protocol}#{request.host_with_port}/prints/#{@prnt.id}/assets/#{@videos.first[:id]}/download" : "")) %>
+
+
+<% content_for :main_content do %>
+
+  <div class="" style="height: 100%;">  
+    <div class="section">
+      <div class="container is-fluid">
+        <div class="columns is-mobile">
+          <div class="column">
+            <nav class="breadcrumb">
+              <ul><li class="title is-4"><a href="<%= user_prints_path(user: @user.username) %>">Prints</a></li>
+              <li class="title is-4"> &nbsp;&nbsp; <%= @prnt.id %></li></ul>
+            </nav>
+            <p style="white-space: pre;"><%= @prnt.description %></p>
+          </div>
+          <% if @prnthash.dig(:attributes, :user_permissions, :canManage) %>
+            <div class="column has-text-right">
+              <a class="button" href="<%= edit_user_print_path(@prnt, user: @user.username) %>">Edit</a>
+            </div>
+          <% end %>
+        </div>
+        <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title level"><p class="level-left">Printer</p></div>
+          </div>
+          <div class="card-content">
+            <div class="level">
+              <div class="level-left">
+                <div class="level-item">Name:</div>
+                <div class="level-item">
+                  <a href="<%= user_printer_path(@prnt.printer, user: @user.username) %>">
+                    <%= @prnt.printer.name || "" %>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="level">
+              <div class="level-left">
+                <div class="level-item">Model:</div>
+                <div class="level-item"><%= @prnt.printer.model || "" %></div>
+              </div>
+            </div>
+            <div class="level">
+              <div class="level-left">
+                <div class="level-item">Description:</div>
+                <div class="level-item"><%= @prnt.printer.description || "" %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title level">
+              <p class="level-left">Slice Details</p>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="card">
+              <div class="card-header"><p class="card-header-title">GCode File</p></div>
+              <div class="card-content">
+                <div class="level">
+                  <div class="level-left">
+                    <div class="level-item">
+                      <a href="<%= user_slice_path(@prnt.slices, user: @user.username) %>"><%= @prnt.slices.name %></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><p class="card-header-title">Description</p></div>
+              <div class="card-content"><%= @prnt.slices.description %></div>
+            </div>
+            <div class="card">
+              <div class="card-header"><p class="card-header-title">Project File</p></div>
+              <div class="card-content">
+                <% (@prnthash.dig(:data, :attributes, :slices, :attributes, :project_files) || []).each do |proj| %>
+                  <div class="level">                  
+                    <div class="level-left">
+                      <div class="level-item"><a href="/<%= proj["attributes"]["repo_path"] %>"><%= proj["attributes"]["repo_name"] %></a></div>
+                      <div class="level-item"><a href="<%= user_edit_projects_files_path(user: @user.username, repo_name: proj.dig("attributes", "repo_name"), revision: proj.dig("attributes", "commit"), filepath: "") %><%= proj.dig("attributes", "filepath") %>"><%= proj["attributes"]["filepath"] %></a></div>
+                      <div class="level-item"><%= proj.dig("attributes", "commit") %></div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><p class="card-header-title">Profile</p></div>
+              <div class="card-content">
+                <% (@prnthash.dig(:data, :attributes, :slices, :attributes, :profile_files) || []).each do |proj| %>
+                  <div class="level">                  
+                    <div class="level-left">
+                      <div class="level-item"><a href="/<%= proj["attributes"]["repo_path"] %>"><%= proj["attributes"]["repo_name"] %></a></div>
+                      <div class="level-item"><a href="<%= user_edit_profiles_files_path(user: @user.username, repo_name: proj.dig("attributes", "repo_name"), revision: proj.dig("attributes", "commit"), filepath: "") %><%= proj.dig("attributes", "filepath") %>"><%= proj["attributes"]["filepath"] %></a></div>
+                      <div class="level-item"><%= proj.dig("attributes", "commit") %></div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <table class="table is-narrow is-fullwidth" style="margin-top: 10px;">
+          <thead>
+            <tr style="background: rgb(239, 247, 255); border: 1px solid rgb(193, 221, 255);">
+              <th colspan="5" style="font-weight: normal;">Asset Name</th>
+            </tr>
+          </thead>
+          <tbody style="border: 1px solid rgb(218, 222, 225);">
+            <% (@prnthash.dig(:data, :attributes, :assets) || []).each do |asset| %>
+            <tr>
+              <td class="cell-icon"><p class="icon"><i class="fas fa-file"></i></p></td>
+              <td class="file-details is-text-overflow">
+                <p><a title="View File <%= asset.dig(:attributes, :name) %>" href="<%= user_print_asset_path(print_id: @prnt.id, user: @user.username, id: asset.dig(:id)) %>"><%= asset.dig(:attributes, :name) %></a></p>
+              </td>
+              <td class="cell-content is-text-overflow"><p><a></a></p></td>
+              <td class="has-text-right"><p><%= asset.dig(:attributes, :created_at) %></p></td>
+              <td class="has-text-right cell-option-buttons" width="66">
+                <div class="field has-addons">
+                  <p class="control">
+                    <a title="Download <%= asset.dig("attributes", "name") %>" class="button is-small" href="/layerkeep/prints/10/assets/59/download">
+                      <span class="icon is-small"><i class="far fa-download"></i></span>
+                    </a>
+                  </p>
+                </div>
+              </td>
+            </tr>
+            <% end %>            
+          </tbody>
+        </table>
+        <div>
+          <div class="columns">
+            <div class="column">
+              <div>
+              <% if !@images.blank? %>
+                <div class="image-gallery " aria-live="polite">
+                  <div class="image-gallery-content">
+                    <div class="image-gallery-slide-wrapper bottom ">
+                      <button type="button" class="image-gallery-fullscreen-button"></button>
+                      <span>
+                        <button type="button" class="image-gallery-left-nav" aria-label="Previous Slide"></button>
+                        <button type="button" class="image-gallery-right-nav" aria-label="Next Slide"></button>
+                      </span>
+                      <div class="image-gallery-swipe">
+                        <div class="image-gallery-slides">
+                          <div class="image-gallery-slide center" style="transform: translate3d(0%, 0px, 0px);">
+                            <div class="image-gallery-image">
+                              <img src="<%= user_print_asset_path(@prnt, user: @user.username, id: @images.first[:id]) %>/download"></div>
+                            </div>
+                            <% if @images.length > 1 %>
+                            <div class="image-gallery-slide right" style="transform: translate3d(100%, 0px, 0px);">
+                              <div class="image-gallery-image">
+                                <img src="<%= user_print_asset_path(@prnt, user: @user.username, id: @images[1][:id]) %>/download">
+                              </div>
+                            </div>
+                            <% end %>
+                          </div>
+                          
+                          <div class="image-gallery-slide" style="transform: translate3d(200%, 0px, 0px);">
+                            <div class="image-gallery-image"><img src="/layerkeep/prints/10/assets/55/download"></div>
+                          </div>
+                          <div class="image-gallery-slide left" style="transform: translate3d(-100%, 0px, 0px);">
+                            <div class="image-gallery-image">
+                              <img src="/layerkeep/prints/10/assets/56/download"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="image-gallery-thumbnails-wrapper bottom ">
+                        <div class="image-gallery-thumbnails">
+                          <div class="image-gallery-thumbnails-container" aria-label="Thumbnail Navigation" style="transform: translate3d(0px, 0px, 0px);">
+                            <% @images.each_with_index do |img, index| %>
+                              <a role="button" aria-pressed="<%= img[:id] == @images.first[:id] %>" aria-label="Go to Slide <%= index + 1 %>" class="image-gallery-thumbnail active">
+                                <div class="image-gallery-thumbnail-inner">
+                                  <img src="<%= user_print_asset_path(@prnt, user: @user.username, id: img[:id]) %>/download" />
+                                </div>
+                              </a>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+              <div class="column"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<% end %>

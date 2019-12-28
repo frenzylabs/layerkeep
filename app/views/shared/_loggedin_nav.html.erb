@@ -1,0 +1,56 @@
+
+<div class="Toastify"></div>
+<nav class="navbar is-fixed-top is-light is-flex" style="justify-content: space-between; border-bottom: 1px solid rgb(211, 211, 211);">
+  <div class="navbar-brand" style="flex: inherit;">
+    <a class="navbar-logo navbar-item" href="<%= user_projects_path(user: @user.username) %>"><img width="30px" src="<%= asset_path("layerkeep.svg") %>"> LayerKeep</a>
+    <a class="navbar-item is-hidden-desktop" href="<%= user_projects_path(user: @user.username) %>">Projects</a>
+    <div class="navbar-burger"><span></span><span></span><span></span></div>
+  </div>
+  <div class="navbar-menu" style="overflow: unset;">
+    <div class="navbar-start is-hidden-touch is-flex-desktop">
+      <a class="navbar-item" href="<%= user_projects_path(user: @user.username) %>">Projects</a>
+      <a class="navbar-item" href="<%= user_profiles_path(user: @user.username) %>">Profiles</a>
+      <a class="navbar-item" href="<%= user_slices_path(user: @user.username) %>">Slices</a>
+      <a class="navbar-item" href="<%= user_printers_path(user: @user.username) %>">Printers</a>
+      <a class="navbar-item" href="<%= user_prints_path(user: @user.username) %>">Prints</a>
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a href="#" class="navbar-link">Tools</a>
+        <div class="navbar-dropdown is-boxed is-right">
+          <a href="https://pluck.io" target="_blank" class="navbar-item">Pluck &nbsp;<small> (find 3D models)</small></a>
+          <a class="navbar-item" href="/<%= @user.username %>/slices/create">Slicer &nbsp;<sup><small>alpha</small></sup></a>
+        </div>
+      </div>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a href="#" class="navbar-link is-hidden-touch is-flex-desktop">
+          <span class="icon is-small"><i class="far fa-robot" aria-hidden="true"></i></span>
+        </a>
+        <div class="navbar-dropdown is-boxed is-right">
+          <div class="navbar-item"><p><%= @user.username %></p></div>
+          <hr class="navbar-divider is-visible is-hidden-desktop">
+          <div class="navbar-item is-hidden-desktop">
+            <a class="navbar-item is-hidden-desktop" href="<%= user_projects_path(user: @user.username) %>">Projects</a>
+          </div>
+          <div class="navbar-item is-hidden-desktop">
+            <a class="navbar-item is-hidden-desktop" href="<%= user_profiles_path(user: @user.username) %>">Profiles</a>
+          </div>
+          <div class="navbar-item is-hidden-desktop"><a class="navbar-item is-hidden-desktop" href="<%= user_slices_path(user: @user.username) %>">Slices</a></div>
+          <div class="navbar-item is-hidden-desktop"><a class="navbar-item is-hidden-desktop" href="<%= user_printers_path(user: @user.username) %>">Printers</a></div>
+          <div class="navbar-item is-hidden-desktop"><a class="navbar-item is-hidden-desktop" href="<%= user_prints_path(user: @user.username) %>">Prints</a></div>
+          <div class="navbar-item has-dropdown is-hoverable is-hidden-desktop">
+            <hr class="navbar-divider"><p>Tools</p>
+            <div class="navbar-item is-right">
+              <a href="https://pluck.io" class="navbar-item">Pluck &nbsp;<small> (find 3D models)</small></a>
+              <a class="navbar-item" href="/<%= @user.username %>/slices/create">Slicer &nbsp;<sup><small>alpha</small></sup></a>
+            </div>
+          </div>
+          <hr class="navbar-divider">
+          <div class="navbar-item"><a href="/<%= @user.username %>/settings/account"> Settings </a></div>
+          <hr class="navbar-divider">
+          <a href="/users/sign_out" class="navbar-item">Sign out.</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
