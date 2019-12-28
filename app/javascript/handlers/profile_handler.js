@@ -14,7 +14,7 @@ function path(endpoint) {
 }
 
 function user_profile(username, endpoint) {
-  return `/${username || currentUser.username}/profiles/${(endpoint || '')}`;
+  return `/api/${username || currentUser.username}/profiles/${(endpoint || '')}`;
 }
 
 export default {

@@ -1,5 +1,5 @@
 class UserPolicy
-  attr_reader :user, :other
+  attr_reader :user, :other, :error_reason
 
   class Scope
     attr_reader :user, :scope
@@ -23,6 +23,7 @@ class UserPolicy
   def initialize(user, record)
     @user = user
     @other = record
+    @error_reason = nil
   end
 
   def index?

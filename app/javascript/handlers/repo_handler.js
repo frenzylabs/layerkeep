@@ -10,7 +10,7 @@
 import {Request, CancelToken} from './request_client';
 
 function repoPath(user, kind, endpoint) {
-  return `/${user}/${kind}/${endpoint || ''}`;
+  return `/api/${user}/${kind}/${endpoint || ''}`;
 }
 
 export default {
@@ -74,6 +74,6 @@ export default {
   },
 
   tree: (url, params = {}) => {
-    return Request.get(url, params);
+    return Request.get("/api" + url, params);
   }
 }

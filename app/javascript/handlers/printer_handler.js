@@ -12,7 +12,7 @@ import {Request, CancelToken} from './request_client';
 const QS = require('qs');
 
 function userPath(username, endpoint) {
-  return `/${(username || currentUser.username)}/printers/${endpoint || ''}`
+  return `/api/${(username || currentUser.username)}/printers/${endpoint || ''}`
 }
 
 export default {

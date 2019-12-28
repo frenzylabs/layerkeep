@@ -12,4 +12,13 @@ class PrintersSerializer
     PrintsSerializer.new(object.prints).as_json["data"]
   end
 
+  attribute :user_permissions do |object, params|
+    if params[:current_user]
+      policy = PrintPolicy.new(params[:current_user], object)
+      {canManage: policy.create?, canView: true}
+    else
+      {canView: true}
+    end
+  end
+  
 end
