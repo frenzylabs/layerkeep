@@ -6,12 +6,12 @@
     <meta name='keywords' content='<%= yield_meta_tag(:keywords, "3D,printing,project management,print management") %>' />
 
 <%# og:url, og:type, og:title, og:image, og:description, fb:app_id %>
-    <meta name='og:url' content='<%= request.url %>' />
-    <meta name='og:type' content='website' />
-    <meta name='og:title' content='<%= if content_for?(:title) then yield(:title) + ' | ' else 'LayerKeep' end %>' />
-    <meta name='og:description' content='<%= yield_meta_tag(:description, "") %>' />
-    <meta name='og:image' content='<%= yield_meta_tag("og:image", "") %>' />
-    <meta name='og:video' content='<%= yield_meta_tag("og:video", "") %>' />
+    <meta property='og:url' content='<%= request.url %>' />
+    <meta property='og:type' content='website' />
+    <meta property='og:title' content='<%= if content_for?(:title) then yield(:title) + ' | ' else 'LayerKeep' end %>' />
+    <meta property='og:description' content='<%= yield_meta_tag(:description, "") %>' />
+    <meta property='og:image' content='<%= yield_meta_tag("og:image", "") %>' />
+    <meta property='og:video' content='<%= yield_meta_tag("og:video", "") %>' />
     
      <meta name="viewport" content="width=device-width">
       <%= favicon_link_tag asset_path('favicon.ico') %>
