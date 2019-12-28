@@ -3,8 +3,8 @@
 
 <% @images = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /image/ } %>
 <% @videos = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /video/ } %>
-<% meta_tag("og:image", (@images.first ? "#{request.protocol}#{request.host_with_port}/prints/#{@prnt.id}/assets/#{@images.first[:id]}/download" : "")) %>
-<% meta_tag("og:video", (@videos.first ? "#{request.protocol}#{request.host_with_port}/prints/#{@prnt.id}/assets/#{@videos.first[:id]}/download" : "")) %>
+<% meta_tag("og:image", (@images.first ? "#{request.protocol}#{request.host_with_port}/#{@user.username}/prints/#{@prnt.id}/assets/#{@images.first[:id]}/download" : "")) %>
+<% meta_tag("og:video", (@videos.first ? "#{request.protocol}#{request.host_with_port}/#{@user.username}/prints/#{@prnt.id}/assets/#{@videos.first[:id]}/download" : "")) %>
 
 
 <% content_for :main_content do %>
