@@ -60,7 +60,7 @@ export class AssetViewer extends React.Component {
     var url = this.props.match.url
     console.log("URL= ", url)
     this.setState({loading: true})
-    AssetHandler.raw("/api" + url, {cancelToken: this.cancelRequest.token})
+    AssetHandler.raw(url, {cancelToken: this.cancelRequest.token})
       .then((response) => {
       // var params = this.props.match.params;
       // var url = "/" + [params.username, params.kind, params.name, "content", params.revisionPath].join("/")

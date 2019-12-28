@@ -113,7 +113,7 @@ export class ProjectNew extends React.Component {
 
     this.setState({
       ...this.state,
-      name: name,
+      name: val,
       nameLabel: {
         title: "Name",
         caption: (val != name ? name : '')
@@ -159,7 +159,7 @@ export class ProjectNew extends React.Component {
   }
 
   submit(formData) {
-    var repoData = Object.assign(formData, {name: this.state.name, is_private: this.state.isPrivate})
+    var repoData = Object.assign(formData, {name: this.state.nameLabel.caption, is_private: this.state.isPrivate})
     if (this.state.selectedFileSource && this.state.selectedFileSource.id != "0") {
       repoData["remote_source_id"] = this.state.selectedFileSource.id
     }

@@ -1,0 +1,228 @@
+<% content_for :title, (@user && @repo && @repo.kind ? "#{@user.username} 3D #{@repo.kind}: #{@repo.name}" : "3D Projects #{@repo.name}") %>
+<% meta_tag(:description, "3D #{@repo.kind} #{@repo.name}: #{@repo.description}") %>
+
+<% meta_tag("og:image", (@images.first ? "#{request.protocol}#{request.host_with_port}/#{@user.username}/#{@repo.kind}/#{@repo.name}/content/#{@filedata.dig(:meta, :current_branch)}/#{@images.first[:path]}" : "")) %>
+
+<% content_for :main_content do 
+  @repo_path = "/#{@user.username}/#{@repo.kind}/#{@repo.name}"
+  @download_path = "/#{@user.username}/#{@repo.kind}/#{@repo.name}/content/#{@filedata.dig(:meta, :current_branch)}" 
+  %>
+
+  <div class="section" style="height: 100%;">
+    <div class="container is-fluid">
+        <div class="columns is-mobile">
+          <div class="column">
+              <nav class="breadcrumb" style="margin: 0px; padding: 0px;">
+                <ul style="margin: 0px; padding: 0px;">
+                    <li class="title is-5" style="margin: 0px; padding: 0px;"><a href="<%= url_for([:user, @repo.kind, user: @user.username]) %>">Projects</a></li>
+                    <li class="title is-5" style="margin: 0px; padding: 0px;"><a href="<%= url_for([:user, :edit, @repo.kind, user: @user.username, repo_name: @repo.name]) %>"><%= @repo.name %></a></li>
+                </ul>
+              </nav>
+              <p style="white-space: pre; margin-top: 10px;"><%= @repo.description %> </p>
+          </div>
+          <div class="column has-text-right"><a class="button" href="<%= url_for([:user, :default, @repo.kind, :revisions, user: @user.username, repo_name: @repo.name]) %>">Revisions</a></div>
+        </div>
+    </div>
+    <div class="container is-fluid" style="height: 100%;">
+        <div class="flex-wrapper">
+          <hr>
+          <br>
+          <div>
+              <div class="columns is-narrow is-gapless is-mobile">
+                <div class="column">
+                    <div class="level">
+                      <div class="level-left">
+                          <div class="is-inline-flex" style="padding-right: 15px;">
+                            <div class="dropdown">
+                                <div class="dropdown-trigger">
+                                  <button aria-haspopup="true" aria-controls="dropdown-menu" type="button" class="button is-outlined is-small">
+                                    <span><%= @filedata.dig(:meta, :current_branch) || "master" %> </span>
+                                    <span icon="angle-down" class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true"></i></span>
+                                  </button>
+                                </div>
+                                <div class="dropdown-menu">
+                                  <div class="dropdown-content">
+                                      <div class="dropdown-item"><input type="text" placeholder="Revision" class="input is-transparent"></div>
+                                      <hr class="dropdown-divider">
+                                      <% (@repohash.dig(:data, :attributes, :branches) || []).each do |br| %>
+                                        <a class="dropdown-item is-active"><%= br[:name] %></a>
+                                      <% end %>
+                                  </div>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="is-inline-flex"></div>
+                      </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="buttons has-addons is-right">
+                      <p class="control">
+                        <a class="button is-small" href="<%= "/#{@user.username}/#{@repo.kind}/#{@repo.name}/content/#{@filedata.dig(:meta, :current_branch)}?download=true" %>" target="_blank">
+                          <span class="icon is-small"><i class="fas fa-download"></i></span>
+                          <span>Download</span>
+                        </a>
+                      </p>
+                      <div class="control">
+                          <div class="dropdown is-right" style="width: 100%;">
+                            <div class="dropdown-trigger"><button class="button is-small" aria-haspopup="true" aria-controls="clone-dropdown"><span class="icon is-small"><i class="fas fa-clone"></i></span><span>Clone</span></button></div>
+                            <div class="dropdown-menu" id="clone-dropdown" role="menu" style="margin-top: 0px; padding-top: 0px; width: 400px;">
+                                <div class="dropdown-content" style="padding: 0px; margin: 0px;">
+                                  <div class="dropdown-item">
+                                      <h5 class="title is-6" style="margin: 0px; padding: 0px;">Clone with git.</h5>
+                                  </div>
+                                  <div class="dropdown-item">
+                                      <p style="margin: 0px; padding: 0px;">Use your login and password from your account.</p>
+                                  </div>
+                                  <div class="dropdown-item">
+                                      <div class="field has-addons is-fullwidth">
+                                        <p class="control is-fullwidth is-expanded"><input class="input is-fullwidth" type="text" readonly="" value="https://layerkeep.com/<%= "#{@user.username}/#{@repo.kind}/#{@repo.name}.git" %>"></p>
+                                        <p class="control"><a class="button"><span class="icon"><i class="fas fa-clipboard-list"></i></span></a></p>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+          </div>
+          <table class="table is-narrow is-fullwidth" style="margin-top: 10px;">
+              <thead>
+                <tr style="background: rgb(239, 247, 255); border: 1px solid rgb(193, 221, 255);">
+                    <th colspan="3" style="font-weight: normal;"><%= @filedata.dig(:meta, :last_commit_message) %></th>
+                    <th class="has-text-right" colspan="2" style="font-weight: normal;">Last updated: <%= @filedata.dig(:meta, :last_committed_at) %></th>
+                </tr>
+              </thead>
+              <tbody style="border: 1px solid rgb(218, 222, 225);">
+                <% @filedata[:data].each do |f| %>
+                <tr>
+                    <td class="cell-icon">
+                      <p class="icon"><i class="fas <%= f[:type] == :tree ? 'fa-folder' : 'fa-file' %>"></i></p>
+                    </td>
+                    <td class="file-details is-text-overflow">
+                      <p><a title="View <%= f[:type] == :tree ? 'Directory' : 'File' %>" href="<%= "#{@repo_path}/tree/#{@filedata.dig(:meta, :current_branch) || 'master'}/#{f[:path]}" %>"><%= f[:name] %></a></p>
+                    </td>
+                    <td class="cell-content is-text-overflow">
+                      <p><a><%= f[:subject] %></a></p>
+                    </td>
+                    <td class="has-text-right">
+                      <p><%= f[:date] %></p>
+                    </td>
+                    <td class="has-text-right cell-option-buttons" width="66">
+                      <div class="field has-addons">
+                        <p class="control">
+                          <a title="Download <%= f[:type] == :tree ? 'Zip Directory' : 'File' %>" class="button is-small" href="<%= "/#{@user.username}/#{@repo.kind}/#{@repo.name}/content/#{@filedata.dig(:meta, :current_branch)}/#{f[:path]}?download=true" %>">
+                            <span class="icon is-small"><i class="far fa-download"></i></span>
+                          </a>
+                        </p>
+                      </div>
+                    </td>
+                </tr>
+                <% end %>
+              </tbody>
+          </table>
+          <div>
+              <div class="columns">
+                <div class="column">
+                    <div>
+                      <% if @images && @images.length > 0 %>
+                        <div class="image-gallery " aria-live="polite">
+                            <div class="image-gallery-content">
+                              <div class="image-gallery-slide-wrapper bottom ">
+                                  <button type="button" class="image-gallery-fullscreen-button"></button>
+                                  <span>
+                                    <button type="button" class="image-gallery-left-nav" aria-label="Previous Slide"></button>
+                                    <button type="button" class="image-gallery-right-nav" aria-label="Next Slide"></button>
+                                  </span>
+                                  <div class="image-gallery-swipe">
+                                    <div class="image-gallery-slides">
+                                        <div class="image-gallery-slide center" style="transform: translate3d(0%, 0px, 0px);">
+                                        
+                                          <div class="image-gallery-image"><img src="<%= "#{@download_path}/#{@images[0][:path]}" %>"></div>
+                                        </div>
+                                        <% if @images.length > 1 %>
+                                          <div class="image-gallery-slide right" style="transform: translate3d(100%, 0px, 0px);">
+                                            <div class="image-gallery-image"><img src="<%= "#{@download_path}/#{@images[1][:path]}" %>"></div>
+                                          </div>
+                                        <% end %>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="image-gallery-thumbnails-wrapper bottom ">
+                                  <div class="image-gallery-thumbnails">
+                                    <div class="image-gallery-thumbnails-container" aria-label="Thumbnail Navigation" style="transform: translate3d(0px, 0px, 0px);">
+                                      <% @images.each_with_index do |img, index| %>
+                                        <a role="button" aria-pressed="<%= img[:path] == @images.first[:path] %>" aria-label="Go to Slide <%= index + 1 %>" class="image-gallery-thumbnail active">
+                                          <div class="image-gallery-thumbnail-inner"><img src="<%= "#{@download_path}/#{img[:path]}" %>"></div>
+                                        </a>
+                                      <% end %>
+                                    </div>
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                      <% end %>
+                    </div>
+                </div>
+                <div class="column"></div>
+              </div>
+          </div>
+          <div class="modal">
+              <div class="modal-background"></div>
+              <div class="modal-content">
+                <div class="box" style="background: rgb(254, 59, 97);">
+                    <div class="message is-danger">
+                      <div class="message-header">
+                          <div>
+                            <p class="" style="font-size: 22px;">Unknown error has occured.</p>
+                            <div class="" style="font-size: 14px;"></div>
+                          </div>
+                          <button class="delete"></button>
+                      </div>
+                    </div>
+                </div>
+              </div>
+              <button class="modal-close"></button>
+          </div>
+        </div>
+    </div>
+    <div class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+          <div class="box">
+              <div>
+                <h1 class="title is-4">Upload files.</h1>
+                <div class="box" style="margin: 0px; padding: 0px;">
+                    <div style="overflow: hidden; position: relative;">
+                      <section class="section">
+                          <div class="box has-text-centered" style="border: none; box-shadow: none;">Click here or drag files here to upload.</div>
+                      </section>
+                      <input type="file" multiple="" style="top: 0px; right: 0px; opacity: 0; width: 100%; height: 100%; cursor: pointer; position: absolute;">
+                    </div>
+                    <div class="box" style="margin: 0px; padding: 0px; overflow-x: scroll;">
+                      <table class="table is-striped is-fullwidth" style="border: 1px solid rgb(234, 234, 234);">
+                          <tbody></tbody>
+                      </table>
+                    </div>
+                </div>
+                <div class="field" style="margin-top: 2em;">
+                    <div class="control"><input type="text" placeholder="Description of uploads." class="input" value=""></div>
+                </div>
+                <hr>
+                <div class="columns">
+                    <div class="column">
+                      <p>Uploading to <strong><%= @repo.name %>.</strong></p>
+                    </div>
+                    <div class="column">
+                      <div class="buttons is-right"><button disabled="" type="button" class="button is-success">Submit</button><button type="button" class="button">Cancel</button></div>
+                    </div>
+                </div>
+              </div>
+          </div>
+        </div>
+        <button class="modal-close"></button>
+    </div>
+  </div>
+<% end %>

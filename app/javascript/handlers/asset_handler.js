@@ -52,7 +52,7 @@ export default {
   },
 
   raw: (url, opts = {}) => {
-    return Request.get(url, opts)
+    return Request.get("/api" + url, opts)
   }
   // deleteAsset: (user, printID, assetID, opts = {}) => {
   //   return Request.delete(userPath(user, printID) + "/assets/" + assetID, opts);
