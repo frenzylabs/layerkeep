@@ -49,7 +49,7 @@ export class PrintListItem extends React.Component {
 
           <MediaContent>
             {this.renderTitle()}
-            <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
+            <p className="has-text-grey">{this.props.item.attributes.description || ''}</p>
           </MediaContent>
 
           <MediaRight>
