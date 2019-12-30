@@ -23,7 +23,19 @@ export class ProjectsPanel extends React.Component {
     this.state = {projects: []}
 
     this.cancelRequest = ProjectHandler.cancelSource();
-    ProjectHandler.list(null, {params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
+    this.getProjects   = this.getProjects.bind(this)
+  }
+
+  componentDidMount() {
+    this.getProjects()
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Project Panel");
+  }
+
+  getProjects() {
+    ProjectHandler.list(this.props.username || currentUser.username, {params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({ projects: response.data.data})
     })
@@ -32,8 +44,8 @@ export class ProjectsPanel extends React.Component {
     });
   }
 
-  componentWillUnmount() {
-    this.cancelRequest.cancel("Left Page");
+  componentDidUpdate(prevProps, prevState) {
+
   }
 
   projectItems() {

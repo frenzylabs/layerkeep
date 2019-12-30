@@ -396,6 +396,9 @@ export class PrintDetails extends React.Component {
                   <BreadcrumbItem className="title is-4" > &nbsp;&nbsp; {this.state.print.attributes && this.state.print.attributes.job}</BreadcrumbItem>
                 </ul>
               </Breadcrumb>
+                <h2 className={"title is-4"}>
+                  {this.state.print.attributes && this.state.print.attributes.name}
+                </h2>
                 <p style={{whiteSpace: 'pre'}}>
                   {this.state.print.attributes && this.state.print.attributes.description}
                 </p>

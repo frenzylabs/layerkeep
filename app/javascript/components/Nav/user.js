@@ -47,31 +47,41 @@ export class UserNavMenu extends React.Component {
     )
   }
 
+  renderViewingUser() {
+    if (this.props.username != currentUser.username) {
+      return (
+        <NavbarItem className="is-hidden-desktop">
+             <p>Viewing: {this.props.username}</p>
+        </NavbarItem>
+      )
+    }
+  }
   renderSignedInNav() {
     return (
           <NavbarDropdown isBoxed className="is-right">
             {/*<NavbarItem href="#">Profile</NavbarItem><NavbarItem href="#">Stars</NavbarItem>*/}
 
             <NavbarItem >
-              <p>{currentUser.username}</p>              
+              Logged In As:
+              <Link to={`/${currentUser.username}/projects`} className="navbar-item">{currentUser.username}</Link>
             </NavbarItem>
 
             <NavbarDivider className="is-visible is-hidden-desktop" />   
-                     
+            {this.renderViewingUser()}         
             <NavbarItem className="is-hidden-desktop">
-              <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
+              <Link to={`/${this.props.username}/projects`} className="navbar-item is-hidden-desktop">Projects</Link>
             </NavbarItem>
             <NavbarItem className="is-hidden-desktop">
-              <Link to={`/${currentUser.username}/profiles/`} className="navbar-item is-hidden-desktop">Profiles</Link>
+              <Link to={`/${this.props.username}/profiles`} className="navbar-item is-hidden-desktop">Profiles</Link>
             </NavbarItem>
             <NavbarItem className="is-hidden-desktop">
-              <Link to={`/${currentUser.username}/slices`} className="navbar-item is-hidden-desktop">Slices</Link>
+              <Link to={`/${this.props.username}/slices`} className="navbar-item is-hidden-desktop">Slices</Link>
             </NavbarItem>
             <NavbarItem className="is-hidden-desktop">
-              <Link to={`/${currentUser.username}/printers`} className="navbar-item is-hidden-desktop">Printers</Link>
+              <Link to={`/${this.props.username}/printers`} className="navbar-item is-hidden-desktop">Printers</Link>
             </NavbarItem>
             <NavbarItem className="is-hidden-desktop">
-              <Link to={`/${currentUser.username}/prints`} className="navbar-item is-hidden-desktop">Prints</Link>
+              <Link to={`/${this.props.username}/prints`} className="navbar-item is-hidden-desktop">Prints</Link>
             </NavbarItem>
 
             

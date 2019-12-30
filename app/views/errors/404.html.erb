@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <title> <%= 'LayerKeep' end %></title>
+    <meta name='description' content="Manage and Share Your 3D Projects and Prints" />
+    <meta name='keywords' content="3D,printing,project management,print management" />
+
+<%# og:url, og:type, og:title, og:image, og:description, fb:app_id %>
+    <meta property='og:url' content='<%= request.url %>' />
+    <meta property='og:type' content='website' />
+    <meta property='og:title' content='LayerKeep Not Found' />
+    <meta property='og:description' content='Not Found' />
+    
+    
+     <meta name="viewport" content="width=device-width">
+      <%= favicon_link_tag asset_path('favicon.ico') %>
+      <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">      
+      <meta name="msapplication-TileColor" content="#da532c">
+      <meta name="theme-color" content="#ffffff">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag     'application', media: 'all' %>
+    <%= javascript_include_tag  'application' %>
+    <%= javascript_pack_tag     'application' %>
+
+    <script>
+      var features = <%= (current_user && raw(current_user.subscription_handler.features.to_json)) || {} %>
+      window.currentUser = {}
+      <% if current_user %>
+      window.currentUser = {
+        id:       "<%= current_user.id || '' %>",
+        username: "<%= current_user.username %>",
+        email:    "<%= current_user.email %>",
+        features: features
+      }
+      <% end %>
+      
+      window.stripeApiKey = "<%= Rails.application.config.settings["stripe"]["api_key"] %> "
+    </script>
+    <script id="stripe-js" src="https://js.stripe.com/v3/" async></script>
+
+    <%= render 'shared/mixpanel' %>
+  </head>
+
+  <body >
+    <div id="app">
+      <div id="dashboard" style="height: 100%;">
+        <% if content_for?(:nav) then %>          
+          <%= content_for(:nav) %>
+        <% else %> 
+          <% if current_user then %>
+            <%= render "shared/loggedin_nav" %>
+          <% else %>
+            <%= render "shared/nav" %>
+          <% end %>
+        <% end %>
+
+        
+          <div class="has-navbar-fixed-top" style="flex: 1 1 0%;">
+            <div id="layout-column" class="columns is-gapless">
+              <% if current_user then %>
+                <div class="column is-2 is-hidden-mobile">
+                  <%= content_for?(:side_nav) ? content_for(:side_nav) : render("shared/side_nav") %>
+                </div>
+              <% end %>
+              <div class="column">
+                The page you were looking for does not exist
+              </div>
+            </div>
+          </div>
+
+        <% end %>
+
+        <% # <%= yield %> 
+      </div>
+    </div>
+
+    <script>
+      if (window.mixpanel) {
+        (function() {
+          var controller  = "<%= controller_name %>";
+          var action      =  "<%= action_name %>";
+          if (currentUser.id != "") {
+            mixpanel.identify(currentUser.id);
+          }
+          mixpanel.track("Page Load", {"pathname": document.location.pathname, "controller ": controller,  "action": action });
+        })();
+      }
+    </script>
+    <%= render 'shared/support' %>
+  </body>
+</html>

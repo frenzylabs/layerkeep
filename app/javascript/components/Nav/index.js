@@ -21,9 +21,14 @@ import logo from 'images/layerkeep.svg'
 export class Nav extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {isActive: false, isToolActive: false}
+    this.state = {
+      isActive: false, 
+      isToolActive: false,
+      username: this.props.match.params.username || currentUser.username
+    }
     this.onClickNav = this.onClickNav.bind(this);
     this.onToolClickNav = this.onToolClickNav.bind(this);
+    this.isActive       = this.isActive.bind(this)
   }
 
   onClickNav(e) {
@@ -47,6 +52,13 @@ export class Nav extends React.Component {
     )
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params.username != this.props.match.params.username) {
+      var username = this.props.match.params.username || currentUser.username
+      this.setState({username: username})      
+    }
+  }
+
   renderTools() {
     return (
         <NavbarItem hasDropdown isHoverable >
@@ -59,30 +71,36 @@ export class Nav extends React.Component {
     )
   }
 
+  isActive(kind) {
+    if (this.props.match.params.kind == kind) {
+      return 'is-active'
+    }
+    return ''
+  }
   renderSignedInNav() {
     return(
       <Navbar className="is-fixed-top is-light is-flex" style={{justifyContent: "space-between", borderBottom: '1px solid #d3d3d3'}}>
         
         <NavbarBrand style={{flex: "inherit"}}>
-          <Link to={`/${currentUser.username}/projects/`} className="navbar-logo navbar-item">
+          <Link to={`/${currentUser.username}/projects`} className="navbar-logo navbar-item">
             <img width='30px' src={logo}/> LayerKeep
           </Link>
-          <Link to={`/${currentUser.username}/projects/`} className="navbar-item is-hidden-desktop">Projects</Link>
+          <Link to={`/${this.state.username}/projects`} className={`navbar-item is-hidden-desktop ${this.isActive('projects')}`}>Projects</Link>
           <NavbarBurger isActive={this.state.isActive} onClick={this.onClickNav} />
         </NavbarBrand>
 
         <NavbarMenu className="" style={{overflow: 'unset'}} isActive={this.state.isActive}  onClick={this.onClickNav}>
           <NavbarStart className="is-hidden-touch is-flex-desktop">
-            <Link to={`/${currentUser.username}/projects/`} className="navbar-item">Projects</Link>
-            <Link to={`/${currentUser.username}/profiles/`} className="navbar-item">Profiles</Link>
-            <Link to={`/${currentUser.username}/slices`} className="navbar-item">Slices</Link>
-            <Link to={`/${currentUser.username}/printers`} className="navbar-item">Printers</Link>
-            <Link to={`/${currentUser.username}/prints`} className="navbar-item">Prints</Link>
+            <Link to={`/${this.state.username}/projects`} className={`navbar-item ${this.isActive('projects')}`}>Projects</Link>
+            <Link to={`/${this.state.username}/profiles`} className={`navbar-item ${this.isActive('profiles')}`}>Profiles</Link>
+            <Link to={`/${this.state.username}/slices`} className={`navbar-item ${this.isActive('slices')}`}>Slices</Link>
+            <Link to={`/${this.state.username}/printers`} className={`navbar-item ${this.isActive('printers')}`}>Printers</Link>
+            <Link to={`/${this.state.username}/prints`} className={`navbar-item ${this.isActive('prints')}`}>Prints</Link>
             {this.renderTools()}
             
           </NavbarStart>
           <NavbarEnd>
-            <UserNavMenu />            
+            <UserNavMenu username={this.state.username} />            
           </NavbarEnd>
         </NavbarMenu>  
       </Navbar>
