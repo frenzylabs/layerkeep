@@ -15,6 +15,21 @@ import { MediaRight }   from 'bloomer/lib/components/Media/MediaRight';
 import { Icon }         from 'bloomer/lib/elements/Icon';
 
 export class RepoListItem extends React.Component {
+  
+  renderDescription() {
+    if (this.props.item.attributes.description) {
+      var d = this.props.item.attributes.description
+      if (d.length > 216) {
+        d = d.substring(0, 216)
+        var last = d.lastIndexOf(" ")
+        return d.substring(0, last) + "..."
+      }
+      return d
+      
+    }
+    return ""
+  }
+
   render() {
     return (
       <Link to={this.props.path} className="box" data-id={this.props.item.id} key={this.props.item.id} >
@@ -25,7 +40,7 @@ export class RepoListItem extends React.Component {
 
           <MediaContent>
             <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
-            <p className="has-text-grey">{this.props.item.attributes.description || ''}</p>
+            <p className="has-text-grey">{this.renderDescription()}</p>
           </MediaContent>
 
           <MediaRight>
