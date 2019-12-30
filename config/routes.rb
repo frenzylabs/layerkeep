@@ -55,7 +55,7 @@ Rails.application.routes.draw do
       current_user ? "/#{current_user.username}/projects/" : '/'
     }
   end
-  get '/users/me', to: 'users#me'
+  
   
   post 'contact-us', to: 'contacts#create'
   # get 'contact-us', to: 'contacts#index'
@@ -159,6 +159,8 @@ Rails.application.routes.draw do
   end
   
   scope "api", as: "api", defaults: {format: :json} do
+    post 'user/settings', to: 'users#settings'
+    get '/users/me', to: 'users#me'
     get '/slicer_engines', to: 'slicer_engines#index'
     get '/remote_sources', to: 'remote_sources#index'
   
@@ -172,6 +174,10 @@ Rails.application.routes.draw do
 
   scope ':user', as: 'user', defaults: {format: :html} do
     concerns :user_routes
+    get '/', to: redirect {|params, req|
+      user = req.params[:user]
+      "/#{user}/projects"
+    }
   end
 
 #     /:username/profiles/

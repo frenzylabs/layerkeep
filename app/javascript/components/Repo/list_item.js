@@ -25,7 +25,7 @@ export class RepoListItem extends React.Component {
 
           <MediaContent>
             <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
-            <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
+            <p className="has-text-grey">{this.props.item.attributes.description || ''}</p>
           </MediaContent>
 
           <MediaRight>
