@@ -34,8 +34,9 @@ export class SliceDetails extends React.Component {
       prints: {}
     };
 
-    this.cancelRequest      = SliceHandler.cancelSource()
-    this.loadSliceDetails   = this.loadSliceDetails.bind(this);
+    this.cancelRequest          = SliceHandler.cancelSource()
+    this.loadSliceDetails       = this.loadSliceDetails.bind(this)
+    this.renderPrintDescription = this.renderPrintDescription.bind(this)
   }
 
   componentDidMount() {
@@ -253,6 +254,20 @@ export class SliceDetails extends React.Component {
       </div>
     )
   }
+
+  renderPrintDescription(item) {
+    if (item.attributes.description) {
+      var d = item.attributes.description
+      if (d.length > 216) {
+        d = d.substring(0, 216)
+        var last = d.lastIndexOf(" ")
+        return d.substring(0, last) + "..."
+      }
+      return d
+      
+    }
+    return ""
+  }
   
   renderPrint(item) {
     return(
@@ -265,7 +280,7 @@ export class SliceDetails extends React.Component {
 
         <td colSpan={3} className="cell-content is-text-overflow">
           <p>
-            {item.attributes.description}
+            {this.renderPrintDescription(item)}
           </p>
         </td>
         
