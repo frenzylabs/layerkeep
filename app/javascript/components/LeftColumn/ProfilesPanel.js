@@ -28,7 +28,18 @@ class _ProfilesPanel extends React.Component {
     this.state = {profiles: []}
 
     this.cancelRequest = ProfileHandler.cancelSource();
-    ProfileHandler.list(null, {params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
+    this.getProfiles   = this.getProfiles.bind(this)
+  }
+  componentDidMount() {
+    this.getProfiles()
+  }
+
+  componentWillUnmount() {
+    this.cancelRequest.cancel("Left Profiles Panel");
+  }
+
+  getProfiles() {
+    ProfileHandler.list(this.props.username || currentUser.username, {params: {page: 1, per_page: 5}, cancelToken: this.cancelRequest.token})
     .then((response) => {
       this.setState({ profiles: response.data.data})
     })
@@ -36,11 +47,6 @@ class _ProfilesPanel extends React.Component {
       console.log(error);
     });
   }
-
-  componentWillUnmount() {
-    this.cancelRequest.cancel("Left Page");
-  }
-
   profileItems() {
     return this.state.profiles.map((profile, index) => {
       return (

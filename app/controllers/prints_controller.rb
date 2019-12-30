@@ -95,13 +95,15 @@ class PrintsController < AuthController
   end
 
   def show
-    
     @prnt = @user.prints.find_by!(id: params[:id])
     authorize(@prnt)
-    # prnt = Print.find_by!(id: params[:id], user_id: @user.id)
-    
     @prnthash = PrintsSerializer.new(@prnt, { params: { printer: true, assets: true, slice_details: true, current_user: current_user }}).serializable_hash
-    respond_with(@prnthash)
+    respond_to do |format|
+      format.html {}
+      format.json {    
+        respond_with(@prnthash)
+      }
+    end
   end
 
   def destroy

@@ -61,7 +61,7 @@ class SideLayout extends React.Component {
     if (currentUser.id) {
       return (
         <Column isSize={2} className="is-hidden-mobile" >
-            <LeftColumn />
+            <LeftColumn username={this.props.match.params.username} />
           </Column>
       )
     }
@@ -70,13 +70,16 @@ class SideLayout extends React.Component {
   render() {
     const Component = this.props.component;
     return (
-      <div className="has-navbar-fixed-top" style={{flex: '1'}}>
-        <Columns id="layout-column" isGapless >
-          {this.renderLeftColumn()}
-          <Column>
-            <Component {...this.props}  />
-          </Column>
-      </Columns>
+      <div style={{height: '100%', width: '100%'}}>
+        <Nav {...this.props} />
+        <div className="has-navbar-fixed-top" style={{flex: '1'}}>
+          <Columns id="layout-column" isGapless >
+            {this.renderLeftColumn()}
+            <Column>
+              <Component {...this.props}  />
+            </Column>
+        </Columns>
+        </div>
       </div>
     );
  }
@@ -86,12 +89,15 @@ class FullScreenLayout extends React.Component {
   render() {
     const Component = this.props.component;
     return (
-      <div id="" className="has-navbar-fixed-top" style={{height: '100vh', flex: '1'}}>
-       <Columns id="layout-column" isGapless >
-          <Column isFullWidth >
-            <Component {...this.props} />
-          </Column>
-      </Columns>
+      <div style={{height: '100%', width: '100%'}}>        
+        <Nav {...this.props} />
+        <div id="" className="has-navbar-fixed-top" style={{height: '100vh', flex: '1'}}>
+        <Columns id="layout-column" isGapless >
+            <Column isFullWidth >
+              <Component {...this.props} />
+            </Column>
+        </Columns>
+        </div>
       </div>
     );
  }
@@ -102,7 +108,7 @@ class AppContainer extends React.Component {
      super(props)
      this.state = {
        fullLayoutRoutes: [
-        {path: '/:username/:resource(slices)/create', component: Slicer},
+        {path: '/:username/:kind(slices)/create', component: Slicer},
         {path: '/:username/:kind(projects)/:name/:resouce(slices)/create', component: Slicer},
        ],
 
@@ -176,8 +182,6 @@ class AppContainer extends React.Component {
       <div id="dashboard" style={{height: '100%'}}>
         <RemoteMessage {...this.props} />
         <ToastContainer />
-        <Nav />
-
         <Switch>
           {this.renderFullLayoutRoutes()}
           {this.renderSideBarLayoutRoutes()}              
