@@ -155,7 +155,7 @@ export class Project extends React.Component {
           <Columns className="is-mobile">
             <Column>
               <RepoBreadCrumbs params={this.props.match.params} repo={this.state.project} />
-              <p style={{whiteSpace: 'pre', marginTop: '10px'}}>
+              <p style={{whiteSpace: 'pre-wrap', marginTop: '10px'}}>
                 {this.state.project.description}
               </p>      
             </Column>
