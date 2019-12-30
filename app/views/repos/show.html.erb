@@ -1,5 +1,6 @@
-<% content_for :title, (@user && @repo && @repo.kind ? "#{@user.username} 3D #{@repo.kind}: #{@repo.name}" : "3D Projects #{@repo.name}") %>
-<% meta_tag(:description, "3D #{@repo.kind} #{@repo.name}: #{@repo.description}") %>
+
+<% content_for :title, (@user && @repo && @repo.kind ? "#{@repo.name} : #{@user.username} 3D #{@repo.kind}" : "#{@repo.name} : 3D Projects") %>
+<% meta_tag(:description, "#{@repo.description} 3D #{@repo.kind} #{@repo.name}: ") %>
 
 <% meta_tag("og:image", (@images.first ? "#{request.protocol}#{request.host_with_port}/#{@user.username}/#{@repo.kind}/#{@repo.name}/content/#{@filedata.dig(:meta, :current_branch)}/#{@images.first[:path]}" : "")) %>
 

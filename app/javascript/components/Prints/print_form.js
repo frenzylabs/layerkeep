@@ -262,6 +262,10 @@ export class PrintForm extends React.Component {
   descriptionChanged(e) {
     this.setState({printAttrs: {...this.state.printAttrs, "description": e.currentTarget.value}})      
   }
+  
+  nameChanged(e) {
+    this.setState({printAttrs: {...this.state.printAttrs, "name": e.currentTarget.value}})      
+  }
 
   renderCurrentGcode() {
     if (this.props.print && this.props.print.attributes) {
@@ -393,15 +397,25 @@ export class PrintForm extends React.Component {
     }
   }
 
-  renderDescription() {
+  renderPrintDetails() {
     // if (!(this.props.print && this.props.print.attributes)) return null;
-    return (<TextField 
-      label="Description"
-      name="description"
-      onChange={this.descriptionChanged}
-      placeholder="Describe Your Print"
-      value={this.props.print ? this.props.print.attributes.description : ""}
-    />)
+    return (
+      <div>
+        <InputField 
+          label="Name"
+          name="optional"
+          onChange={this.nameChanged.bind(this)}
+          placeholder="Name Your Print"
+          value={this.props.print ? this.props.print.attributes.name : ""}
+        />  
+        <TextField 
+          label="Description"
+          name="description"
+          onChange={this.descriptionChanged}
+          placeholder="Describe Your Print"
+          value={this.props.print ? this.props.print.attributes.description : ""}
+        />
+    </div>)
   }
   render() {    
     var backparams = [this.props.match.params.username, "prints"]
@@ -413,11 +427,11 @@ export class PrintForm extends React.Component {
       <div>
         <Formsy onValidSubmit={this.submit} onValid={this.enableButton} onInvalid={this.disableButton}>
           
+          {this.renderPrintDetails()}
+          <br/>
           {this.renderPrinterSection()}
           <br/>          
           {this.renderSliceSection()}
-          <br/>
-          {this.renderDescription()}
           <br/>
           {this.renderAssetsContainer()}
           

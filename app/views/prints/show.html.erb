@@ -1,5 +1,6 @@
-<% content_for :title, (@prnt.name ? "3D Print #{@prnt.name}" : (@prnt.slices && @prnt.slices.name ? "3D Print #{@prnt.slices.name}" : "3D Print #{@prnt.id}")) %>
-<% meta_tag(:description, "3D Print #{@prnt.description}") %>
+
+<% content_for :title, (@prnt.name ? "#{@prnt.name} 3D Print" : (@prnt.slices && @prnt.slices.name ? "#{@prnt.slices.name} 3D Print" : "3D Print #{@prnt.id}")) %>
+<% meta_tag(:description, "#{@prnt.description}") %>
 
 <% @images = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /image/ } %>
 <% @videos = (@prnthash.dig(:data, :attributes, :assets) || []).select{|a| a.dig(:attributes, :content_type) =~ /video/ } %>
@@ -26,91 +27,95 @@
             </div>
           <% end %>
         </div>
-        <div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-title level"><p class="level-left">Printer</p></div>
-          </div>
-          <div class="card-content">
-            <div class="level">
-              <div class="level-left">
-                <div class="level-item">Name:</div>
-                <div class="level-item">
-                  <a href="<%= user_printer_path(@prnt.printer, user: @user.username) %>">
-                    <%= @prnt.printer.name || "" %>
-                  </a>
-                </div>
-              </div>
+        <div>        
+        <% if @prnt.printer %>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-title level"><p class="level-left">Printer</p></div>
             </div>
-            <div class="level">
-              <div class="level-left">
-                <div class="level-item">Model:</div>
-                <div class="level-item"><%= @prnt.printer.model || "" %></div>
-              </div>
-            </div>
-            <div class="level">
-              <div class="level-left">
-                <div class="level-item">Description:</div>
-                <div class="level-item"><%= @prnt.printer.description || "" %></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-header-title level">
-              <p class="level-left">Slice Details</p>
-            </div>
-          </div>
-          <div class="card-content">
-            <div class="card">
-              <div class="card-header"><p class="card-header-title">GCode File</p></div>
-              <div class="card-content">
-                <div class="level">
-                  <div class="level-left">
-                    <div class="level-item">
-                      <a href="<%= user_slice_path(@prnt.slices, user: @user.username) %>"><%= @prnt.slices.name %></a>
-                    </div>
+            <div class="card-content">
+              <div class="level">
+                <div class="level-left">
+                  <div class="level-item">Name:</div>
+                  <div class="level-item">
+                    <a href="<%= user_printer_path(@prnt.printer, user: @user.username) %>">
+                      <%= @prnt.printer.name || "" %>
+                    </a>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="card">
-              <div class="card-header"><p class="card-header-title">Description</p></div>
-              <div class="card-content"><%= @prnt.slices.description %></div>
-            </div>
-            <div class="card">
-              <div class="card-header"><p class="card-header-title">Project File</p></div>
-              <div class="card-content">
-                <% (@prnthash.dig(:data, :attributes, :slices, :attributes, :project_files) || []).each do |proj| %>
-                  <div class="level">                  
-                    <div class="level-left">
-                      <div class="level-item"><a href="/<%= proj["attributes"]["repo_path"] %>"><%= proj["attributes"]["repo_name"] %></a></div>
-                      <div class="level-item"><a href="<%= user_edit_projects_files_path(user: @user.username, repo_name: proj.dig("attributes", "repo_name"), revision: proj.dig("attributes", "commit"), filepath: "") %><%= proj.dig("attributes", "filepath") %>"><%= proj["attributes"]["filepath"] %></a></div>
-                      <div class="level-item"><%= proj.dig("attributes", "commit") %></div>
-                    </div>
-                  </div>
-                <% end %>
+              <div class="level">
+                <div class="level-left">
+                  <div class="level-item">Model:</div>
+                  <div class="level-item"><%= @prnt.printer.model || "" %></div>
+                </div>
               </div>
-            </div>
-            <div class="card">
-              <div class="card-header"><p class="card-header-title">Profile</p></div>
-              <div class="card-content">
-                <% (@prnthash.dig(:data, :attributes, :slices, :attributes, :profile_files) || []).each do |proj| %>
-                  <div class="level">                  
-                    <div class="level-left">
-                      <div class="level-item"><a href="/<%= proj["attributes"]["repo_path"] %>"><%= proj["attributes"]["repo_name"] %></a></div>
-                      <div class="level-item"><a href="<%= user_edit_profiles_files_path(user: @user.username, repo_name: proj.dig("attributes", "repo_name"), revision: proj.dig("attributes", "commit"), filepath: "") %><%= proj.dig("attributes", "filepath") %>"><%= proj["attributes"]["filepath"] %></a></div>
-                      <div class="level-item"><%= proj.dig("attributes", "commit") %></div>
-                    </div>
-                  </div>
-                <% end %>
+              <div class="level">
+                <div class="level-left">
+                  <div class="level-item">Description:</div>
+                  <div class="level-item"><%= @prnt.printer.description || "" %></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <br>
+          <br>
+          <% end %>
+        <% if @prnt.slices %>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-title level">
+                <p class="level-left">Slice Details</p>
+              </div>
+            </div>
+            <div class="card-content">
+              <div class="card">
+                <div class="card-header"><p class="card-header-title">GCode File</p></div>
+                <div class="card-content">
+                  <div class="level">
+                    <div class="level-left">
+                      <div class="level-item">
+                        <a href="<%= user_slice_path(@prnt.slices, user: @user.username) %>"><%= @prnt.slices.name %></a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header"><p class="card-header-title">Description</p></div>
+                <div class="card-content"><%= @prnt.slices.description %></div>
+              </div>
+              <div class="card">
+                <div class="card-header"><p class="card-header-title">Project File</p></div>
+                <div class="card-content">
+                  <% (@prnthash.dig(:data, :attributes, :slices, :attributes, :project_files) || []).each do |proj| %>
+                    <div class="level">                  
+                      <div class="level-left">
+                        <div class="level-item"><a href="/<%= proj["attributes"]["repo_path"] %>"><%= proj["attributes"]["repo_name"] %></a></div>
+                        <div class="level-item"><a href="<%= user_edit_projects_files_path(user: @user.username, repo_name: proj.dig("attributes", "repo_name"), revision: proj.dig("attributes", "commit"), filepath: "") %><%= proj.dig("attributes", "filepath") %>"><%= proj["attributes"]["filepath"] %></a></div>
+                        <div class="level-item"><%= proj.dig("attributes", "commit") %></div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header"><p class="card-header-title">Profile</p></div>
+                <div class="card-content">
+                  <% (@prnthash.dig(:data, :attributes, :slices, :attributes, :profile_files) || []).each do |proj| %>
+                    <div class="level">                  
+                      <div class="level-left">
+                        <div class="level-item"><a href="/<%= proj["attributes"]["repo_path"] %>"><%= proj["attributes"]["repo_name"] %></a></div>
+                        <div class="level-item"><a href="<%= user_edit_profiles_files_path(user: @user.username, repo_name: proj.dig("attributes", "repo_name"), revision: proj.dig("attributes", "commit"), filepath: "") %><%= proj.dig("attributes", "filepath") %>"><%= proj["attributes"]["filepath"] %></a></div>
+                        <div class="level-item"><%= proj.dig("attributes", "commit") %></div>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+        <% end %>
         <table class="table is-narrow is-fullwidth" style="margin-top: 10px;">
           <thead>
             <tr style="background: rgb(239, 247, 255); border: 1px solid rgb(193, 221, 255);">

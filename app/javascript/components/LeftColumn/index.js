@@ -17,13 +17,13 @@ export class LeftColumn extends React.Component {
     return (
       <div id="left-column">
         <Section>
-          <ProjectsPanel/>
+          <ProjectsPanel username={this.props.username} />
         </Section>
 
         <hr />
 
         <Section>
-          <ProfilesPanel/>
+          <ProfilesPanel username={this.props.username}  />
         </Section>
       </div>
     )

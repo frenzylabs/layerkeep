@@ -30,6 +30,15 @@ export class PrintListItem extends React.Component {
     }
   }
 
+  renderTitle() {
+    var itematt = this.props.item.attributes
+    if (!itematt.name && itematt.slices && itematt.slices.attributes.name) {
+      return (<p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{itematt.slices.attributes.name}</p>)
+    }
+    return (
+      <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{itematt.name}</p>
+    )
+  }
   render() {
     return (
       <Link to={this.props.path} className="box" data-id={this.props.item.id} key={this.props.item.id} >
@@ -39,7 +48,7 @@ export class PrintListItem extends React.Component {
           </MediaLeft>
 
           <MediaContent>
-            <p className="title is-5" style={{lineHeight: "154%", marginBottom: "0"}}>{this.props.item.attributes.name}</p>
+            {this.renderTitle()}
             <p className="has-text-grey">{this.props.item.attributes.description || 'Description goes here.'}</p>
           </MediaContent>
 

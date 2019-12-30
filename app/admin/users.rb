@@ -7,6 +7,7 @@ ActiveAdmin.register User do
     selectable_column
     id_column
     column :email
+    column :username
     column :active
     column :approved
     column :approved_on
@@ -18,6 +19,7 @@ ActiveAdmin.register User do
   end
 
   filter :email
+  filter :username
   filter :active
   filter :approved
   filter :current_sign_in_at
