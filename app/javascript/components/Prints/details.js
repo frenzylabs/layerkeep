@@ -399,13 +399,13 @@ export class PrintDetails extends React.Component {
                 <h2 className={"title is-4"}>
                   {this.state.print.attributes && this.state.print.attributes.name}
                 </h2>
-                <p style={{whiteSpace: 'pre'}}>
-                  {this.state.print.attributes && this.state.print.attributes.description}
-                </p>
             </Column>
             {this.renderEditButton()}
             
           </Columns>
+          <p style={{whiteSpace: 'pre-wrap', marginBottom: '10px'}}>
+            {this.state.print.attributes && this.state.print.attributes.description}
+          </p>
           {this.renderContent()}
         </Container>
         <br/>
