@@ -80,6 +80,7 @@ export class PrintForm extends React.Component {
     this.selectSlice        = this.selectSlice.bind(this)
     this.selectPrinter      = this.selectPrinter.bind(this)
     this.descriptionChanged = this.descriptionChanged.bind(this)
+    this.nameChanged        = this.nameChanged.bind(this)
 
     this.cancelRequest      = PrintHandler.cancelSource()
   }
