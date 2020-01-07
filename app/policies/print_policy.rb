@@ -61,7 +61,7 @@ class PrintPolicy
   end
 
   def destroy?
-    user && record.user_id == record.id
+    user && record.user_id == user.id
   end
 
   def upload?
