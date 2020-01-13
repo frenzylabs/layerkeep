@@ -195,13 +195,14 @@ class ReposController < AuthController
     thingfiles = resp.body.reduce([]) do |acc, t| 
       uri = URI(URI.decode(URI.encode_www_form_component(t["public_url"])))
       code, tmpfilepath = download_to_tmp_path(uri)        
-      logger.info(tmpfilepath)
+      logger.info("Tmp #{uri}: #{tmpfilepath}")
 
       if code != 200 
         download_errors << "#{t["name"]}"
-        return acc
+        acc
+      else
+        acc <<  [t["name"], File.new(tmpfilepath)]
       end
-      acc <<  [t["name"], File.new(tmpfilepath)]
     end
     # 3837312
     # logger.info("ThingFiles = #{thingfiles}")
