@@ -89,9 +89,16 @@ class RepoFilesHandler
         else
           next
         end
-
       else
-        name = f.original_filename
+        next unless f.respond_to?(:read)
+        if f.respond_to?(:original_filename)
+          name = f.original_filename
+        elsif f.respond_to?(:path)
+          name = f.path.split("/").last
+        else
+         next
+        end
+
         if  (f.content_type =~ /image\//) != nil
           prefix = "images/"
         end
@@ -123,7 +130,9 @@ class RepoFilesHandler
   def cleanup_tmp_files(files)
     dirpath = File.join(@repo.path, ".tmpfiles")
     files.each do |f| 
-      if f.is_a?(String)
+      if f.is_a?(File)
+        File.delete(f.path)
+      elsif f.is_a?(String)
         filepath = File.join(dirpath, f)
         File.delete(filepath) if File.exist?(filepath)
       end

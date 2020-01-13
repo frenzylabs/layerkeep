@@ -108,7 +108,7 @@ export class ProjectNew extends React.Component {
   }
 
   nameChanged(e) {
-    const val = e.currentTarget.value;
+    var val = e.currentTarget.value;
     var name  = val.trim().replace(/[^a-zA-Z0-9\-_]/g, " ").split(/\s+/).join('-');
 
     this.setState({
@@ -159,7 +159,8 @@ export class ProjectNew extends React.Component {
   }
 
   submit(formData) {
-    var repoData = Object.assign(formData, {name: this.state.nameLabel.caption, is_private: this.state.isPrivate})
+    var name = this.state.nameLabel.caption.length > 1 ? this.state.nameLabel.caption : this.state.name
+    var repoData = Object.assign(formData, {name: name, is_private: this.state.isPrivate})
     if (this.state.selectedFileSource && this.state.selectedFileSource.id != "0") {
       repoData["remote_source_id"] = this.state.selectedFileSource.id
     }
