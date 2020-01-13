@@ -158,7 +158,7 @@ class ReposController < AuthController
     if resp.body["public_url"]
       uri = URI(URI.decode(URI.encode_www_form_component(resp.body["public_url"])))
       code, tmpfilepath = download_to_tmp_path(uri)        
-      logger.info(tmpfilepath)
+      logger.info("Download to tmpPath #{tmpfilepath}")
 
       if code != 200 
         return create_thingiverse_files(params) 
@@ -203,7 +203,8 @@ class ReposController < AuthController
       end
       acc <<  [t["name"], File.new(tmpfilepath)]
     end
-     
+    # 3837312
+    # logger.info("ThingFiles = #{thingfiles}")
     if thingfiles.count > 0
       commit_message = "Created From Thingiverse #{params[:thing_id]}"
       return thingfiles, commit_message
