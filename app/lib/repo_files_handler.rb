@@ -103,6 +103,7 @@ class RepoFilesHandler
           if  (f.content_type =~ /image\//) != nil
             prefix = "images/"
           end
+        end
         oid = @repo.write(f.read(), :blob)
       end
       @names << name
