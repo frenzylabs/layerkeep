@@ -21,6 +21,7 @@ import Loader               from '../Loader';
 
 import {
   Error404,
+  Error403,
   Error401
 } from '../ErrorViews';
 
@@ -143,6 +144,8 @@ export class Project extends React.Component {
       switch(this.state.hasError) {
         case 404:
           return (<Error404 style={{height: '100%'}}/>);
+        case 403:
+          return (<Error403 />);
         case 401:
           return (<Error401/>);
       }
