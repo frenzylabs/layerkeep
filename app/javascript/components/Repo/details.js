@@ -27,6 +27,7 @@ import Modal              from '../Modal';
 
 import {
   Error404,
+  Error403,
   Error401
 } from '../ErrorViews';
 import RepoClone from './repo_clone';
@@ -265,7 +266,8 @@ class Details extends React.Component {
           return (
             <Error404/>
           );
-
+        case 403:
+          return (<Error403 />)
         case 401:
           return (
             <Error401/>

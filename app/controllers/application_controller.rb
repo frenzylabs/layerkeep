@@ -42,8 +42,8 @@ class ApplicationController < ActionController::Base
       request.format = :html
     end
     respond_to do |format|
-      format.html { render status: 401, :file => File.join(Rails.root, 'public', '401.html') }
-      format.json { render status: 401, :json => {"error": "Not Authorized"}.merge(error_reason) }
+      format.html { render status: 403, :file => File.join(Rails.root, 'public', '401.html') }
+      format.json { render status: 403, :json => {"error": "Not Authorized"}.merge(error_reason) }
     end
   end
 
