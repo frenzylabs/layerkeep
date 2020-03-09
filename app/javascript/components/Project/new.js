@@ -109,7 +109,7 @@ export class ProjectNew extends React.Component {
 
   nameChanged(e) {
     var val = e.currentTarget.value;
-    var name  = val.trim().replace(/[^a-zA-Z0-9\-_]/g, " ").split(/\s+/).join('-');
+    var name  = val.trim().replace(/[^a-zA-Z0-9\-_]/g, " ").split(/\s+/).join('-').replace(/-*$/, "");
 
     this.setState({
       ...this.state,
