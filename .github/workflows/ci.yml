@@ -78,7 +78,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: /usr/local/bundle
+          path: vendor/bundle
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gem-
