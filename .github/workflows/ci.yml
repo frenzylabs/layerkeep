@@ -70,6 +70,6 @@ jobs:
 
       - name: Push docker images
         run: |
-          docker push ${IMAGE}
+          docker push ${BUILD_IMAGE}
           docker push ${ASSET_IMAGE}
 
