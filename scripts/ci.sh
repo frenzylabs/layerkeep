@@ -21,7 +21,7 @@ docker_build_assets() {
     -e SECRET_KEY_BASE=c959724279db5ca746e7a87 \
 		-e RAILS_ENV=production \
 		-e PRECOMPILE_ASSETS=true \
-		${IMAGE} -- bundle exec rails assets:precompile
+		${IMAGE} bundle exec rails assets:precompile
     docker build -f ${SCRIPT_DIR}/assets/Dockerfile -t ${ASSET_IMAGE} ${SCRIPT_DIR}/assets
 }
 
