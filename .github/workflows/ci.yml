@@ -57,7 +57,7 @@ jobs:
       - name: Set build info
         run: |
           echo "::set-env name=IMAGE::${IMAGE_REPOSITORY}:${VERSION}"
-          echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}"
+          echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}-build"
           echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${VERSION}-build"
 
       - name: Cache node modules
@@ -82,6 +82,19 @@ jobs:
           key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gem-
+
+      - name: Cache assets
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-assets
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: public
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-              
 
       - name: Build docker build image
         run: |
