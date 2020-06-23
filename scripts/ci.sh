@@ -22,3 +22,8 @@ docker_build_assets() {
 	${IMAGE} -- bundle exec rails assets:precompile
     docker build -f ${SCRIPT_DIR}/assets/Dockerfile -t ${ASSET_IMAGE} ${SCRIPT_DIR}/assets
 }
+
+push_images() {
+    docker push ${IMAGE}
+    docker push ${ASSET_IMAGE}
+}

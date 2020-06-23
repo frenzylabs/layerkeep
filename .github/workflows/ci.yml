@@ -66,5 +66,10 @@ jobs:
 
       - name: Build docker build asset image
         run: |
-          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} TARGET=build ./scripts/ci.sh docker_build_assets          
+          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} TARGET=build ./scripts/ci.sh docker_build_assets
+
+      - name: Push docker images
+        run: |
+          docker push ${IMAGE}
+          docker push ${ASSET_IMAGE}
 
