@@ -26,7 +26,7 @@ RUN mkdir ${APP_DIR}
 WORKDIR $RAILS_ROOT
 
 # Setting env up
-ARG RAILS_ENV=${RAILS_ENV:-development}
+ARG RAILS_ENV=${RAILS_ENV:-production}
 ENV RAILS_ENV=$RAILS_ENV
 ENV RACK_ENV=${RAILS_ENV}
 
@@ -40,6 +40,8 @@ COPY package.json yarn.lock ./
 
 RUN if [ "$RAILS_ENV" = "production" ] ; then yarn install --check-files --production=true ; else yarn install --check-files ; fi
 
+ARG SECRET_KEY_BASE
+ENV SECRET_KEY_BASE=${SECRET_KEY_BASE}
 
 COPY . .
 
@@ -52,9 +54,9 @@ RUN git config --global user.email web@layerkeep.com && git config --global user
 
 # VOLUME [ "${RAILS_ROOT}/public", "/var/www/repos" ]
 
-ENV SECRET_KEY_BASE=${SECRET_KEY_BASE:-c959724279db5ca746e7a88}
+
 
 EXPOSE 3000
 
-CMD ["rails", "s"]
-# CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]

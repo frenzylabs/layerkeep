@@ -20,7 +20,9 @@ profiles:
       artifacts:
       - image: localhost/layerkeep
         docker:
-          dockerfile: Dockerfile.dev
+          dockerfile: Dockerfile
+          buildArgs:
+            RAILS_ENV: '{{.RAILS_ENV}}'
         sync:
           # infer:
           #   - '**'
