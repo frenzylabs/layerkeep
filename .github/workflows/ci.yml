@@ -70,18 +70,21 @@ jobs:
             ~/cache
             !~/cache/exclude
             **/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - uses: actions/cache@v2
+      - name: Cache assets
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-gems
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-gem-
+            ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: Cache assets
         uses: actions/cache@v2
