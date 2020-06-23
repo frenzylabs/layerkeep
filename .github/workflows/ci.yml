@@ -60,6 +60,29 @@ jobs:
           echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}"
           echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${VERSION}-build"
 
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/cache
+            !~/cache/exclude
+            **/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - uses: actions/cache@v2
+        with:
+          path: /usr/local/bundle
+          key: ${{ runner.os }}-gem-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gem-
+
       - name: Build docker build image
         run: |
           IMAGE=${BUILD_IMAGE} TARGET=build ./scripts/ci.sh docker_build_target
@@ -69,7 +92,7 @@ jobs:
           IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} TARGET=build ./scripts/ci.sh docker_build_assets
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
+        run: doctl registry login
 
       - name: Push docker images
         run: |
