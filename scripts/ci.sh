@@ -11,7 +11,7 @@ docker_build_target() {
 	echo "PWD = $(pwd)"
   echo $(ls)  
   docker build -f ${ROOT_DIR}/Dockerfile -t ${IMAGE} .
-  docker push ${IMAGE}
+  # docker push ${IMAGE}
 }
 
 docker_build_assets() {
