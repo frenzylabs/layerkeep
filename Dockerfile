@@ -34,7 +34,7 @@ ENV RACK_ENV=${RAILS_ENV}
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 # RUN bundle install --jobs 20 --retry 5 --without test 
-RUN if [ "$RAILS_ENV" = "production" ] ; then bundle install --deployment --jobs 20 --retry 5 --without test; else bundle install --jobs 20 --retry 5 --without test 
+RUN if [ "$RAILS_ENV" = "production" ] ; then bundle install --deployment --jobs 20 --retry 5 --without test; else bundle install --jobs 20 --retry 5 --without test ; fi
 # Adding project files
 
 COPY package.json yarn.lock ./
