@@ -30,8 +30,8 @@ jobs:
       #     ref: refs/heads/${{ github.head_ref }}
       #     path: './from_branch'
       #     persist-credentials: false
-      - name: Update SHA
-        run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
+      # - name: Update SHA
+      #   run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
 
       - name: Set release version info
         if: github.event_name == 'release'
