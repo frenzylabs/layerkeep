@@ -23,6 +23,38 @@ Things you may want to cover:
 
 * ...
 
+## Start Dependencies 
+In terminal go to /frenzylabs/layerkeep-infra
+1. Setup Aws Authentication to have access to the secrets
+  Copy .saml2aws to /root/ or copy the content into /root/.saml2aws if it already exist.  
+  Update username to be your frenzylabs email address. 
+2. Run `saml2aws login` and follow prompts
+
+3. Run rabbitmq
+   `make localdev setup-rabbitmq`
+
+4. Setup Repo Directory
+  `skaffold deploy -p repo`
+
+5. Run nginx
+   `make localdev setup-nginx`
+   `make localdev setup-ingress`
+
+6. Run Postgres
+   `make localdev setup-postgres init=true`
+
+7. skaffold dev
+
+8.  Run migrations  
+    `make localdev run-database-migrations -f ../../layerkeep-infra/Makefile`
+
+
+9.  Setup host file
+    Edit /etc/hosts and add 127.0.0.1 layerkeep.local, www.layerkeep.local, admin.layerkeep.local
+
+
+
+
 INSTALL NGINX LOCALLY
 
 brew tap denji/nginx

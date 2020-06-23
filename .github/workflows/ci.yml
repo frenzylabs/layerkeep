@@ -1,0 +1,70 @@
+name: CI
+
+on: 
+  push:
+  pull_request:
+  release:
+    types: [published]
+
+env:
+  IMAGE_REPOSITORY: registry.digitalocean.com/frenzylabs/web
+  ASSET_IMAGE_REPOSITORY: registry.digitalocean.com/frenzylabs/web_assets
+#   HARNESS_WEBHOOK_QA_DEPLOY: ${{ secrets.HARNESS_WEBHOOK_QA_DEPLOY }}
+#   HARNESS_WEBHOOK_PROD_DEPLOY: ${{ secrets.HARNESS_WEBHOOK_QA_DEPLOY }}
+
+jobs:
+
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      
+      # - name: Checkout
+      #   uses: actions/checkout@v2
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     ref: refs/heads/${{ github.head_ref }}
+      #     path: './from_branch'
+      #     persist-credentials: false
+      - name: Update SHA
+        run: echo $GITHUB_SHA > $GITHUB_WORKSPACE/site/_meta
+
+      - name: Set release version info
+        if: github.event_name == 'release'
+        run: |
+          echo "::set-env name=VERSION::${{ github.event.release.tag_name }}"
+      
+      - name: Set commit version info
+        if: github.event_name == 'push'
+        run: |
+          echo "::set-env name=VERSION::$(echo "$GITHUB_SHA" | cut -c1-7)"
+
+      - name: Set PR version info
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "::set-env name=VERSION::pr-${{ github.event.pull_request.number }}"        
+
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Set build info
+        run: |
+          echo "::set-env name=IMAGE::${IMAGE_REPOSITORY}:${VERSION}"
+          echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}"
+          echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${VERSION}-build"
+
+      - name: Build docker build image
+        run: |
+          IMAGE=${BUILD_IMAGE} TARGET=build ./scripts/ci.sh docker_build_target
+
+      - name: Build docker build asset image
+        run: |
+          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} TARGET=build ./scripts/ci.sh docker_build_assets          
+
