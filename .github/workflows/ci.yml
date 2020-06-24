@@ -183,6 +183,7 @@ jobs:
           commit-message: Update Layerkeep ${TARGET} Config
           title: 'Update Layerkeep ${TARGET} Config'
           branch: layerkeep-${TARGET}
+          base: master
 
           # committer: GitHub <action@github.com>
           # author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
