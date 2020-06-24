@@ -43,7 +43,7 @@ push_images() {
 }
 
 update_infa_config() {
-	sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" ../layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
+	sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" ${ROOT_DIR}/layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
 }
 
 $1
