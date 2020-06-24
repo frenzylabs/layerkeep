@@ -11,6 +11,16 @@ docker_build_target() {
 	echo "PWD = $(pwd)"
   echo $(ls)  
   docker build -f ${ROOT_DIR}/Dockerfile -t ${IMAGE} .
+	docker run --rm \
+		-v ${SCRIPT_DIR}/vendor/bundle:/var/www/layerkeep/bundlecache \
+		${IMAGE} /bin/sh -c "cp -rf vendor/bundle/* bundlecache/"
+	
+	docker run --rm \
+		-v ${SCRIPT_DIR}/node_module_cache:/var/www/layerkeep/nodecache \
+		${IMAGE} /bin/sh -c "cp -rf node_modules/* nodecache/"
+	# echo "$( cp -rf docs ./from_branch/ )"
+	echo $(ls ${SCRIPT_DIR}/node_module_cache)
+
   # docker push ${IMAGE}
 }
 
@@ -31,3 +41,12 @@ push_images() {
 }
 
 $1
+
+
+docker run --rm \
+		-v ${PWD}/vendor/bundle:/var/www/layerkeep/bundlecache \
+    -e SECRET_KEY_BASE=c959724279db5ca746e7a87 \
+		-e RAILS_ENV=production \
+		-e PRECOMPILE_ASSETS=true \
+		registry.digitalocean.com/frenzylabs/web:7f1cab2-build cp -rf /usr/local/bundle/* bundlecache/
+

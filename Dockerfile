@@ -30,16 +30,20 @@ ARG RAILS_ENV=${RAILS_ENV:-production}
 ENV RAILS_ENV=$RAILS_ENV
 ENV RACK_ENV=${RAILS_ENV}
 
+RUN mkdir -p $RAILS_ROOT/vendor/bundle
 # Adding gems
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-RUN bundle install --jobs 20 --retry 5 --without test 
-# RUN if [ "$RAILS_ENV" = "production" ] ; then bundle install --deployment --jobs 20 --retry 5 --without test; else bundle install --jobs 20 --retry 5 --without test ; fi
+# RUN bundle install --jobs 20 --retry 5 --without test 
+
+COPY ./vendor ./vendor
+RUN if [ "$RAILS_ENV" = "production" ] ; then bundle install --deployment --jobs 20 --retry 5 --without test development; else bundle install --jobs 20 --retry 5 --without test ; fi
 # Adding project files
 
 COPY package.json yarn.lock ./
+COPY node_module_cache ./node_modules
 
-RUN if [ "$RAILS_ENV" = "production" ] ; then yarn install --check-files --production=true ; else yarn install --check-files ; fi
+RUN if [ "$RAILS_ENV" = "production" ] ; then yarn install --check-files --production=true ; else echo "DEv" && yarn install --check-files --update-checksums ; fi
 
 ARG SECRET_KEY_BASE
 ENV SECRET_KEY_BASE=${SECRET_KEY_BASE}
