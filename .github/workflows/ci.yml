@@ -146,7 +146,7 @@ jobs:
 
       - name: Update layerkeep infra chart values
         run: |
-          TAG=${BUILD_TAG} TARGET=${TARGET} ./scripts/ci.sh update_infa_config
+          TAG=${BUILD_TAG} TARGET=${TARGET} ./layerkeep/scripts/ci.sh update_infa_config
 
       - name: Create Pull Request
         id: cpr
