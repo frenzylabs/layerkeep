@@ -171,7 +171,7 @@ jobs:
           git checkout -b mytestbranch
           git status
           git remote add infraorigin https://x-access-token:${{ secrets.FL_WORKFLOW_PAT }}@github.com/frenzylabs/layerkeep-infra
-          git push infraorigin mytestbranch
+          git push -f infraorigin mytestbranch
           
 
       - name: Create Pull Request
