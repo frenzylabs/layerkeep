@@ -170,8 +170,8 @@ jobs:
           cd $GITHUB_WORKSPACE/layerkeep-infra
           git checkout -b mytestbranch
           git status
-          git remote set-url origin https://x-access-token:${{ secrets.FL_WORKFLOW_PAT }}@github.com/frenzylabs/layerkeep-infra
-          git push origin mytestbranch
+          git remote set-url infraorigin https://x-access-token:${{ secrets.FL_WORKFLOW_PAT }}@github.com/frenzylabs/layerkeep-infra
+          git push infraorigin mytestbranch
           
 
       - name: Create Pull Request
