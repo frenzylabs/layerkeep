@@ -140,7 +140,7 @@ jobs:
           echo $GITHUB_WORKSPACE
           ls $GITHUB_WORKSPACE/layerkeep-infra
           ls $GITHUB_WORKSPACE/layerkeep-infra/charts/layerkeep
-          git remote -v $GITHUB_WORKSPACE/layerkeep-infra
+          git --git-dir $GITHUB_WORKSPACE/layerkeep-infra remote -v 
 
       - name: Update layerkeep infra chart values
         run: |
