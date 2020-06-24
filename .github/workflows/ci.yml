@@ -165,12 +165,12 @@ jobs:
       #     branch: 'mytestbranch'
       #     repository: 'frenzylabs/layerkeep-infra'
 
-      - name: Test PUSHING BRANCH
-        run: |
-          cd $GITHUB_WORKSPACE/layerkeep-infra
-          git checkout -b mytestbranch
-          git status
-          git push origin/mytestbranch
+      # - name: Test PUSHING BRANCH
+      #   run: |
+      #     cd $GITHUB_WORKSPACE/layerkeep-infra
+      #     git checkout -b mytestbranch
+      #     git status
+      #     git push origin/mytestbranch
           
 
       - name: Create Pull Request
