@@ -109,21 +109,21 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Build docker build image
-        run: |
-          IMAGE=${BUILD_IMAGE} ./scripts/ci.sh docker_build_target
+      # - name: Build docker build image
+      #   run: |
+      #     IMAGE=${BUILD_IMAGE} ./scripts/ci.sh docker_build_target
 
-      - name: Build docker build asset image
-        run: |
-          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./scripts/ci.sh docker_build_assets
+      # - name: Build docker build asset image
+      #   run: |
+      #     IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./scripts/ci.sh docker_build_assets
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login
+      # - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      #   run: doctl registry login
 
-      - name: Push docker images
-        run: |
-          docker push ${BUILD_IMAGE}
-          docker push ${ASSET_IMAGE}
+      # - name: Push docker images
+      #   run: |
+      #     docker push ${BUILD_IMAGE}
+      #     docker push ${ASSET_IMAGE}
 
       - name: Check out layerkeep infra
         uses: actions/checkout@v2
@@ -138,7 +138,8 @@ jobs:
       - name: Test GH DIR AGAIN
         run: |
           echo $GITHUB_WORKSPACE
-          ls $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE/layerkeep-infra
+          ls $GITHUB_WORKSPACE/layerkeep-infra/charts/layerkeep
 
       - name: Update layerkeep infra chart values
         run: |
