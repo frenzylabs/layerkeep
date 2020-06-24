@@ -85,7 +85,8 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
-
+            ${{ runner.os }}-
+            
       - name: Cache assets
         uses: actions/cache@v2
         env:
@@ -97,7 +98,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}
             ${{ runner.os }}-build-
-            ${{ runner.os }}-              
+            ${{ runner.os }}-
 
       - name: Build docker build image
         run: |

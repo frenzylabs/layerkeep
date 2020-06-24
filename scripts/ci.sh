@@ -42,12 +42,3 @@ push_images() {
 }
 
 $1
-
-
-docker run --rm \
-		-v ${PWD}/vendor/bundle:/var/www/layerkeep/bundlecache \
-    -e SECRET_KEY_BASE=c959724279db5ca746e7a87 \
-		-e RAILS_ENV=production \
-		-e PRECOMPILE_ASSETS=true \
-		registry.digitalocean.com/frenzylabs/web:7f1cab2-build cp -rf /usr/local/bundle/* bundlecache/
-
