@@ -8,6 +8,7 @@ ROOT_DIR="$( cd "$( dirname "${SCRIPT_DIR}" )" >/dev/null 2>&1 && pwd )"
 docker_build_target() {
   IMAGE=${IMAGE:?'IMAGE must be set'}
 
+	cd ${ROOT_DIR}
 	echo "PWD = $(pwd)"
   echo $(ls ${ROOT_DIR}/vendor/bundle)
   docker build -f ${ROOT_DIR}/Dockerfile -t ${IMAGE} .
