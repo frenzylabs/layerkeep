@@ -131,7 +131,7 @@ jobs:
         # if: github.event_name == 'pull_request'
         with:
           # ref: refs/heads/master
-          token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
+          token: ${{ secrets.FL_WORKFLOW_PAT }}
           path: layerkeep-infra
           fetch-depth: 0
           # persist-credentials: false
@@ -170,6 +170,7 @@ jobs:
           cd $GITHUB_WORKSPACE/layerkeep-infra
           git checkout -b mytestbranch
           git status
+          git remote set-url origin https://x-access-token:${{ secrets.FL_WORKFLOW_PAT }}@github.com/frenzylabs/layerkeep-infra
           git push origin mytestbranch
           
 
@@ -177,7 +178,7 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v2
         with:
-          token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
+          token: ${{ secrets.FL_WORKFLOW_PAT }}
           path: './layerkeep-infra'
           commit-message: Update Layerkeep ${TARGET} Config
           title: 'Update Layerkeep ${TARGET} Config'
