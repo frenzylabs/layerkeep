@@ -9,13 +9,14 @@ docker_build_target() {
   IMAGE=${IMAGE:?'IMAGE must be set'}
 
 	echo "PWD = $(pwd)"
-  echo $(ls)  
+  echo $(ls ${SCRIPT_DIR}/vendor/bundle)
   docker build -f ${ROOT_DIR}/Dockerfile -t ${IMAGE} .
 	docker run --rm \
 		-v ${SCRIPT_DIR}/vendor/bundle:/var/www/layerkeep/bundlecache \
 		${IMAGE} /bin/sh -c "cp -rf vendor/bundle/* bundlecache/"
 	
 	echo "Image= ${IMAGE}"
+	echo $(ls ${SCRIPT_DIR}/node_module_cache)
 	docker run --rm \
 		-v ${SCRIPT_DIR}/node_module_cache:/var/www/layerkeep/nodecache \
 		${IMAGE} /bin/sh -c "cp -rf node_modules/* nodecache/"
@@ -39,6 +40,10 @@ docker_build_assets() {
 push_images() {
     docker push ${IMAGE}
     docker push ${ASSET_IMAGE}
+}
+
+update_infa_config() {
+	sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" ./layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
 }
 
 $1
