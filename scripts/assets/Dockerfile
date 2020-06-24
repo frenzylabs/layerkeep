@@ -7,4 +7,4 @@ WORKDIR $ASSET_ROOT
 
 COPY public .
 
-CMD ['/bin/bash']
+CMD ['/bin/sh']
