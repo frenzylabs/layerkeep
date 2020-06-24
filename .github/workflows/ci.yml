@@ -180,9 +180,9 @@ jobs:
         with:
           token: ${{ secrets.FL_WORKFLOW_PAT }}
           path: layerkeep-infra
-          commit-message: Update Layerkeep ${TARGET} Config
-          title: "Update Layerkeep ${TARGET} Config"
-          branch: "layerkeep-${TARGET}"
+          commit-message: Update Layerkeep ${{ env.TARGET }} Config
+          title: "Update Layerkeep ${{ env.TARGET }} Config"
+          branch: "layerkeep-${{ env.TARGET }}"
           base: master
 
           # committer: GitHub <action@github.com>
