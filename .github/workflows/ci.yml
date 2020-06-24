@@ -76,7 +76,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Cache assets
+      - name: Cache gems
         uses: actions/cache@v2
         env:
           cache-name: cache-gems

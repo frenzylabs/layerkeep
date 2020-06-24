@@ -15,11 +15,12 @@ docker_build_target() {
 		-v ${SCRIPT_DIR}/vendor/bundle:/var/www/layerkeep/bundlecache \
 		${IMAGE} /bin/sh -c "cp -rf vendor/bundle/* bundlecache/"
 	
+	echo "Image= ${IMAGE}"
 	docker run --rm \
 		-v ${SCRIPT_DIR}/node_module_cache:/var/www/layerkeep/nodecache \
 		${IMAGE} /bin/sh -c "cp -rf node_modules/* nodecache/"
 	# echo "$( cp -rf docs ./from_branch/ )"
-	echo $(ls ${SCRIPT_DIR}/node_module_cache)
+	# echo $(ls ${SCRIPT_DIR}/node_module_cache)
 
   # docker push ${IMAGE}
 }
