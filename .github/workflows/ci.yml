@@ -134,7 +134,7 @@ jobs:
           token: ${{ secrets.FL_WORKFLOW_PAT }}
           path: layerkeep-infra
           fetch-depth: 0
-          # persist-credentials: false
+          persist-credentials: false
           repository: frenzylabs/layerkeep-infra
 
       - name: Test GH DIR AGAIN
@@ -149,14 +149,14 @@ jobs:
         run: |
           TAG=${BUILD_TAG} TARGET=${TARGET} ./layerkeep/scripts/ci.sh update_infa_config
 
-      - name: Commit files
-        run: |
-          cd $GITHUB_WORKSPACE/layerkeep-infra
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git status
-          git commit -am "Update Config"
-          git config -l
+      # - name: Commit files
+      #   run: |
+      #     cd $GITHUB_WORKSPACE/layerkeep-infra
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     git status
+      #     git commit -am "Update Config"
+      #     git config -l
       # - name: Push changes
       #   uses: ad-m/github-push-action@master
       #   with:
