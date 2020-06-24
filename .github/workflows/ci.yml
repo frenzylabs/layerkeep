@@ -112,11 +112,11 @@ jobs:
 
       - name: Build docker build image
         run: |
-          IMAGE=${BUILD_IMAGE} ./scripts/ci.sh docker_build_target
+          IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
 
       - name: Build docker build asset image
         run: |
-          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./scripts/ci.sh docker_build_assets
+          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login
