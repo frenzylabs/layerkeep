@@ -148,23 +148,35 @@ jobs:
         run: |
           TAG=${BUILD_TAG} TARGET=${TARGET} ./layerkeep/scripts/ci.sh update_infa_config
 
-      - name: Test PUSHING BRANCH
+      - name: Commit files
         run: |
-          cd $GITHUB_WORKSPACE/layerkeep-infra
-          git checkout -b mytestbranch
-          git status
-          git push origin/mytestbranch
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update Config"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
+          directory: './layerkeep-infra' 
+          branch: 'mytestbranch'
+
+      # - name: Test PUSHING BRANCH
+      #   run: |
+      #     cd $GITHUB_WORKSPACE/layerkeep-infra
+      #     git checkout -b mytestbranch
+      #     git status
+      #     git push origin/mytestbranch
           
 
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v2
-        with:
-          token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
-          path: './layerkeep-infra'
-          commit-message: Update Layerkeep ${TARGET} Config
-          title: 'Update Layerkeep ${TARGET} Config'
-          branch: layerkeep-${TARGET}
+      # - name: Create Pull Request
+      #   id: cpr
+      #   uses: peter-evans/create-pull-request@v2
+      #   with:
+      #     token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
+      #     path: './layerkeep-infra'
+      #     commit-message: Update Layerkeep ${TARGET} Config
+      #     title: 'Update Layerkeep ${TARGET} Config'
+      #     branch: layerkeep-${TARGET}
 
           # committer: GitHub <action@github.com>
           # author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
