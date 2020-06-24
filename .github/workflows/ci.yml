@@ -51,6 +51,10 @@ jobs:
           echo "::set-env name=VERSION::pr-${{ github.event.pull_request.number }}"
           echo "::set-env name=TARGET::staging"
 
+      - name: Test GH DIR
+        run: |
+          echo $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -126,6 +130,11 @@ jobs:
           path: './layerkeep-infra'
           persist-credentials: false
           repository: frenzylabs/layerkeep-infra
+
+      - name: Test GH DIR AGAIN
+        run: |
+          echo $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE
 
       - name: Update layerkeep infra chart values
         run: |
