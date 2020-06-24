@@ -134,7 +134,7 @@ jobs:
           token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
           path: layerkeep-infra
           fetch-depth: 0
-          persist-credentials: false
+          # persist-credentials: false
           repository: frenzylabs/layerkeep-infra
 
       - name: Test GH DIR AGAIN
