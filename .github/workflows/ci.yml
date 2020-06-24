@@ -160,6 +160,7 @@ jobs:
           github_token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
           directory: './layerkeep-infra' 
           branch: 'mytestbranch'
+          repository: 'frenzylabs/layerkeep-infra'
 
       # - name: Test PUSHING BRANCH
       #   run: |
