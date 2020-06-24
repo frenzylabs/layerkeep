@@ -130,7 +130,7 @@ jobs:
         uses: actions/checkout@v2
         # if: github.event_name == 'pull_request'
         with:
-          ref: refs/heads/master
+          # ref: refs/heads/master
           token: ${{ secrets.ZOMBIE_WORKFLOW_PAT }}
           path: './layerkeep-infra'
           # persist-credentials: false
@@ -139,6 +139,7 @@ jobs:
       - name: Test GH DIR AGAIN
         run: |
           echo $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE
           ls $GITHUB_WORKSPACE/layerkeep-infra
           ls $GITHUB_WORKSPACE/layerkeep-infra/charts/layerkeep
           git --git-dir $GITHUB_WORKSPACE/layerkeep-infra remote -v 
