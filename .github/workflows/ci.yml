@@ -20,8 +20,9 @@ jobs:
       image: frenzylab/devcontainer:latest
       env:
         XDG_DATA_HOME: "/root/.local/share/"
+        PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       volumes:
-        - /usr/bin:/root/bin
+        - /usr/bin:/usr/bin
         
     steps:
       # - name: install python
@@ -31,7 +32,9 @@ jobs:
         
       - name: Try pip
         run: |        
+          echo $PATH
           echo "::add-path::/root/bin"
+          
           which python
           python -m pip install --upgrade pip
           pip -h
