@@ -130,15 +130,20 @@ jobs:
       #     docker push ${BUILD_IMAGE}
       #     docker push ${ASSET_IMAGE}
 
-      # - name: Check out layerkeep infra
-      #   uses: actions/checkout@v2
-      #   # if: github.event_name == 'pull_request'
-      #   with:
-      #     token: ${{ secrets.FL_WORKFLOW_PAT }}
-      #     path: layerkeep-infra
-      #     fetch-depth: 0
-      #     persist-credentials: false
-      #     repository: frenzylabs/layerkeep-infra
+      - name: Check out layerkeep infra
+        uses: actions/checkout@v2
+        # if: github.event_name == 'pull_request'
+        with:
+          token: ${{ secrets.FL_WORKFLOW_PAT }}
+          path: layerkeep-infra
+          fetch-depth: 0
+          persist-credentials: false
+          repository: frenzylabs/layerkeep-infra
+
+      - name: test 
+        run: |
+          cd $GITHUB_WORKSPACE/layerkeep-infra
+          make ${TARGET} get-pods
 
       # - name: Update layerkeep infra chart values
       #   run: |
