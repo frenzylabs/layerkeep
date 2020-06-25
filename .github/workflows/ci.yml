@@ -141,6 +141,9 @@ jobs:
           persist-credentials: false
           repository: frenzylabs/layerkeep-infra
 
+      - name: doctl auth
+        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
       - name: test 
         run: |
           echo $DIGITALOCEAN_ACCESS_TOKEN
