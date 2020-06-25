@@ -179,6 +179,10 @@ jobs:
       - name: test sops
         run: sops -h
 
+      - name: root dir
+        run: |
+          ls -al /root
+
       - name: test plugins
         run: helm plugin list
 
