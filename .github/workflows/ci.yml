@@ -66,12 +66,13 @@ jobs:
       #   with:
       #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      # - name: Set build info
-      #   run: |
-      #     echo "::set-env name=BUILD_TAG::${VERSION}-build"
-      #     echo "::set-env name=IMAGE::${IMAGE_REPOSITORY}:${VERSION}"
-      #     echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}-build"
-      #     echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${VERSION}-build"
+      - name: Set build info
+        run: |
+          echo "::set-env name=DIGITALOCEAN_ACCESS_TOKEN::${DIGITALOCEAN_ACCESS_TOKEN}"
+          echo "::set-env name=BUILD_TAG::${VERSION}-build"
+          echo "::set-env name=IMAGE::${IMAGE_REPOSITORY}:${VERSION}"
+          echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}-build"
+          echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${VERSION}-build"
 
       # - name: Cache node modules
       #   uses: actions/cache@v2
@@ -142,6 +143,7 @@ jobs:
 
       - name: test 
         run: |
+          echo $DIGITALOCEAN_ACCESS_TOKEN
           cd $GITHUB_WORKSPACE/layerkeep-infra
           make ${TARGET} get-pods
 
