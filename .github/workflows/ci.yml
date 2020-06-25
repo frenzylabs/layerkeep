@@ -144,13 +144,28 @@ jobs:
       - name: doctl auth
         run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: test 
+      - name: testget pods 
         run: |
           echo $DIGITALOCEAN_ACCESS_TOKEN
           cd $GITHUB_WORKSPACE/layerkeep-infra
 
           KUBECONFIG=${PWD}/${TARGET}/config doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
           make ${TARGET} get-pods
+
+      - name: saml aws login
+        run: |
+          cp $GITHUB_WORKSPACE/layerkeep-infra/.saml2aws ~/
+          saml2aws login --profile="default" \
+               --username=ci@frenzylabs.com \
+               --password="${{ secrets.CI_GOOGLE_PASSWRORD }}" \
+               --skip-prompt
+
+      - name: test template 
+        run: |
+          echo $PWD
+          cd $GITHUB_WORKSPACE/layerkeep-infra
+          helm secrets template layerkeep charts/layerkeep -f ./charts/layerkeep/values.yaml -f ./charts/layerkeep/values.staging.yaml -f ./secrets/secrets.staging.yaml
+
 
       # - name: Update layerkeep infra chart values
       #   run: |
