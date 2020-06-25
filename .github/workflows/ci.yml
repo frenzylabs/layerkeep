@@ -157,7 +157,7 @@ jobs:
           cp $GITHUB_WORKSPACE/layerkeep-infra/.saml2aws ~/
           saml2aws login --profile="default" \
                --username=ci@frenzylabs.com \
-               --password="${{ secrets.CI_GOOGLE_PASSWRORD }}" \
+               --password="${{ secrets.CI_GOOGLE_PASSWORD }}" \
                --skip-prompt
 
       - name: test template 
