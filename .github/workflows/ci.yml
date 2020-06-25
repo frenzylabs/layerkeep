@@ -166,13 +166,18 @@ jobs:
       #          --password=${{ secrets.CI_GOOGLE_PASSWORD }} \
       #          --skip-prompt
 
-      - name: Configure AWS credentials from Test account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
-          aws-region: us-east-1
+      # - name: Configure AWS credentials from Test account
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+      #     aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
+      #     aws-region: us-east-1
 
+      - name: test template 
+        run: |
+          echo $PWD
+          helm secrets -h
+          
       - name: test template 
         run: |
           echo $PWD
