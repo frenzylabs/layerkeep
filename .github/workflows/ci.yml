@@ -16,12 +16,12 @@ env:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    # container:
-    #   image: frenzylab/devcontainer:latest
-    #   env:
-    #     XDG_DATA_HOME: "/root/.local/share/"
-    #   volumes:
-    #     - /usr/local/bin:/root/bin
+    container:
+      image: frenzylab/devcontainer:latest
+      env:
+        XDG_DATA_HOME: "/root/.local/share/"
+      volumes:
+        - /usr/bin:/root/bin
         
     steps:
       # - name: install python
@@ -31,6 +31,7 @@ jobs:
         
       - name: Try pip
         run: |        
+          ls /root/bin
           which python
           python -m pip install --upgrade pip
           pip -h
