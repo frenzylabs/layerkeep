@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: frenzylab/devcontainer:latest
-    
-    
-      
+      env:
+        XDG_DATA_HOME: "/root/.local/share/"
+  
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -181,7 +181,8 @@ jobs:
 
       - name: root dir
         run: |
-          ls -al /root
+          echo $XDG_DATA_HOME
+          ls -al /root/.local/share
 
       - name: test plugins
         run: helm plugin list
