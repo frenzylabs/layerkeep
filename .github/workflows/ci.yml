@@ -148,7 +148,8 @@ jobs:
         run: |
           echo $DIGITALOCEAN_ACCESS_TOKEN
           cd $GITHUB_WORKSPACE/layerkeep-infra
-          doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
+
+          KUBECONFIG=${PWD}/${TARGET}/config doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
           make ${TARGET} get-pods
 
       # - name: Update layerkeep infra chart values
