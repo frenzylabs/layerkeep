@@ -36,8 +36,11 @@ jobs:
         
       - name: Try pip
         run: |          
+          which python
+          python -m pip install --upgrade pip
           pip -h
           which pip
+          pip3 -h
 
       # - name: Checkout
       #   uses: actions/checkout@v2
