@@ -176,6 +176,12 @@ jobs:
       - name: test skaffold
         run: skaffold -h
 
+      - name: test sops
+        run: sops -h
+
+      - name: test plugins
+        run: helm plugin list
+
       - name: test secrets
         run: helm secrets -h
 
