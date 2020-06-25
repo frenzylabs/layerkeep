@@ -20,26 +20,31 @@ jobs:
       image: frenzylab/devcontainer:latest
       env:
         XDG_DATA_HOME: "/root/.local/share/"
-  
+      volumes:
+        - /usr/local/bin:/root/bin
+        
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          path: './layerkeep'
-          persist-credentials: false
-      
       - name: install python
         uses: actions/setup-python@v2
         with:
           python-version: 'pypy3' # Version range or exact version of a Python version to use, using SemVer's version range syntax
         
       - name: Try pip
-        run: |          
+        run: |        
+          ls /root/bin
           which python
           python -m pip install --upgrade pip
           pip -h
           which pip
           pip3 -h
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: './layerkeep'
+          persist-credentials: false
+      
+
 
       # - name: Checkout
       #   uses: actions/checkout@v2
