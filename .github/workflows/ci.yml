@@ -36,10 +36,7 @@ jobs:
           apt install -y python3-pip
           which python3
           pip3 -h
-          which pip3          
-          pip -h
-          which pip
-          pip4
+          which pip3
 
       - name: Checkout
         uses: actions/checkout@v2
