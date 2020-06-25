@@ -173,11 +173,15 @@ jobs:
       #     aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
       #     aws-region: us-east-1
 
-      - name: test template 
-        run: |
-          echo $PWD
-          helm secrets -h
-          
+      - name: test skaffold
+        run: skaffold -h
+
+      - name: test secrets
+        run: helm secrets -h
+
+          # echo $PWD
+          # helm secrets -h
+
       - name: test template 
         run: |
           echo $PWD
