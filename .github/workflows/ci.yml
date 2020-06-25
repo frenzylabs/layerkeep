@@ -35,7 +35,9 @@ jobs:
           architecture: 'x64'
         
       - name: Try pip
-        run: pip3 -h
+        run: |          
+          pip -h
+          which pip
 
       # - name: Checkout
       #   uses: actions/checkout@v2
