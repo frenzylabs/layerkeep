@@ -31,7 +31,7 @@ jobs:
         
       - name: Try pip
         run: |        
-          ls /root/bin
+          echo "::add-path::/root/bin"
           which python
           python -m pip install --upgrade pip
           pip -h
