@@ -228,11 +228,11 @@ jobs:
           echo 'eval "$(direnv hook bash)"' >> "/root/.bash_profile"
           echo 'eval "$(direnv hook bash)"' >> "/root/.bashrc"
           echo 'eval "$(direnv hook bash)"' >> "$HOME/.bash_profile"
-          echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
-          echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
+          echo 'eval "$(direnv hook zsh)"' >> "$HOME/.zshrc"
+          echo 'eval "$(direnv hook zsh)"' >> "/root/.zshrc"
 
       - name: test
-        shell: bash
+        shell: /usr/bin/zsh {0}
         run: |
           
           echo ~
