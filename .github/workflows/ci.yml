@@ -23,6 +23,8 @@ jobs:
         # PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       # volumes:
       #   - /usr/bin:/usr/bin
+    outputs:
+      buildenv: ${{ steps.buildenv.outputs }}
         
     steps:
       - name: Checkout
@@ -51,7 +53,8 @@ jobs:
 
       - name: Set build info
         run: |
-          echo "::set-env name=TAG::${TARGET}-${VERSION}-build"
+          TAG=${TARGET}-${VERSION}-build
+          echo "::set-env name=TAG::${TAG}"
           echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${TAG}"
           echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${TAG}"
 
@@ -127,6 +130,15 @@ jobs:
           name: build_info
           path: build_env.txt          
 
+      - name: buildenv
+        if: ${{ always }}
+        run: |
+          echo "::set-output name=target::${TARGET}"
+          echo "::set-output name=tag::${TAG}"
+          echo "::set-output name=build_image::${BUILD_IMAGE}"
+          echo "::set-output name=asset_image::${ASSET_IMAGE}"
+          
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -142,6 +154,9 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: build_info
+
+      - name: test job outputs
+        run: echo ${{needs.build.outputs.buildenv}}
 
       - name: set env vars
         shell: bash
