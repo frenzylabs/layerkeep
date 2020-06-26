@@ -240,8 +240,8 @@ jobs:
           echo "KUBECONFIG = $KUBECONFIG"
           kubectl config get-contexts
           kubectl config current-context
-          doctl account get
-          kubectl get pods
+
+          make ${TARGET} get-pods
 
 # make ${TARGET} get-pods
 
