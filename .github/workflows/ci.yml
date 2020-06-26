@@ -60,6 +60,8 @@ jobs:
           echo "::set-env name=TAG::${TAG}"
           echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${TAG}"
           echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${TAG}"
+          echo "::set-env name=CLUSTER_KEY::DO_${TARGET^^}_CLUSTER"
+          
 
       # - name: Cache node modules
       #   uses: actions/cache@v2
@@ -143,15 +145,14 @@ jobs:
       
       - name: test
         run: |
-          echo "SECRET NAMe= ${SECRET_NAME^^}"          
-          export cluster_key=${{ env.SECRET_NAME }}
-          echo "cluster key = ${cluster_key}"
-          echo "envclusterkey= ${{ env.cluster_key }}"
-          SECRET_VALUE= ${{ secrets[env.cluster_key] }}
+          echo "SECRET NAMe= ${CLUSTER_KEY}"                    
+          echo "envclusterkey= ${{ env.CLUSTER_KEY }}"
+          SECRET_VALUE= ${{ secrets[env.CLUSTER_KEY] }}
           echo "SECRET_VALUE = $SECRET_VALUE"
-        env:
-          SECRET_PREFIX: A
-          SECRET_NAME: "DO_${TARGET^^}_CLUSTER"
+
+        # env:
+        #   SECRET_PREFIX: A
+        #   SECRET_NAME: "DO_${TARGET^^}_CLUSTER"
           
 
   # deploy:
