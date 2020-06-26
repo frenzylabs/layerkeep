@@ -16,16 +16,17 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: frenzylab/devcontainer:latest
+    # container:
+    #   image: frenzylab/devcontainer:latest
       # env:
       #   XDG_DATA_HOME: "/root/.local/share/"  # HELM plugin path
         # PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       # volumes:
       #   - /usr/bin:/usr/bin
-    outputs:
+    outputs:      
+      target: ${{ steps.buildenv.outputs.target }}
+      tag: ${{ steps.buildenv.outputs.tag }}
       buildenv: ${{ steps.buildenv.outputs }}
-      testtarget: ${{ steps.buildenv.outputs.target }}
         
     steps:
       - name: Checkout
@@ -158,7 +159,8 @@ jobs:
 
       - name: test job outputs
         run: |
-          echo "TESTTARGET = ${{ needs.build.outputs.buildenv.testtarget }}"
+          echo "TESTTARGET = ${{ needs.build.outputs.target }}"
+          echo "TAG = ${{ needs.build.outputs.tag }}"
           echo "TARGET = ${{ needs.build.outputs.buildenv.target }}"
           echo "TAG = ${{ needs.build.outputs.buildenv.target }}"
 
