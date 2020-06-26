@@ -226,25 +226,20 @@ jobs:
       - name: doctl auth
         run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: set bashrc
+      - name: Set KUBECONFIG
+        working-directory: ./layerkeep-infra
         run: |
-          echo 'eval "$(direnv hook bash)"' >> "/root/.bash_profile"
-          echo 'eval "$(direnv hook bash)"' >> "/root/.bashrc"
-          echo 'eval "$(direnv hook bash)"' >> "$HOME/.bash_profile"
-          echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
-          echo 'eval "$(direnv hook zsh)"' >> "/root/.zshrc"
-          echo "::set-env name=KUBECONFIG::${PWD}/layerkeep-infra/${TARGET}/config"          
+          echo "::set-env name=KUBECONFIG::${PWD}/${TARGET}/config"
 
-      - name: test        
+      - name: test
         working-directory: ./layerkeep-infra
         run: |          
           echo ${PWD}
-          env
           echo "KUBECONFIG = $KUBECONFIG"
           kubectl config get-contexts
           kubectl config current-context
           
-          make get-pods
+          make ${TARGET} get-pods
 
   #     - name: Update layerkeep infra chart values
   #       run: |
