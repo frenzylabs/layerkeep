@@ -219,16 +219,18 @@ jobs:
           make ${TARGET} get-pods
 
       - name: test skaffold
+        shell: zsh
         run: |
           echo ${PWD}
           cd $GITHUB_WORKSPACE/layerkeep-infra
           KUBECONFIG=${PWD}/${TARGET}/config SECRETS_FILE=secrets.${TARGET}.yaml TARGETENV=${TARGET} skaffold deploy -p layerkeep
 
       - name: Update template 
+        shell: zsh
         run: |
           echo $PWD
           cd $GITHUB_WORKSPACE/layerkeep-infra
-          make ${TARGET} setup-layerkeep
+          KUBECONFIG=${PWD}/${TARGET}/config make ${TARGET} setup-layerkeep
 
 
 
