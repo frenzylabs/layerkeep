@@ -26,7 +26,8 @@ jobs:
     outputs:      
       target: ${{ steps.buildenv.outputs.target }}
       tag: ${{ steps.buildenv.outputs.tag }}
-      buildenv: ${{ toJSON(steps.buildenv.outputs) }}
+      build_image: ${{ steps.buildenv.outputs.build_image }}
+      asset_image: ${{ steps.buildenv.outputs.asset_image }}
         
     steps:
       - name: Checkout
@@ -113,24 +114,24 @@ jobs:
       #   run: doctl registry login
 
       # docker push ${BUILD_IMAGE}
-      - name: Push docker image
-        run: |
-          echo "TAG: ${TAG}" >> build_env.txt
-          echo "TARGET: ${TARGET}" >> build_env.txt
-          echo "BUILD_IMAGE: ${BUILD_IMAGE}" >> build_env.txt
+      # - name: Push docker image
+      #   run: |
+      #     echo "TAG: ${TAG}" >> build_env.txt
+      #     echo "TARGET: ${TARGET}" >> build_env.txt
+      #     echo "BUILD_IMAGE: ${BUILD_IMAGE}" >> build_env.txt
     
-      # docker push ${ASSET_IMAGE}          
-      - name: Push docker asset image
-        run: |
-          echo ${ASSET_IMAGE}
-          echo "ASSET_IMAGE: ${ASSET_IMAGE}" >> build_env.txt
+      # # docker push ${ASSET_IMAGE}          
+      # - name: Push docker asset image
+      #   run: |
+      #     echo ${ASSET_IMAGE}
+      #     echo "ASSET_IMAGE: ${ASSET_IMAGE}" >> build_env.txt
 
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v1
-        if: ${{ always() }}
-        with:
-          name: build_info
-          path: build_env.txt          
+      # - name: Upload Build Artifacts
+      #   uses: actions/upload-artifact@v1
+      #   if: ${{ always() }}
+      #   with:
+      #     name: build_info
+      #     path: build_env.txt          
 
       - id: buildenv
         if: ${{ always() }}
@@ -157,18 +158,26 @@ jobs:
         with:
           name: build_info
 
-      - name: test job outputs
+      # - name: test job outputs
+      #   run: |
+      #     BUILDENV = ${{ fromJSON(needs.build.outputs.buildenv)
+      #     echo "TESTTARGET = ${{ needs.build.outputs.target }}"
+      #     echo "JTAG = ${{ needs.build.outputs.tag }}"
+      #     echo "TARGET = ${{ fromJSON(needs.build.outputs.buildenv).target }}"
+      
+      - name: Set env
         run: |
-          echo "TESTTARGET = ${{ needs.build.outputs.target }}"
-          echo "JTAG = ${{ needs.build.outputs.tag }}"
-          echo "TARGET = ${{ fromJSON(needs.build.outputs.buildenv).target }}"
+          echo "::set-env name=TARGET::${{ needs.build.outputs.target }}"
+          echo "::set-env name=TAG::${{ needs.build.outputs.tag }}"
+          echo "::set-env name=ASSET_IMAGE::${{ needs.build.outputs.asset_image }}"
+          echo "::set-env name=BUILD_IMAGE::${{ needs.build.outputs.build_image }}"
 
 
-      - name: set env vars
-        shell: bash
-        run: |
-          cat build_info/build_env.txt;
-          source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
+      # - name: set env vars
+      #   shell: bash
+      #   run: |
+      #     cat build_info/build_env.txt;
+      #     source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
 
       - name: test env
         run: |
