@@ -232,7 +232,7 @@ jobs:
           echo 'eval "$(direnv hook zsh)"' >> "/root/.zshrc"
 
       - name: test
-        shell: /usr/bin/zsh -l {0}
+        shell: /usr/bin/zsh {0}
         run: |
 
           cat $HOME/.bash_profile
