@@ -131,7 +131,7 @@ jobs:
           path: build_env.txt          
 
       - name: buildenv
-        if: ${{ always }}
+        if: ${{ always() }}
         run: |
           echo "::set-output name=target::${TARGET}"
           echo "::set-output name=tag::${TAG}"
