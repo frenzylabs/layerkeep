@@ -26,7 +26,7 @@ jobs:
     outputs:      
       target: ${{ steps.buildenv.outputs.target }}
       tag: ${{ steps.buildenv.outputs.tag }}
-      buildenv: ${{ steps.buildenv.outputs }}
+      buildenv: ${{ toJSON(steps.buildenv.outputs) }}
         
     steps:
       - name: Checkout
@@ -161,8 +161,8 @@ jobs:
         run: |
           echo "TESTTARGET = ${{ needs.build.outputs.target }}"
           echo "JTAG = ${{ needs.build.outputs.tag }}"
-          echo "TARGET = ${{ needs.build.outputs.buildenv.target }}"
-          echo "TAG = ${{ needs.build.outputs.buildenv.target }}"
+          echo "TARGET = ${{ fromJSON(needs.build.outputs.buildenv).target }}"
+
 
       - name: set env vars
         shell: bash
