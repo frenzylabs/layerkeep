@@ -222,14 +222,13 @@ jobs:
   #         aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
   #         aws-region: us-east-1
 
-
-      - name: doctl auth
-        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
       - name: Set KUBECONFIG
         working-directory: ./layerkeep-infra
         run: |
           echo "::set-env name=KUBECONFIG::${PWD}/${TARGET}/config"
+
+      - name: doctl auth
+        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}          
 
       - name: test
         working-directory: ./layerkeep-infra
@@ -239,7 +238,9 @@ jobs:
           kubectl config get-contexts
           kubectl config current-context
           
-          make ${TARGET} get-pods
+          kubectl get pods
+
+# make ${TARGET} get-pods
 
   #     - name: Update layerkeep infra chart values
   #       run: |
