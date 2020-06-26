@@ -226,15 +226,18 @@ jobs:
       - name: set bashrc
         run: |
           echo 'eval "$(direnv hook bash)"' >> "/root/.bash_profile"
+          echo 'eval "$(direnv hook bash)"' >> "/root/.bashrc"
           echo 'eval "$(direnv hook bash)"' >> "$HOME/.bash_profile"
+          echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
 
       - name: test
         shell: bash -l {0}
         run: |
-          env
+          
           cat $HOME/.bash_profile
           source $HOME/.bash_profile
           cd $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
+          env
           ls -al ${PWD}
           echo "KUBECONFIG = $KUBECONFIG"
           kubectl config get-contexts
