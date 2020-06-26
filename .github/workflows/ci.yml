@@ -235,8 +235,10 @@ jobs:
         shell: bash
         run: |
           
+          echo ~
+
           cat $HOME/.bash_profile
-          source $HOME/.bash_profile
+          source ~/.bashrc
           cd $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
           env
           ls -al ${PWD}
