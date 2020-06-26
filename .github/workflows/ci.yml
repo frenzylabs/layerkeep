@@ -143,7 +143,9 @@ jobs:
           name: build_info
 
       - name: set env vars
+        shell: bash
         run: |
+          cat build_info/build_env.txt;
           source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
 
       - name: test env
