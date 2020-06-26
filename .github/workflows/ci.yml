@@ -132,7 +132,7 @@ jobs:
           name: build_info
           path: build_env.txt          
 
-      - name: buildenv
+      - id: buildenv
         if: ${{ always() }}
         run: |
           echo "::set-output name=target::${TARGET}"
@@ -160,7 +160,7 @@ jobs:
       - name: test job outputs
         run: |
           echo "TESTTARGET = ${{ needs.build.outputs.target }}"
-          echo "TAG = ${{ needs.build.outputs.tag }}"
+          echo "JTAG = ${{ needs.build.outputs.tag }}"
           echo "TARGET = ${{ needs.build.outputs.buildenv.target }}"
           echo "TAG = ${{ needs.build.outputs.buildenv.target }}"
 
