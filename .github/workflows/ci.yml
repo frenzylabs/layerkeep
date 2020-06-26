@@ -87,62 +87,65 @@ jobs:
           echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${VERSION}-build"
           echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${VERSION}-build"
 
-      # - name: Cache node modules
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: cache-node-modules
-      #   with:
-      #     # npm cache files are stored in `~/.npm` on Linux/macOS
-      #     path: |
-      #       **/node_module_cache
-      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-      #       ${{ runner.os }}-build-${{ env.cache-name }}-
-      #       ${{ runner.os }}-build-
-      #       ${{ runner.os }}-
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            **/node_module_cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-      # - name: Cache gems
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: cache-gems
-      #   with:
-      #     path: |
-      #       **/vendor/cache
-      #       **/vendor/bundle
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
-      #       ${{ runner.os }}-
+      - name: Cache gems
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-gems
+        with:
+          path: |
+            **/vendor/cache
+            **/vendor/bundle
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
+            ${{ runner.os }}-
             
-      # - name: Cache assets
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: cache-assets
-      #   with:
-      #     # npm cache files are stored in `~/.npm` on Linux/macOS
-      #     path: public/pack
-      #     key: ${{ runner.os }}-build-${{ env.cache-name }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-build-${{ env.cache-name }}
-      #       ${{ runner.os }}-build-
-      #       ${{ runner.os }}-
+      - name: Cache assets
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-assets
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: public/pack
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-      # - name: Build docker build image
-      #   run: |
-      #     IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
+      - name: Build docker build image
+        run: |
+          IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
 
-      # - name: Build docker build asset image
-      #   run: |
-      #     IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
+      - name: Build docker build asset image
+        run: |
+          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
         run: doctl registry login
 
-      # - name: Push docker images
-      #   run: |
-      #     docker push ${BUILD_IMAGE}
-      #     docker push ${ASSET_IMAGE}
+      - name: Push docker image
+        run: |
+          docker push ${BUILD_IMAGE}
+    
+      - name: Push docker asset image
+        run: |
+          docker push ${ASSET_IMAGE}
 
       - name: Check out layerkeep infra
         uses: actions/checkout@v2
@@ -154,21 +157,6 @@ jobs:
           persist-credentials: false
           repository: frenzylabs/layerkeep-infra
 
-      
-
-      # - name: saml aws login
-      #   run: |
-      #     cp $GITHUB_WORKSPACE/layerkeep-infra/.saml2aws ~/
-      #     echo "GOOGLE PASS = ${{ secrets.CI_GOOGLE_PASSWORD }}"
-      #     echo "saml2aws login --profile='default' \
-      #          --username=ci@frenzylabs.com \
-      #          --password=${{ secrets.CI_GOOGLE_PASSWORD }} \
-      #          --skip-prompt"
-
-      #     saml2aws login --profile='default' \
-      #          --username=ci@frenzylabs.com \
-      #          --password=${{ secrets.CI_GOOGLE_PASSWORD }} \
-      #          --skip-prompt
 
       - name: Configure AWS credentials from Test account
         uses: aws-actions/configure-aws-credentials@v1
@@ -181,57 +169,51 @@ jobs:
       - name: doctl auth
         run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      # - name: Update layerkeep infra chart values
-      #   run: |
-      #     TAG=${BUILD_TAG} TARGET=${TARGET} ./layerkeep/scripts/ci.sh update_infa_config
+      - name: Update layerkeep infra chart values
+        run: |
+          TAG=${BUILD_TAG} TARGET=${TARGET} ./layerkeep/scripts/ci.sh update_infa_config
 
-      # - name: Create Pull Request
-      #   id: cpr
-      #   uses: peter-evans/create-pull-request@v2
-      #   with:
-      #     token: ${{ secrets.FL_WORKFLOW_PAT }}
-      #     path: layerkeep-infra
-      #     commit-message: Update Layerkeep ${{ env.TARGET }} Config
-      #     branch: "${{ env.TARGET }}-layerkeep"
-      #     base: master
-      #     committer: GitHub <action@github.com>
-      #     author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-      #     title: '${{ env.TARGET }} - Layerkeep Config'
-      #     body: |
-      #       New ${{ env.TARGET }} Config
-      #       - Contains *today's* date
-      #       - Auto-generated by [create-pull-request][1]
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.FL_WORKFLOW_PAT }}
+          path: layerkeep-infra
+          commit-message: Update Layerkeep ${{ env.TARGET }} Config
+          branch: "${{ env.TARGET }}-layerkeep"
+          base: master
+          committer: GitHub <action@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          title: '${{ env.TARGET }} - Layerkeep Config'
+          body: |
+            New ${{ env.TARGET }} Config
+            - Contains *today's* date
+            - Auto-generated by [create-pull-request][1]
 
-      #       [1]: https://github.com/peter-evans/create-pull-request
-      #     labels: layerkeep, automated pr, ${{ env.TARGET }}
-      #     team-reviewers: owners, maintainers
-      #     # milestone: 1
-      #     draft: false
+            [1]: https://github.com/peter-evans/create-pull-request
+          labels: layerkeep, automated pr, ${{ env.TARGET }}
+          team-reviewers: owners, maintainers
+          # milestone: 1
+          draft: false
 
 
       - name: set bashrc
         run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
 
 
-      - name: set kubernetes cluster
+      - name: Set kubernetes cluster
         run: |
           echo $DIGITALOCEAN_ACCESS_TOKEN
           cd $GITHUB_WORKSPACE/layerkeep-infra
-
           KUBECONFIG=${PWD}/${TARGET}/config doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
           make ${TARGET} get-pods
 
-      - name: test skaffold
-        run: |
-          echo ${PWD}
-          cd $GITHUB_WORKSPACE/layerkeep-infra
-          KUBECONFIG=${PWD}/${TARGET}/config SECRETS_FILE=secrets.${TARGET}.yaml TARGETENV=${TARGET} skaffold deploy -p layerkeep
 
-      - name: Update template 
+      - name: Deploy to Kubernetes 
         run: |
           echo $PWD
           cd $GITHUB_WORKSPACE/layerkeep-infra
-          KUBECONFIG=${PWD}/${TARGET}/config make ${TARGET} setup-layerkeep
+          make ${TARGET} setup-layerkeep
 
 
 
