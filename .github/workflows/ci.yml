@@ -222,13 +222,16 @@ jobs:
   #         aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
   #         aws-region: us-east-1
 
+      - name: set bashrc
+        run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
+
       - name: Set KUBECONFIG
         working-directory: ./layerkeep-infra
         run: |
           echo "::set-env name=KUBECONFIG::${PWD}/${TARGET}/config"
 
       - name: doctl auth
-        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}          
+        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: test
         working-directory: ./layerkeep-infra
@@ -237,7 +240,7 @@ jobs:
           echo "KUBECONFIG = $KUBECONFIG"
           kubectl config get-contexts
           kubectl config current-context
-          
+          doctl account get
           kubectl get pods
 
 # make ${TARGET} get-pods
