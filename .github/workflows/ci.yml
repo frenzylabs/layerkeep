@@ -224,11 +224,12 @@ jobs:
         run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: set bashrc
-        run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
+        run: echo 'eval "$(direnv hook zsh)"' >> "$HOME/.bashrc"
 
       - name: test
         shell: bash -l {0}
         run: |
+          env
           cd $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
           ls -al ${PWD}
           echo "KUBECONFIG = $KUBECONFIG"
