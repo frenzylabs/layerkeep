@@ -26,15 +26,15 @@ jobs:
     outputs:      
       target: ${{ steps.buildenv.outputs.target }}
       tag: ${{ steps.buildenv.outputs.tag }}
-      build_image: ${{ steps.buildenv.outputs.build_image }}
-      asset_image: ${{ steps.buildenv.outputs.asset_image }}
+      build_image: ${{ steps.build-image.outputs.build_image }}
+      asset_image: ${{ steps.asset-image.outputs.asset_image }}
         
     steps:
-      # - name: Checkout
-      #   uses: actions/checkout@v2
-      #   with:
-      #     path: './layerkeep'
-      #     persist-credentials: false
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: './layerkeep'
+          persist-credentials: false
 
       - name: Set release version info
         if: github.event_name == 'release'
@@ -63,68 +63,78 @@ jobs:
           echo "::set-env name=CLUSTER_KEY::DO_${TARGET^^}_CLUSTER"
           
 
-      # - name: Cache node modules
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: cache-node-modules
-      #   with:
-      #     # npm cache files are stored in `~/.npm` on Linux/macOS
-      #     path: |
-      #       **/node_module_cache
-      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-      #       ${{ runner.os }}-build-${{ env.cache-name }}-
-      #       ${{ runner.os }}-build-
-      #       ${{ runner.os }}-
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            **/node_module_cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
-      # - name: Cache gems
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: cache-gems
-      #   with:
-      #     path: |
-      #       **/vendor/cache
-      #       **/vendor/bundle
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
-      #       ${{ runner.os }}-
+      - name: Cache gems
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-gems
+        with:
+          path: |
+            **/vendor/cache
+            **/vendor/bundle
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
+            ${{ runner.os }}-
             
-      # - name: Cache assets
-      #   uses: actions/cache@v2
-      #   env:
-      #     cache-name: cache-assets
-      #   with:
-      #     # npm cache files are stored in `~/.npm` on Linux/macOS
-      #     path: scripts/assets/public
-      #     key: ${{ runner.os }}-build-${{ env.cache-name }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-build-${{ env.cache-name }}
-      #       ${{ runner.os }}-build-
-      #       ${{ runner.os }}-
+      - name: Cache assets
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-assets
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            **/scripts/assets/public
+          key: ${{ runner.os }}-build-${{ env.cache-name }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}
+            ${{ runner.os }}-
 
-      # - name: Build docker build image
-      #   run: |
-      #     IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
+      - name: Build docker build image
+        run: |
+          IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
 
-      # - name: Build docker build asset image
-      #   run: |
-      #     IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
+      - name: Build docker build asset image
+        run: |
+          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
 
-      # - name: Log in to DigitalOcean Container Registry with short-lived credentials
-      #   run: doctl registry login
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      # docker push ${BUILD_IMAGE}
-      # - name: Push docker image
-      #   run: |
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login
+
+      - name: Push docker image
+        id: build-image
+        run: |
+            docker push ${BUILD_IMAGE}
+            echo "::set-output name=build_image::${BUILD_IMAGE}"
       #     echo "TAG: ${TAG}" >> build_env.txt
       #     echo "TARGET: ${TARGET}" >> build_env.txt
       #     echo "BUILD_IMAGE: ${BUILD_IMAGE}" >> build_env.txt
     
-      # # docker push ${ASSET_IMAGE}          
-      # - name: Push docker asset image
-      #   run: |
+      - name: Push docker asset image
+        id: asset-image
+        run: |
+            docker push ${ASSET_IMAGE}
+            echo "::set-output name=asset_image::${ASSET_IMAGE}"
+
       #     echo ${ASSET_IMAGE}
       #     echo "ASSET_IMAGE: ${ASSET_IMAGE}" >> build_env.txt
 
@@ -140,8 +150,7 @@ jobs:
         run: |
           echo "::set-output name=target::${TARGET}"
           echo "::set-output name=tag::${TAG}"
-          echo "::set-output name=build_image::${BUILD_IMAGE}"
-          echo "::set-output name=asset_image::${ASSET_IMAGE}"
+          
       
       - name: test
         run: |
@@ -166,8 +175,8 @@ jobs:
       env:
         XDG_DATA_HOME: "/root/.local/share/"
     steps:
-  #     - name: Install pip
-  #       run: apt install -y python3-pip
+      - name: Install pip
+        run: apt install -y python3-pip
 
   #     # - name: Download build info
   #     #   uses: actions/download-artifact@v1
@@ -198,12 +207,12 @@ jobs:
   #     #     cat build_info/build_env.txt;
   #     #     source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
 
-      - name: test env
-        run: |
-          echo "TARGEt= $TARGET"
-          echo "TAG= $TAG"
-          echo "BUILD_IMAGE= $BUILD_IMAGE"
-          echo "ASSET_IMAGE= $ASSET_IMAGE"
+      # - name: test env
+      #   run: |
+      #     echo "TARGEt= $TARGET"
+      #     echo "TAG= $TAG"
+      #     echo "BUILD_IMAGE= $BUILD_IMAGE"
+      #     echo "ASSET_IMAGE= $ASSET_IMAGE"
 
       - name: Check out layerkeep infra
         uses: actions/checkout@v2
@@ -215,12 +224,12 @@ jobs:
           repository: frenzylabs/layerkeep-infra
 
 
-  #     - name: Configure AWS credentials from Test account
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
-  #         aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
-  #         aws-region: us-east-1
+      - name: Configure AWS credentials from Test account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
+          aws-region: us-east-1
 
       # - name: set bashrc
       #   run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
@@ -235,61 +244,56 @@ jobs:
 
       - name: test
         working-directory: ./layerkeep-infra
-        run: |          
-          echo ${PWD}
-          echo "KUBECONFIG = $KUBECONFIG"
+        run: |
           kubectl config get-contexts
           kubectl config current-context
-
           make ${TARGET} get-pods
 
-# make ${TARGET} get-pods
 
-  #     - name: Update layerkeep infra chart values
-  #       run: |
-  #         sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
+      - name: Update layerkeep infra chart values
+        run: |
+          sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
 
-  #     - name: Create Pull Request
-  #       id: cpr
-  #       uses: peter-evans/create-pull-request@v2
-  #       with:
-  #         token: ${{ secrets.FL_WORKFLOW_PAT }}
-  #         path: layerkeep-infra
-  #         commit-message: Update Layerkeep ${{ env.TARGET }} Config
-  #         branch: "${{ env.TARGET }}-layerkeep"
-  #         base: master
-  #         committer: GitHub <action@github.com>
-  #         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-  #         title: '${{ env.TARGET }} - Layerkeep Config'
-  #         body: |
-  #           New ${{ env.TARGET }} Config
-  #           - Contains *today's* date
-  #           - Auto-generated by [create-pull-request][1]
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v2
+        with:
+          token: ${{ secrets.FL_WORKFLOW_PAT }}
+          path: layerkeep-infra
+          commit-message: Update Layerkeep ${{ env.TARGET }} Config
+          branch: "${{ env.TARGET }}-layerkeep"
+          base: master
+          committer: GitHub <action@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          title: '${{ env.TARGET }} - Layerkeep Config'
+          body: |
+            New ${{ env.TARGET }} Config
+            - Contains *today's* date
+            - Auto-generated by [create-pull-request][1]
 
-  #           [1]: https://github.com/peter-evans/create-pull-request
-  #         labels: layerkeep, automated pr, ${{ env.TARGET }}
-  #         team-reviewers: owners, maintainers
-  #         # milestone: 1
-  #         draft: false
+            [1]: https://github.com/peter-evans/create-pull-request
+          labels: layerkeep, automated pr, ${{ env.TARGET }}
+          team-reviewers: owners, maintainers
+          # milestone: 1
+          draft: false
 
 
   #     - name: set bashrc
   #       run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
 
 
-  #     - name: Set kubernetes cluster
-  #       run: |
-  #         echo $DIGITALOCEAN_ACCESS_TOKEN
-  #         cd $GITHUB_WORKSPACE/layerkeep-infra
-  #         KUBECONFIG=${PWD}/${TARGET}/config doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
-  #         make ${TARGET} get-pods
-
-
-      # - name: Deploy to Kubernetes 
+      # - name: Set kubernetes cluster
+      #   working-directory: ./layerkeep-infra
       #   run: |
-      #     echo $PWD
-      #     cd $GITHUB_WORKSPACE/layerkeep-infra
-      #     make ${TARGET} setup-layerkeep
+      #     doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
+      #     make ${TARGET} get-pods
+
+
+      - name: Deploy to Kubernetes 
+        working-directory: ./layerkeep-infra
+        run: |
+          echo $PWD
+          make ${TARGET} setup-layerkeep
 
 
 
