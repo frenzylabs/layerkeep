@@ -25,6 +25,7 @@ jobs:
       #   - /usr/bin:/usr/bin
     outputs:
       buildenv: ${{ steps.buildenv.outputs }}
+      testtarget: ${{ steps.buildenv.outputs.target }}
         
     steps:
       - name: Checkout
@@ -142,10 +143,10 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    container:
-      image: frenzylab/devcontainer:latest
-      env:
-        XDG_DATA_HOME: "/root/.local/share/"
+    # container:
+    #   image: frenzylab/devcontainer:latest
+    #   env:
+    #     XDG_DATA_HOME: "/root/.local/share/"
     steps:
       # - name: Install pip
       #   run: apt install -y python3-pip
@@ -156,7 +157,10 @@ jobs:
           name: build_info
 
       - name: test job outputs
-        run: echo ${{needs.build.outputs.buildenv}}
+        run: |
+          echo "TESTTARGET = ${{ needs.build.outputs.buildenv.testtarget }}"
+          echo "TARGET = ${{ needs.build.outputs.buildenv.target }}"
+          echo "TAG = ${{ needs.build.outputs.buildenv.target }}"
 
       - name: set env vars
         shell: bash
