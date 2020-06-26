@@ -146,6 +146,7 @@ jobs:
           echo "SECRET NAMe= ${SECRET_NAME^^}"          
           export cluster_key=${{ env.SECRET_NAME }}
           echo "cluster key = ${cluster_key}"
+          echo "envclusterkey= ${{ env.cluster_key }}"
           SECRET_VALUE= ${{ secrets[env.cluster_key] }}
           echo "SECRET_VALUE = $SECRET_VALUE"
         env:
