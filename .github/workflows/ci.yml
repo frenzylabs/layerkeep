@@ -140,111 +140,123 @@ jobs:
           echo "::set-output name=tag::${TAG}"
           echo "::set-output name=build_image::${BUILD_IMAGE}"
           echo "::set-output name=asset_image::${ASSET_IMAGE}"
+      
+      - name: test
+        run: |
+          echo "SECRET NAMe= $SECRET_NAME"
+          echo ${{ env.SECRET_NAME }}
+          echo "SECRET= ${{ secrets[env.SECRET_NAME] }}"
+        env:
+          SECRET_PREFIX: A
+          SECRET_NAME: "DO_${TARGET}_CLUSTER"
           
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    container:
-      image: frenzylab/devcontainer:latest
-      env:
-        XDG_DATA_HOME: "/root/.local/share/"
-    steps:
-      - name: Install pip
-        run: apt install -y python3-pip
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: frenzylab/devcontainer:latest
+  #     env:
+  #       XDG_DATA_HOME: "/root/.local/share/"
+  #   steps:
+  #     - name: Install pip
+  #       run: apt install -y python3-pip
 
-      # - name: Download build info
-      #   uses: actions/download-artifact@v1
-      #   with:
-      #     name: build_info
+  #     # - name: Download build info
+  #     #   uses: actions/download-artifact@v1
+  #     #   with:
+  #     #     name: build_info
 
-      # - name: test job outputs
-      #   run: |
-      #     BUILDENV = ${{ fromJSON(needs.build.outputs.buildenv)
-      #     echo "TESTTARGET = ${{ needs.build.outputs.target }}"
-      #     echo "JTAG = ${{ needs.build.outputs.tag }}"
-      #     echo "TARGET = ${{ fromJSON(needs.build.outputs.buildenv).target }}"
+  #     # - name: test job outputs
+  #     #   run: |
+  #     #     BUILDENV = ${{ fromJSON(needs.build.outputs.buildenv)
+  #     #     echo "TESTTARGET = ${{ needs.build.outputs.target }}"
+  #     #     echo "JTAG = ${{ needs.build.outputs.tag }}"
+  #     #     echo "TARGET = ${{ fromJSON(needs.build.outputs.buildenv).target }}"
       
-      - name: Set env
-        run: |
-          echo "::set-env name=TARGET::${{ needs.build.outputs.target }}"
-          echo "::set-env name=TAG::${{ needs.build.outputs.tag }}"
-          echo "::set-env name=ASSET_IMAGE::${{ needs.build.outputs.asset_image }}"
-          echo "::set-env name=BUILD_IMAGE::${{ needs.build.outputs.build_image }}"
+  #     - name: Set env
+  #       run: |
+  #         echo "::set-env name=TARGET::${{ needs.build.outputs.target }}"
+  #         echo "::set-env name=TAG::${{ needs.build.outputs.tag }}"
+  #         echo "::set-env name=ASSET_IMAGE::${{ needs.build.outputs.asset_image }}"
+  #         echo "::set-env name=BUILD_IMAGE::${{ needs.build.outputs.build_image }}"
+
+  #     - name: Set K8s cluster        
+  #       run: |
+  #         clusters
+
+  #     # - name: set env vars
+  #     #   shell: bash
+  #     #   run: |
+  #     #     cat build_info/build_env.txt;
+  #     #     source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
+
+  #     - name: test env
+  #       run: |
+  #         echo "TARGEt= $TARGET"
+  #         echo "TAG= $TAG"
+  #         echo "BUILD_IMAGE= $BUILD_IMAGE"
+  #         echo "ASSET_IMAGE= $ASSET_IMAGE"
+
+  #     - name: Check out layerkeep infra
+  #       uses: actions/checkout@v2
+  #       with:
+  #         token: ${{ secrets.FL_WORKFLOW_PAT }}
+  #         path: layerkeep-infra
+  #         fetch-depth: 0
+  #         persist-credentials: false
+  #         repository: frenzylabs/layerkeep-infra
 
 
-      # - name: set env vars
-      #   shell: bash
-      #   run: |
-      #     cat build_info/build_env.txt;
-      #     source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
-
-      - name: test env
-        run: |
-          echo "TARGEt= $TARGET"
-          echo "TAG= $TAG"
-          echo "BUILD_IMAGE= $BUILD_IMAGE"
-          echo "ASSET_IMAGE= $ASSET_IMAGE"
-
-      - name: Check out layerkeep infra
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.FL_WORKFLOW_PAT }}
-          path: layerkeep-infra
-          fetch-depth: 0
-          persist-credentials: false
-          repository: frenzylabs/layerkeep-infra
+  #     - name: Configure AWS credentials from Test account
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
+  #         aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
+  #         aws-region: us-east-1
 
 
-      - name: Configure AWS credentials from Test account
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
-          aws-region: us-east-1
+  #     - name: doctl auth
+  #       run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+  #     - name: Update layerkeep infra chart values
+  #       run: |
+  #         sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
+
+  #     - name: Create Pull Request
+  #       id: cpr
+  #       uses: peter-evans/create-pull-request@v2
+  #       with:
+  #         token: ${{ secrets.FL_WORKFLOW_PAT }}
+  #         path: layerkeep-infra
+  #         commit-message: Update Layerkeep ${{ env.TARGET }} Config
+  #         branch: "${{ env.TARGET }}-layerkeep"
+  #         base: master
+  #         committer: GitHub <action@github.com>
+  #         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+  #         title: '${{ env.TARGET }} - Layerkeep Config'
+  #         body: |
+  #           New ${{ env.TARGET }} Config
+  #           - Contains *today's* date
+  #           - Auto-generated by [create-pull-request][1]
+
+  #           [1]: https://github.com/peter-evans/create-pull-request
+  #         labels: layerkeep, automated pr, ${{ env.TARGET }}
+  #         team-reviewers: owners, maintainers
+  #         # milestone: 1
+  #         draft: false
 
 
-      - name: doctl auth
-        run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Update layerkeep infra chart values
-        run: |
-          sed -i -E "s/^([[:space:]]*)(tag:.*$)/\1tag: ${TAG}/g" layerkeep-infra/charts/layerkeep/values.${TARGET}.yaml
-
-      - name: Create Pull Request
-        id: cpr
-        uses: peter-evans/create-pull-request@v2
-        with:
-          token: ${{ secrets.FL_WORKFLOW_PAT }}
-          path: layerkeep-infra
-          commit-message: Update Layerkeep ${{ env.TARGET }} Config
-          branch: "${{ env.TARGET }}-layerkeep"
-          base: master
-          committer: GitHub <action@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          title: '${{ env.TARGET }} - Layerkeep Config'
-          body: |
-            New ${{ env.TARGET }} Config
-            - Contains *today's* date
-            - Auto-generated by [create-pull-request][1]
-
-            [1]: https://github.com/peter-evans/create-pull-request
-          labels: layerkeep, automated pr, ${{ env.TARGET }}
-          team-reviewers: owners, maintainers
-          # milestone: 1
-          draft: false
+  #     - name: set bashrc
+  #       run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
 
 
-      - name: set bashrc
-        run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
-
-
-      # - name: Set kubernetes cluster
-      #   run: |
-      #     echo $DIGITALOCEAN_ACCESS_TOKEN
-      #     cd $GITHUB_WORKSPACE/layerkeep-infra
-      #     KUBECONFIG=${PWD}/${TARGET}/config doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
-      #     make ${TARGET} get-pods
+  #     - name: Set kubernetes cluster
+  #       run: |
+  #         echo $DIGITALOCEAN_ACCESS_TOKEN
+  #         cd $GITHUB_WORKSPACE/layerkeep-infra
+  #         KUBECONFIG=${PWD}/${TARGET}/config doctl kubernetes cluster kubeconfig save layerkeep1-nyc3
+  #         make ${TARGET} get-pods
 
 
       # - name: Deploy to Kubernetes 
