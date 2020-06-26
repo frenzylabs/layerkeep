@@ -28,7 +28,7 @@ docker_build_target() {
 }
 
 docker_build_assets() {
-    mkdir ${SCRIPT_DIR}/assets/public
+    mkdir -p ${SCRIPT_DIR}/assets/public
     docker run --rm \
 		-v ${SCRIPT_DIR}/assets/public:/var/www/layerkeep/public \
     	-e SECRET_KEY_BASE=1 \
