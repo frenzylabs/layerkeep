@@ -158,6 +158,9 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     container:
       image: frenzylab/devcontainer:latest
       env:
@@ -231,13 +234,12 @@ jobs:
           echo 'eval "$(direnv hook zsh)"' >> "$HOME/.zshrc"
           echo 'eval "$(direnv hook zsh)"' >> "/root/.zshrc"
 
-      - name: test
-        shell: /usr/bin/zsh {0}
+      - name: test        
+        working-directory: $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
         run: |
-
           cat $HOME/.bash_profile
           source ~/.bashrc
-          cd $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
+          echo ${PWD}
           env
           ls -al ${PWD}
           echo "KUBECONFIG = $KUBECONFIG"
