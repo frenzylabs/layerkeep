@@ -195,12 +195,12 @@ jobs:
   #     #     cat build_info/build_env.txt;
   #     #     source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
 
-  #     - name: test env
-  #       run: |
-  #         echo "TARGEt= $TARGET"
-  #         echo "TAG= $TAG"
-  #         echo "BUILD_IMAGE= $BUILD_IMAGE"
-  #         echo "ASSET_IMAGE= $ASSET_IMAGE"
+      - name: test env
+        run: |
+          echo "TARGEt= $TARGET"
+          echo "TAG= $TAG"
+          echo "BUILD_IMAGE= $BUILD_IMAGE"
+          echo "ASSET_IMAGE= $ASSET_IMAGE"
 
       - name: Check out layerkeep infra
         uses: actions/checkout@v2
@@ -229,8 +229,9 @@ jobs:
       - name: test
         shell: bash
         run: |
-          cd $GITHUB_WORKSPACE/layerkeep-infra
-          make ${TARGET} get-pods
+          cd $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
+          kubectl config current-context
+          make get-pods
 
   #     - name: Update layerkeep infra chart values
   #       run: |
