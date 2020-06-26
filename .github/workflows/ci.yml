@@ -225,7 +225,7 @@ jobs:
 
       - name: set bashrc
         run: |
-          echo 'eval "$(direnv hook bash)"' >> "root/.bash_profile"
+          echo 'eval "$(direnv hook bash)"' >> "/root/.bash_profile"
           echo 'eval "$(direnv hook bash)"' >> "$HOME/.bash_profile"
 
       - name: test
