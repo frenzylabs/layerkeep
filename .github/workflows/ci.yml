@@ -235,7 +235,7 @@ jobs:
           echo 'eval "$(direnv hook zsh)"' >> "/root/.zshrc"
 
       - name: test        
-        working-directory: ${{ env.GITHUB_WORKSPACE}}/layerkeep-infra/${{ env.TARGET }}
+        working-directory: ./layerkeep-infra/${{ env.TARGET }}
         run: |
           cat $HOME/.bash_profile
           source ~/.bashrc
