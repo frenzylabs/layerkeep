@@ -31,7 +31,7 @@ docker_build_assets() {
     mkdir ${SCRIPT_DIR}/assets/public
     docker run --rm \
 		-v ${SCRIPT_DIR}/assets/public:/var/www/layerkeep/public \
-    -e SECRET_KEY_BASE=c959724279db5ca746e7a87 \
+    	-e SECRET_KEY_BASE=1 \
 		-e RAILS_ENV=production \
 		-e PRECOMPILE_ASSETS=true \
 		${IMAGE} bundle exec rails assets:precompile
