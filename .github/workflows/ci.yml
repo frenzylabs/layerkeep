@@ -222,8 +222,8 @@ jobs:
   #         aws-secret-access-key: ${{ secrets.CI_AWS_ACCESS_SECRET }}
   #         aws-region: us-east-1
 
-      - name: set bashrc
-        run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
+      # - name: set bashrc
+      #   run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
 
       - name: Set KUBECONFIG
         working-directory: ./layerkeep-infra
