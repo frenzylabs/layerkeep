@@ -224,7 +224,9 @@ jobs:
         run: doctl auth init -t ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: set bashrc
-        run: echo 'eval "$(direnv hook zsh)"' >> "$HOME/.bash_profile"
+        run: |
+          echo 'eval "$(direnv hook bash)"' >> "root/.bash_profile"
+          echo 'eval "$(direnv hook bash)"' >> "$HOME/.bash_profile"
 
       - name: test
         shell: bash -l {0}
