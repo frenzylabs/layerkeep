@@ -229,9 +229,10 @@ jobs:
           echo 'eval "$(direnv hook bash)"' >> "/root/.bashrc"
           echo 'eval "$(direnv hook bash)"' >> "$HOME/.bash_profile"
           echo 'eval "$(direnv hook bash)"' >> "$HOME/.bashrc"
+          echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
 
       - name: test
-        shell: bash -l {0}
+        shell: bash
         run: |
           
           cat $HOME/.bash_profile
