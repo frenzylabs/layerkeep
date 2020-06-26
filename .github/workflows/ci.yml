@@ -144,9 +144,10 @@ jobs:
       - name: test
         run: |
           echo "SECRET NAMe= ${SECRET_NAME^^}"          
-          cluster_key = ${{ env.SECRET_NAME }}
+          export cluster_key = ${{ env.SECRET_NAME }}
           echo "cluster key = ${cluster_key}"
-          echo "SECRET= ${{ secrets[${cluster_key}] }}"
+          SECRET_VALUE= ${{ secrets[env.cluster_key] }}
+          echo "SECRET_VALUE = $SECRET_VALUE"
         env:
           SECRET_PREFIX: A
           SECRET_NAME: "DO_${TARGET^^}_CLUSTER"
