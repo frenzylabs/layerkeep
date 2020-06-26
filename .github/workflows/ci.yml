@@ -127,6 +127,7 @@ jobs:
           path: build_env.txt          
 
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     container:
       image: frenzylab/devcontainer:latest
