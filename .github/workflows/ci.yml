@@ -143,12 +143,12 @@ jobs:
       
       - name: test
         run: |
-          echo "SECRET NAMe= $SECRET_NAME"
+          echo "SECRET NAMe= ${SECRET_NAME^^}"
           echo ${{ env.SECRET_NAME }}
           echo "SECRET= ${{ secrets[env.SECRET_NAME] }}"
         env:
           SECRET_PREFIX: A
-          SECRET_NAME: "DO_${TARGET}_CLUSTER"
+          SECRET_NAME: "DO_${TARGET^^}_CLUSTER"
           
 
   # deploy:
