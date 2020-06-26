@@ -227,10 +227,10 @@ jobs:
         run: echo 'eval "$(direnv hook zsh)"' >> "/root/.bashrc"
 
       - name: test
-        shell: bash
+        shell: bash -l {0}
         run: |
           cd $GITHUB_WORKSPACE/layerkeep-infra/${TARGET}
-          ls ${PWD}
+          ls -al ${PWD}
           echo "KUBECONFIG = $KUBECONFIG"
           kubectl config get-contexts
           kubectl config current-context
