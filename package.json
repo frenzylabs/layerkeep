@@ -1,5 +1,6 @@
 {
-  "name": "LayerKeep",
+  "name": "layerkeep",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@babel/preset-react": "^7.0.0",
