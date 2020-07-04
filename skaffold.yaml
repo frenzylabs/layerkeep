@@ -16,18 +16,21 @@ profiles:
       tagPolicy:
         gitCommit:
           prefix: dev-
-      local: {}
+      local:
+        useBuildkit: true
       artifacts:
       - image: localhost/layerkeep
         docker:
-          dockerfile: Dockerfile
+          dockerfile: Dockerfile.app
+          target: finaldev
           buildArgs:
             RAILS_ENV: '{{.RAILS_ENV}}'
+            TARGET_ENV: 'dev'
         sync:
           # infer:
           #   - '**'
           manual:
-            - src: "*/**"
+            - src: "app/**"
               dest: .
     deploy:
       helm:
@@ -48,12 +51,32 @@ profiles:
           #   image: localhost/pluck:5baa5553
           # values:
           #   image: layerkeep
-          # setValues:
+          setValues:
+          # ['bundle', 'exec', 'puma', '-C', 'config/puma.rb']
           #   image.repository: layerkeep
           #   image: registry.digitalocean.com/frenzylabs/pluck:5baa5553
           valuesFiles:
               - ../../layerkeep-infra/charts/layerkeep/values.yaml
               - ../../layerkeep-infra/charts/layerkeep/values.local.yaml
+              - ../../layerkeep-infra/secrets/secrets.local.yaml
+          imageStrategy:
+            helm: {}
+        - name: ingress
+          useHelmSecrets: true
+          namespace: default
+          chartPath: ../../layerkeep-infra/charts/ingress
+          wait: true
+          # artifactOverrides:
+          #   image: localhost/layerkeep
+          #   image: localhost/pluck:5baa5553
+          # values:
+          #   image: layerkeep
+          # setValues:
+          #   image.repository: layerkeep
+          #   image: registry.digitalocean.com/frenzylabs/pluck:5baa5553
+          valuesFiles:
+              - ../../layerkeep-infra/charts/ingress/values.yaml
+              - ../../layerkeep-infra/charts/ingress/values.local.yaml
               - ../../layerkeep-infra/secrets/secrets.local.yaml
           imageStrategy:
             helm: {}

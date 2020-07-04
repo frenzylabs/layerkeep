@@ -43,7 +43,7 @@ In terminal go to /frenzylabs/layerkeep-infra
 6. Run Postgres
    `make localdev setup-postgres init=true`
 
-7. skaffold dev
+7. cd ../layerkeep-services/layerkeep && skaffold dev
 
 8.  Run migrations  
     `make localdev run-database-migrations -f ../../layerkeep-infra/Makefile`

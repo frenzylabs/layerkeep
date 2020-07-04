@@ -2,38 +2,38 @@ name: CI
 
 on: 
   push:
+    branches:
+      - '**'
+    tags-ignore:
+      - "**"
   pull_request:
   release:
-    types: [published]
+    types:
+      - created
+
+# ON PR: github.head_ref = the branch
 
 env:
   IMAGE_REPOSITORY: registry.digitalocean.com/frenzylabs/web
   ASSET_IMAGE_REPOSITORY: registry.digitalocean.com/frenzylabs/web_assets
   DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-#   HARNESS_WEBHOOK_QA_DEPLOY: ${{ secrets.HARNESS_WEBHOOK_QA_DEPLOY }}
-#   HARNESS_WEBHOOK_PROD_DEPLOY: ${{ secrets.HARNESS_WEBHOOK_QA_DEPLOY }}
+
+#if: "!contains(github.event.head_commit.message, 'ci skip')"  
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # container:
-    #   image: frenzylab/devcontainer:latest
-      # env:
-      #   XDG_DATA_HOME: "/root/.local/share/"  # HELM plugin path
-        # PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      # volumes:
-      #   - /usr/bin:/usr/bin
+
     outputs:      
       target: ${{ steps.buildenv.outputs.target }}
       tag: ${{ steps.buildenv.outputs.tag }}
       build_image: ${{ steps.build-image.outputs.build_image }}
-      asset_image: ${{ steps.asset-image.outputs.asset_image }}
         
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: './layerkeep'
+          # path: './layerkeep'
           persist-credentials: false
 
       - name: Set release version info
@@ -56,61 +56,11 @@ jobs:
 
       - name: Set build info
         run: |
-          TAG=${TARGET}-${VERSION}-build
+          TAG=${TARGET}-${VERSION}
           echo "::set-env name=TAG::${TAG}"
-          echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${TAG}"
-          echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${TAG}"
-          echo "::set-env name=CLUSTER_KEY::DO_${TARGET^^}_CLUSTER"
-          
-
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: |
-            **/node_module_cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Cache gems
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-gems
-        with:
-          path: |
-            **/vendor/cache
-            **/vendor/bundle
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('**/Gemfile.lock') }}
-            ${{ runner.os }}-
-            
-      - name: Cache assets
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-assets
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: |
-            **/scripts/assets/public
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}
-            ${{ runner.os }}-
-
-      - name: Build docker build image
-        run: |
-          IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
-
-      - name: Build docker build asset image
-        run: |
-          IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
+          echo "::set-env name=IMAGE::${IMAGE_REPOSITORY}:${TAG}"
+          echo "::set-env name=IMAGE_LATEST::${IMAGE_REPOSITORY}:${TARGET}-latest"
+          echo "::set-env name=ASSET_CACHE::${ASSET_IMAGE_REPOSITORY}:${TARGET}-latest"
 
       - name: Install doctl
         uses: digitalocean/action-doctl@v2
@@ -118,46 +68,114 @@ jobs:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login
+        run: doctl registry login          
+
+      - name: Build Docker Assets
+        run: |
+          DOCKER_BUILDKIT=1 docker build -f Dockerfile.app --cache-from ${ASSET_CACHE} --build-arg BUILDKIT_INLINE_CACHE=1 -t localhost/lkassets:latest --target assets .
+
+      - name: Push Assets
+        run: |    
+          docker tag localhost/lkassets:latest ${ASSET_CACHE}
+          docker push ${ASSET_CACHE}
+
+      - name: Build docker build image
+        run: |
+          DOCKER_BUILDKIT=1 docker build -f Dockerfile.app  --cache-from ${ASSET_CACHE} --cache-from ${IMAGE_LATEST} \
+          -t ${IMAGE} -t ${IMAGE_LATEST} --target final .
 
       - name: Push docker image
+        if: github.event_name != 'pull_request'
         id: build-image
         run: |
-            docker push ${BUILD_IMAGE}
-            echo "::set-output name=build_image::${BUILD_IMAGE}"
-      #     echo "TAG: ${TAG}" >> build_env.txt
-      #     echo "TARGET: ${TARGET}" >> build_env.txt
-      #     echo "BUILD_IMAGE: ${BUILD_IMAGE}" >> build_env.txt
-    
-      - name: Push docker asset image
-        id: asset-image
-        run: |
-            docker push ${ASSET_IMAGE}
-            echo "::set-output name=asset_image::${ASSET_IMAGE}"
+            docker push ${IMAGE}
+            docker push ${IMAGE_LATEST}
+            echo "::set-output name=build_image::${IMAGE}"
 
-      #     echo ${ASSET_IMAGE}
-      #     echo "ASSET_IMAGE: ${ASSET_IMAGE}" >> build_env.txt
+      - name: Set Artifacts
+        run: |            
+            echo "TAG: ${TAG}" >> build_env.txt
+            echo "TARGET: ${TARGET}" >> build_env.txt
+            echo "IMAGE: ${IMAGE}" >> build_env.txt
 
-      # - name: Upload Build Artifacts
-      #   uses: actions/upload-artifact@v1
-      #   if: ${{ always() }}
-      #   with:
-      #     name: build_info
-      #     path: build_env.txt          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v1
+        if: ${{ always() }}
+        with:
+          name: build_info
+          path: build_env.txt
 
-      - id: buildenv
+      - name: Build Output
+        id: buildenv
         if: ${{ always() }}
         run: |
           echo "::set-output name=target::${TARGET}"
-          echo "::set-output name=tag::${TAG}"
+          echo "::set-output name=tag::${TAG}"          
+
+      # - name: Set build info
+      #   run: |
+      #     TAG=${TARGET}-${VERSION}
+      #     echo "::set-env name=TAG::${TAG}"
+      #     echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${TAG}"
+      #     echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${TAG}"
+      #     echo "::set-env name=CLUSTER_KEY::DO_${TARGET^^}_CLUSTER"
+          
+
+      # - name: Build docker build image
+      #   run: |
+      #     IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
+
+      # - name: Build docker build asset image
+      #   run: |
+      #     IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
+
+      # - name: Install doctl
+      #   uses: digitalocean/action-doctl@v2
+      #   with:
+      #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      # - name: Log in to DigitalOcean Container Registry with short-lived credentials
+      #   run: doctl registry login
+
+      # - name: Push docker image
+      #   id: build-image
+      #   run: |
+      #       docker push ${BUILD_IMAGE}
+      #       echo "::set-output name=build_image::${BUILD_IMAGE}"
+      # #     echo "TAG: ${TAG}" >> build_env.txt
+      # #     echo "TARGET: ${TARGET}" >> build_env.txt
+      # #     echo "BUILD_IMAGE: ${BUILD_IMAGE}" >> build_env.txt
+    
+      # - name: Push docker asset image
+      #   id: asset-image
+      #   run: |
+      #       docker push ${ASSET_IMAGE}
+      #       echo "::set-output name=asset_image::${ASSET_IMAGE}"
+
+      # #     echo ${ASSET_IMAGE}
+      # #     echo "ASSET_IMAGE: ${ASSET_IMAGE}" >> build_env.txt
+
+      # # - name: Upload Build Artifacts
+      # #   uses: actions/upload-artifact@v1
+      # #   if: ${{ always() }}
+      # #   with:
+      # #     name: build_info
+      # #     path: build_env.txt          
+
+      # - name: Set Job Outputs
+      #   id: buildenv
+      #   if: ${{ always() }}
+      #   run: |
+      #     echo "::set-output name=target::${TARGET}"
+      #     echo "::set-output name=tag::${TAG}"
           
       
-      - name: test
-        run: |
-          echo "SECRET NAMe= ${CLUSTER_KEY}"                    
-          echo "envclusterkey= ${{ env.CLUSTER_KEY }}"
-          SECRET_VALUE="${{ secrets[env.CLUSTER_KEY] }}"
-          echo "SECRET_VALUE = $SECRET_VALUE"
+      # - name: test
+      #   run: |
+      #     echo "SECRET NAMe= ${CLUSTER_KEY}"                    
+      #     echo "envclusterkey= ${{ env.CLUSTER_KEY }}"
+      #     SECRET_VALUE="${{ secrets[env.CLUSTER_KEY] }}"
+      #     echo "SECRET_VALUE = $SECRET_VALUE"
 
         # env:
         #   SECRET_PREFIX: A
@@ -194,25 +212,9 @@ jobs:
         run: |
           echo "::set-env name=TARGET::${{ needs.build.outputs.target }}"
           echo "::set-env name=TAG::${{ needs.build.outputs.tag }}"
-          echo "::set-env name=ASSET_IMAGE::${{ needs.build.outputs.asset_image }}"
           echo "::set-env name=BUILD_IMAGE::${{ needs.build.outputs.build_image }}"
 
-  #     - name: Set K8s cluster        
-  #       run: |
-  #         clusters
 
-  #     # - name: set env vars
-  #     #   shell: bash
-  #     #   run: |
-  #     #     cat build_info/build_env.txt;
-  #     #     source <(grep -v '^#' build_info/build_env.txt | sed -E 's|^([^:]+):\s*(.*)$|\1="\2"; export \1|g')
-
-      # - name: test env
-      #   run: |
-      #     echo "TARGEt= $TARGET"
-      #     echo "TAG= $TAG"
-      #     echo "BUILD_IMAGE= $BUILD_IMAGE"
-      #     echo "ASSET_IMAGE= $ASSET_IMAGE"
 
       - name: Check out layerkeep infra
         uses: actions/checkout@v2
@@ -247,7 +249,6 @@ jobs:
         run: |
           kubectl config get-contexts
           kubectl config current-context
-          make ${TARGET} get-pods
 
 
       - name: Update layerkeep infra chart values
@@ -260,21 +261,19 @@ jobs:
         with:
           token: ${{ secrets.FL_WORKFLOW_PAT }}
           path: layerkeep-infra
-          commit-message: Update Layerkeep ${{ env.TARGET }} Config
-          branch: "${{ env.TARGET }}-layerkeep"
+          commit-message: Update ${{ github.event.repository.name }} ${{ env.TARGET }} Config
+          branch: "${{ env.TARGET }}-${{ github.event.repository.name }}"
           base: master
           committer: GitHub <action@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          title: '${{ env.TARGET }} - Layerkeep Config'
+          title: '${{ github.event.repository.name }} : ${{ env.TARGET }}'
           body: |
-            New ${{ env.TARGET }} Config
-            - Contains *today's* date
+            New ${{ env.TARGET }} Image
             - Auto-generated by [create-pull-request][1]
 
             [1]: https://github.com/peter-evans/create-pull-request
-          labels: layerkeep, automated pr, ${{ env.TARGET }}
+          labels: ${{ github.event.repository.name }}, automated pr, ${{ env.TARGET }}
           team-reviewers: owners, maintainers
-          # milestone: 1
           draft: false
 
 
