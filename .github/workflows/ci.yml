@@ -24,7 +24,7 @@ jobs:
   valid:
     runs-on: ubuntu-latest
     outputs:      
-      stopbuild: ${{ steps.build.outputs.stopbuild }}
+      canbuild: ${{ steps.build.outputs.canbuild }}
 
     steps:
     - name: dont rebuild tagged commits
@@ -42,15 +42,15 @@ jobs:
   
         if [[ "$filter_count" -eq 0 ]]; then
           echo "all good, continue"
-          echo "::set-output name=stopbuild::false"
+          echo "::set-output name=canbuild::true"
         else
           echo "the last commit log \"$last_commit_log\" contains \"$COMMIT_FILTER\", stopping"
-          echo "::set-output name=stopbuild::true"
+          echo "::set-output name=canbuild::false"
         fi  
 
   build:
     needs: valid
-    if: (needs.valid.outputs.stopbuild == 'false')
+    if: (github.event_name != 'push' || needs.valid.outputs.canbuild == 'true')
     runs-on: ubuntu-latest
 
     outputs:      
