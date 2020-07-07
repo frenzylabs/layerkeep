@@ -21,14 +21,14 @@ env:
 
 jobs:
   valid:
-    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest    
     outputs:      
       canbuild: ${{ steps.build.outputs.canbuild }}
 
     steps:
     - name: dont rebuild tagged commits
-      id: build
-      if: github.event_name == 'push'
+      id: build      
       env:
         COMMIT_FILTER: 'v\d+\.\d+\.[^\s]+$'
       run: | 
