@@ -18,7 +18,6 @@ env:
   ASSET_IMAGE_REPOSITORY: registry.digitalocean.com/frenzylabs/web_assets
   DIGITALOCEAN_ACCESS_TOKEN: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-#if: "!contains(github.event.head_commit.message, 'ci skip')"  
 
 jobs:
   valid:
@@ -68,7 +67,7 @@ jobs:
         if: github.event_name == 'release'
         run: |
           echo "::set-env name=VERSION::${{ github.event.release.tag_name }}"
-          echo "::set-env name=TARGET::prod"
+          echo "::set-env name=TARGET::staging"
       
       - name: Set commit version info
         if: github.event_name == 'push'
@@ -156,25 +155,11 @@ jobs:
       - name: Install pip
         run: apt install -y python3-pip
 
-  #     # - name: Download build info
-  #     #   uses: actions/download-artifact@v1
-  #     #   with:
-  #     #     name: build_info
-
-  #     # - name: test job outputs
-  #     #   run: |
-  #     #     BUILDENV = ${{ fromJSON(needs.build.outputs.buildenv)
-  #     #     echo "TESTTARGET = ${{ needs.build.outputs.target }}"
-  #     #     echo "JTAG = ${{ needs.build.outputs.tag }}"
-  #     #     echo "TARGET = ${{ fromJSON(needs.build.outputs.buildenv).target }}"
-      
       - name: Set env
         run: |
           echo "::set-env name=TARGET::${{ needs.build.outputs.target }}"
           echo "::set-env name=TAG::${{ needs.build.outputs.tag }}"
           echo "::set-env name=BUILD_IMAGE::${{ needs.build.outputs.build_image }}"
-
-
 
       - name: Check out layerkeep infra
         uses: actions/checkout@v2
