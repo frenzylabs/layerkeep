@@ -1,27 +1,5 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
 
 ## Start Dependencies 
 In terminal go to /frenzylabs/layerkeep-infra
@@ -53,6 +31,7 @@ In terminal go to /frenzylabs/layerkeep-infra
     Edit /etc/hosts and add 127.0.0.1 layerkeep.local, www.layerkeep.local, admin.layerkeep.local
 
 
+First time it runs it takes a minute with webpack compiling assets
 
 
 INSTALL NGINX LOCALLY
@@ -60,6 +39,7 @@ INSTALL NGINX LOCALLY
 brew tap denji/nginx
 brew install nginx-full --with-auth-req
 
+test
 
 
 docker run -it -p 3000:3000 \
