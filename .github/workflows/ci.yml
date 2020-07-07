@@ -21,7 +21,36 @@ env:
 #if: "!contains(github.event.head_commit.message, 'ci skip')"  
 
 jobs:
+  valid:
+    runs-on: ubuntu-latest
+    outputs:      
+      canbuild: ${{ steps.build.outputs.canbuild }}
+
+    steps:
+    - name: dont rebuild tagged commits
+      id: build
+      if: github.event_name == 'push'
+      env:
+        COMMIT_FILTER: 'v\d+\.\d+\.[^\s]+$'
+      run: | 
+        # Get last commit message
+        readonly local last_commit_log="${{ github.event.head_commit.message }}"
+        echo "last commit log: $last_commit_log"
+  
+        readonly local filter_count=$(echo "$last_commit_log" | grep -c -P "$COMMIT_FILTER" )
+        echo "number of occurence of '$COMMIT_FILTER' in '$last_commit_log': $filter_count"
+  
+        if [[ "$filter_count" -eq 0 ]]; then
+          echo "all good, continue"
+          echo "::set-output name=canbuild::true"
+        else
+          echo "the last commit log \"$last_commit_log\" contains \"$COMMIT_FILTER\", stopping"
+          echo "::set-output name=canbuild::false"
+        fi  
+
   build:
+    needs: valid
+    if: needs.valid.outputs.canbuild == true
     runs-on: ubuntu-latest
 
     outputs:      
@@ -33,7 +62,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          # path: './layerkeep'
           persist-credentials: false
 
       - name: Set release version info
@@ -111,78 +139,10 @@ jobs:
         run: |
           echo "::set-output name=target::${TARGET}"
           echo "::set-output name=tag::${TAG}"          
-
-      # - name: Set build info
-      #   run: |
-      #     TAG=${TARGET}-${VERSION}
-      #     echo "::set-env name=TAG::${TAG}"
-      #     echo "::set-env name=ASSET_IMAGE::${ASSET_IMAGE_REPOSITORY}:${TAG}"
-      #     echo "::set-env name=BUILD_IMAGE::${IMAGE_REPOSITORY}:${TAG}"
-      #     echo "::set-env name=CLUSTER_KEY::DO_${TARGET^^}_CLUSTER"
-          
-
-      # - name: Build docker build image
-      #   run: |
-      #     IMAGE=${BUILD_IMAGE} ./layerkeep/scripts/ci.sh docker_build_target
-
-      # - name: Build docker build asset image
-      #   run: |
-      #     IMAGE=${BUILD_IMAGE} ASSET_IMAGE=${ASSET_IMAGE} ./layerkeep/scripts/ci.sh docker_build_assets
-
-      # - name: Install doctl
-      #   uses: digitalocean/action-doctl@v2
-      #   with:
-      #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      # - name: Log in to DigitalOcean Container Registry with short-lived credentials
-      #   run: doctl registry login
-
-      # - name: Push docker image
-      #   id: build-image
-      #   run: |
-      #       docker push ${BUILD_IMAGE}
-      #       echo "::set-output name=build_image::${BUILD_IMAGE}"
-      # #     echo "TAG: ${TAG}" >> build_env.txt
-      # #     echo "TARGET: ${TARGET}" >> build_env.txt
-      # #     echo "BUILD_IMAGE: ${BUILD_IMAGE}" >> build_env.txt
-    
-      # - name: Push docker asset image
-      #   id: asset-image
-      #   run: |
-      #       docker push ${ASSET_IMAGE}
-      #       echo "::set-output name=asset_image::${ASSET_IMAGE}"
-
-      # #     echo ${ASSET_IMAGE}
-      # #     echo "ASSET_IMAGE: ${ASSET_IMAGE}" >> build_env.txt
-
-      # # - name: Upload Build Artifacts
-      # #   uses: actions/upload-artifact@v1
-      # #   if: ${{ always() }}
-      # #   with:
-      # #     name: build_info
-      # #     path: build_env.txt          
-
-      # - name: Set Job Outputs
-      #   id: buildenv
-      #   if: ${{ always() }}
-      #   run: |
-      #     echo "::set-output name=target::${TARGET}"
-      #     echo "::set-output name=tag::${TAG}"
-          
-      
-      # - name: test
-      #   run: |
-      #     echo "SECRET NAMe= ${CLUSTER_KEY}"                    
-      #     echo "envclusterkey= ${{ env.CLUSTER_KEY }}"
-      #     SECRET_VALUE="${{ secrets[env.CLUSTER_KEY] }}"
-      #     echo "SECRET_VALUE = $SECRET_VALUE"
-
-        # env:
-        #   SECRET_PREFIX: A
-        #   SECRET_NAME: "DO_${TARGET^^}_CLUSTER"
           
 
   deploy:
+    if: (github.ref == 'refs/heads/master' && github.event_name == 'push') || github.event_name == 'release'
     needs: build
     runs-on: ubuntu-latest
     defaults:

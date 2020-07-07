@@ -77,12 +77,9 @@ RUN mount=type=cache,target=${RAILS_ROOT}/yarn_cache yarn install --check-files 
 ### Compile Assets
 FROM gems-${TARGET_ENV} as compiled-assets
 
-# COPY . .
-
-COPY package.json yarn.lock ./
+# COPY package.json yarn.lock ./
 COPY bin bin
 COPY Rakefile postcss.config.js babel.config.js ./
-# COPY config config
 
 COPY config/initializers/assets.rb config/initializers/
 COPY config/initializers/active_admin.rb config/initializers/
