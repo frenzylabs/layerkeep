@@ -1,33 +1,45 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
+## Start Dependencies 
+In terminal go to /frenzylabs/layerkeep-infra
+1. Setup Aws Authentication to have access to the secrets
+  Copy .saml2aws to /root/ or copy the content into /root/.saml2aws if it already exist.  
+  Update username to be your frenzylabs email address. 
+2. Run `saml2aws login` and follow prompts
 
-* Ruby version
+3. Run rabbitmq
+   `make localdev setup-rabbitmq`
 
-* System dependencies
+4. Setup Repo Directory
+  `skaffold deploy -p repo`
 
-* Configuration
+5. Run nginx
+   `make localdev setup-nginx`
+   `make localdev setup-ingress`
 
-* Database creation
+6. Run Postgres
+   `make localdev setup-postgres init=true`
 
-* Database initialization
+7. cd ../layerkeep-services/layerkeep && skaffold dev
 
-* How to run the test suite
+8.  Run migrations  
+    `make localdev run-database-migrations -f ../../layerkeep-infra/Makefile`
 
-* Services (job queues, cache servers, search engines, etc.)
 
-* Deployment instructions
+9.  Setup host file
+    Edit /etc/hosts and add 127.0.0.1 layerkeep.local, www.layerkeep.local, admin.layerkeep.local
 
-* ...
+
+First time it runs it takes a minute with webpack compiling assets
+
 
 INSTALL NGINX LOCALLY
 
 brew tap denji/nginx
 brew install nginx-full --with-auth-req
 
+test
 
 
 docker run -it -p 3000:3000 \

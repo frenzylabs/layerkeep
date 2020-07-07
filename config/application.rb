@@ -35,5 +35,7 @@ module LayerKeep
     config.settings = Rails.application.config_for(:application)
 
     config.assets.paths << Rails.root.join('node_modules')
+
+    config.assets.initialize_on_precompile = false
   end
 end

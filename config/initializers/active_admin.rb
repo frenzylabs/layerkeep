@@ -4,7 +4,7 @@ ActiveAdmin.setup do |config|
   # Set the title that is displayed on the main layout
   # for each of the active admin pages.
   #
-  config.site_title = "Layer Keep"
+  config.site_title = "LayerKeep"
 
   # config.load_paths << Dir["#{Rails.root}/app/admin/lib/json_editor.rb"] 
   config.load_paths = Dir["#{Rails.root}/app/admin/lib"] + config.load_paths
