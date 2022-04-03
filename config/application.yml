@@ -1,0 +1,45 @@
+defaults: &defaults
+  rabbitmq_url: <%= ENV.fetch('RABBITMQ_URL'){ "amqp://rabbit:rabbit@localhost:5672" } %>
+  slicer_script: <%= ENV.fetch('SLICER_SCRIPT_PATH') { "/Applications/Slic3r.app/Contents/MacOS/slic3r" } %>
+  repo_mount_path: <%= ENV.fetch('REPO_MOUNT_PATH') { "../repos"} %>
+  mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN')  %>
+  smtp_username: <%= ENV.fetch('SMTP_USERNAME')  %>
+  smtp_password: <%= ENV.fetch('SMTP_PASSWORD')  %>
+  thingiverse_api_token: <%= ENV.fetch('THINGIVERSE_API_TOKEN')  %>
+  stripe:
+    api_key: <%= ENV.fetch('STRIPE_API_KEY')  %>
+    secret_key: <%= ENV.fetch('STRIPE_SECRET_KEY')  %>
+    signing_secret: <%= ENV.fetch('STRIPE_SIGNING_SECRET')  %>
+  digitalocean: &do
+    access_key: <%= ENV.fetch('DIGITALOCEAN_ACCESS_KEY')  %>
+    secret_access_key: <%= ENV.fetch('DIGITALOCEAN_SECRET_ACCESS_KEY')  %>
+    region: <%= ENV.fetch('DIGITALOCEAN_REGION') %> 
+    bucket: <%= ENV.fetch('DIGITALOCEAN_BUCKET')  %>
+    endpoint: <%= ENV.fetch('DIGITALOCEAN_ENDPOINT') { "https://sfo2.digitaloceanspaces.com" } %>
+
+
+development:
+  <<: *defaults
+  rabbitmq_vhost: '/'
+  digitalocean:
+    <<: *do
+    bucket: <%= ENV.fetch('DIGITALOCEAN_BUCKET') { "layerkeep-dev" } %>
+
+staging:
+  <<: *defaults
+  rabbitmq_vhost: 'staging'
+
+test:
+  <<: *defaults
+  rabbitmq_vhost: 'test'  
+
+production:
+  <<: *defaults
+  rabbitmq_vhost: '/'  
+  mixpanel_token: <%= ENV.fetch('MIXPANEL_TOKEN') %>
+  digitalocean:
+    access_key: <%= ENV['DIGITALOCEAN_ACCESS_KEY'] %>
+    secret_access_key: <%= ENV['DIGITALOCEAN_SECRET_ACCESS_KEY'] %>
+    region: <%= ENV['DIGITALOCEAN_REGION'] %>
+    bucket: <%= ENV['DIGITALOCEAN_BUCKET'] %>
+    endpoint: <%= ENV['DIGITALOCEAN_ENDPOINT'] %>
